@@ -161,7 +161,7 @@ class _CalendarPageState extends State<CalendarPage> {
             textStyle: TextStyle(
                 color: Colors.white,
                 fontSize: 14,
-                locale: Locale('en'),
+                // locale: Locale('en'),
                 fontFamily: RainbowTextStyle.fontFamily)),
       ),
       floatingActionButton: FloatingActionButton(
@@ -174,7 +174,7 @@ class _CalendarPageState extends State<CalendarPage> {
         foregroundColor: RainbowColor.secondary,
         backgroundColor: RainbowColor.primary_1,
         elevation: 2,
-        child: Icon(Icons.add_outlined),
+        child: const Icon(Icons.add_outlined),
       ),
     );
   }
