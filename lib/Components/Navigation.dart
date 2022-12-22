@@ -35,9 +35,9 @@ class _NavigationState extends State<Navigation> {
           ),
           createDrawerItem(
             icon: Icons.calendar_today_outlined,
-            text: AppLocalizations.of(context)!.calendar,
+            text: AppLocalizations.of(context)!.absences,
             onTap: () =>
-                Navigator.pushReplacementNamed(context, Routes.calendar),
+                Navigator.pushReplacementNamed(context, Routes.absenceList),
           ),
           createDrawerItem(
             icon: Icons.payment_outlined,

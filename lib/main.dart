@@ -16,12 +16,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'Pages/Calendar/Absence/AbsenceInfoPage.dart';
 import 'Pages/Login/LoginPage.dart';
+import 'Pages/Payslips/PayslipPage/PayslipViewPage.dart';
 
 bool loggedIn = false;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  loggedIn = (prefs.getBool("loggedIn"))!;
+  loggedIn = (prefs.getBool("loggedIn")) ?? false;
   runApp(const MyApp());
 }
 
@@ -95,13 +96,14 @@ class _MyAppState extends State<MyApp> {
         '/login': (context) => const LoginPage(),
         '/pincode': (context) => const PincodePage(),
         '/dashboard': (context) => const DashboardPage(),
-        '/calendar': (context) => const CalendarPage(),
+        // '/calendar': (context) => const CalendarPage(),
         '/payslips': (context) => PayslipListPage(),
         '/profile': (context) => const ProfilePage(),
         '/settings': (context) => const SettingsPage(),
         '/notifications': (context) => const NotificationsPage(),
         '/absenceList': (context) => const AbsenceListPage(),
         '/splashScreen': (context) => const SplashScreenPage(),
+        // '/payslip': (context) => const PayslipViewPage(),
         // '/absenceInfo': (context) => const AbsenceInfoPage(),
       },
     );

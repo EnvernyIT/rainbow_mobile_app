@@ -4,8 +4,11 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:rainbow_app/Components/OnlyReadFields/RButtonTextField.dart';
+import 'package:rainbow_app/Pages/Calendar/AbsenceListPage/AbsenceListPage.dart';
+import 'package:rainbow_app/Pages/Dashboard/DashboardPage.dart';
 
 import '../../../Backend/Models/Absence.dart';
+import '../../../Backend/Models/Status.dart';
 import '../../../Components/OnlyReadFields/RBigTextField.dart';
 import '../../../Components/OnlyReadFields/RTitle.dart';
 import '../../../Components/OnlyReadFields/RTextField.dart';
@@ -34,6 +37,9 @@ class _AbsenceInfoPageState extends State<AbsenceInfoPage> {
         title: Text(AppLocalizations.of(context)!.absence,
             style: TextStyle(fontFamily: RainbowTextStyle.fontFamily)),
         backgroundColor: RainbowColor.secondary,
+        leading: BackButton(onPressed: () {
+          Navigator.pop(context);
+        }),
       ),
       body: Container(
         margin: const EdgeInsets.all(10),
@@ -43,60 +49,78 @@ class _AbsenceInfoPageState extends State<AbsenceInfoPage> {
             RTitle(
               title: AppLocalizations.of(context)!.absence +
                   ": " +
-                  (widget.absence.typeOfLeave!),
-              subTitle: (widget.absence.endDay != null
-                      ? DateFormat.MMMEd(locale)
-                          .format(widget.absence.startDay!)
-                      : DateFormat.yMMMEd(locale)
-                              .format(widget.absence.startDay!) +
+                  (widget.absence.hourType?.usOmschrijving ?? ""),
+              subTitle: (widget.absence.uaEindDat != widget.absence.usStartDate
+                      ? showMDDate(widget.absence.usStartDate)
+                      : showYMDDate(widget.absence.usStartDate) +
                           " (" +
-                          widget.absence.hours.toString() +
+                          widget.absence.uaAantalUren.toString() +
                           " " +
                           AppLocalizations.of(context)!.hours +
                           ")") +
                   " " +
-                  (widget.absence.endDay != null
+                  (widget.absence.uaEindDat != widget.absence.usStartDate
                       ? AppLocalizations.of(context)!.towiths +
                           " " +
-                          DateFormat.yMMMEd(locale)
-                              .format(widget.absence.endDay!)
+                          showYMDDate(widget.absence.uaEindDat!)
                       : ""),
             ),
             const SizedBox(
               height: 25,
             ),
             RTextField(
-              title: AppLocalizations.of(context)!.approval,
-              data_1: widget.absence.accepted == null
-                  ? AppLocalizations.of(context)!.waiting
-                  : !widget.absence.accepted!
+              title: AppLocalizations.of(context)!.status,
+              data_1: widget.absence.status?.statusNumber ==
+                      Standardstatus.PR_70_APPROVED
+                  ? AppLocalizations.of(context)!.approved
+                  : widget.absence.status?.statusNumber ==
+                          Standardstatus.PR_70_REJECTED
                       ? AppLocalizations.of(context)!.declined
-                      : AppLocalizations.of(context)!.approved,
-              color_1: widget.absence.accepted == null
-                  ? Colors.grey
-                  : !widget.absence.accepted!
-                      ? Colors.redAccent
-                      : Colors.green,
+                      : AppLocalizations.of(context)!.waiting,
+              color_1: widget.absence.status?.statusNumber ==
+                      Standardstatus.PR_70_APPROVED
+                  ? Colors.lightGreen
+                  : widget.absence.status?.statusNumber ==
+                          Standardstatus.PR_70_REJECTED
+                      ? Colors.red
+                      : Color.fromARGB(255, 193, 186, 186),
               fontSize: 17.0,
             ),
             RBigTextField(
               title: AppLocalizations.of(context)!.description,
-              data: widget.absence.description,
+              data: widget.absence.uaOpmerking,
               fontSize: 17.0,
             ),
-            RButtonTextField(
-              title: AppLocalizations.of(context)!.fileOrPhoto,
-              fontSize: 17.0,
-              buttonTitle: AppLocalizations.of(context)!.download,
-              buttonIcon: const Icon(
-                Icons.download,
-                color: RainbowColor.secondary,
-                size: 16.0,
-              ),
-            )
+            // RButtonTextField(
+            //   title: AppLocalizations.of(context)!.fileOrPhoto,
+            //   fontSize: 17.0,
+            //   buttonTitle: AppLocalizations.of(context)!.download,
+            //   buttonIcon: const Icon(
+            //     Icons.download,
+            //     color: RainbowColor.secondary,
+            //     size: 16.0,
+            //   ),
+            // )
           ],
         ),
       ),
     );
+  }
+
+  String showMDDate(DateTime? date) {
+    if (date != null) {
+      String formatter = DateFormat.MMMEd().format(date);
+      return formatter;
+    }
+    return " ";
+  }
+
+  String showYMDDate(DateTime? date) {
+    if (date != null) {
+      String formatter = DateFormat.yMMMEd().format(date);
+      return formatter;
+    }
+
+    return " ";
   }
 }

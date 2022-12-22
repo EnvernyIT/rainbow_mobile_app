@@ -77,6 +77,8 @@ class UserProfileTile extends StatelessWidget {
                 icon: const Icon(Icons.logout_outlined),
                 onPressed: () {
                   GetStorage("data").remove("pin");
+                  SharedPreferences.getInstance()
+                      .then((prefs) => prefs.setBool("loggedIn", false));
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const LoginPage()),

@@ -31,89 +31,99 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 2,
-        foregroundColor: RainbowColor.primary_1,
-        bottomOpacity: 0,
-        title: Text(
-          title,
-          style: TextStyle(fontFamily: RainbowTextStyle.fontFamily),
+        appBar: AppBar(
+          elevation: 2,
+          foregroundColor: RainbowColor.primary_1,
+          bottomOpacity: 0,
+          title: Text(
+            title,
+            style: TextStyle(fontFamily: RainbowTextStyle.fontFamily),
+          ),
+          backgroundColor: RainbowColor.secondary,
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ProfilePage()),
+                  );
+                },
+                icon: CircleAvatar(
+                  radius: 15.0,
+                  child: const CircleAvatar(
+                      radius: 13.0,
+                      backgroundImage:
+                          AssetImage('assets/images/blank-profile.png')),
+                  backgroundColor: RainbowColor.primary_1,
+                )
+                // Icon(
+                //   Icons.person_outline,
+                //   color: RainbowColor.primary_1,
+                // ),
+                ),
+            // IconButton(
+            //   onPressed: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //           builder: (context) => const NotificationsPage()),
+            //     );
+            //     makeNotificationsRead();
+            //   },
+            //   icon: notifications_length > 0
+            //       ? Stack(
+            //           children: <Widget>[
+            //             const Icon(
+            //               Icons.notifications_outlined,
+            //               size: 28,
+            //             ),
+            //             Positioned(
+            //               top: 0.0,
+            //               right: 0,
+            //               child: Container(
+            //                 padding: const EdgeInsets.all(1),
+            //                 decoration: BoxDecoration(
+            //                   color: Colors.red,
+            //                   borderRadius: BorderRadius.circular(6),
+            //                 ),
+            //                 constraints: const BoxConstraints(
+            //                   minWidth: 12,
+            //                   minHeight: 12,
+            //                 ),
+            //                 child: Text(
+            //                   notifications_length.toString(),
+            //                   style: TextStyle(
+            //                       color: Colors.white,
+            //                       fontSize: 9,
+            //                       fontFamily: RainbowTextStyle.fontFamily),
+            //                   textAlign: TextAlign.center,
+            //                 ),
+            //               ),
+            //             )
+            //           ],
+            //         )
+            //       : Icon(
+            //           Icons.notifications_outlined,
+            //           color: RainbowColor.primary_1,
+            //         ),
+            // )
+          ],
         ),
-        backgroundColor: RainbowColor.secondary,
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfilePage()),
-              );
-            },
-            icon: Icon(
-              Icons.person_outline,
-              color: RainbowColor.primary_1,
+        drawer: const Navigation(),
+        body: Container(
+          decoration: const BoxDecoration(
+            color: RainbowColor.secondary,
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: const [AbsenceCard(), PayslipCard()],
             ),
           ),
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const NotificationsPage()),
-              );
-              makeNotificationsRead();
-            },
-            icon: notifications_length > 0
-                ? Stack(
-                    children: <Widget>[
-                      const Icon(
-                        Icons.notifications_outlined,
-                        size: 25,
-                      ),
-                      Positioned(
-                        top: 0.0,
-                        right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(1),
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          constraints: const BoxConstraints(
-                            minWidth: 12,
-                            minHeight: 12,
-                          ),
-                          child: Text(
-                            notifications_length.toString(),
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 9,
-                                fontFamily: RainbowTextStyle.fontFamily),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      )
-                    ],
-                  )
-                : Icon(
-                    Icons.notifications_outlined,
-                    color: RainbowColor.primary_1,
-                  ),
-          )
-        ],
-      ),
-      drawer: const Navigation(),
-      body: Container(
-        decoration: const BoxDecoration(
-          color: RainbowColor.secondary,
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [AbsenceCard(), PayslipCard()],
-        ),
-      ),
-    );
+        ));
   }
 
   int getNotificationsLength() {

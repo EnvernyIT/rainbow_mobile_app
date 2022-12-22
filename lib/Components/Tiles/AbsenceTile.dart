@@ -6,6 +6,7 @@ import 'package:rainbow_app/Theme/ThemeColor.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../Backend/Models/Absence.dart';
+import '../../Backend/Models/Status.dart';
 import '../../Theme/ThemeTextStyle.dart';
 
 class AbsenceTile extends StatelessWidget {
@@ -17,24 +18,26 @@ class AbsenceTile extends StatelessWidget {
     String locale = Localizations.localeOf(context).languageCode;
     return Container(
         padding: const EdgeInsets.all(15),
-        color: absence.accepted == null
-            ? Color.fromARGB(255, 193, 186, 186)
-            : absence.accepted == true
-                ? Colors.lightGreen
-                : Colors.red,
+        color: absence.status?.statusNumber == Standardstatus.PR_70_APPROVED
+            ? Colors.lightGreen
+            : absence.status?.statusNumber == Standardstatus.PR_70_REJECTED
+                ? Colors.red
+                : Color.fromARGB(255, 193, 186, 186),
         child:
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text(
-            absence.days == true
-                ? DateFormat.MMMEd(locale).format(absence.startDay!) +
-                    " " +
-                    AppLocalizations.of(context)!.tos +
-                    " " +
-                    DateFormat.yMMMEd(locale).format(absence.endDay!)
-                : DateFormat.yMMMEd(locale).format(absence.startDay!) +
+            absence.numberOfLeaveDays == 1
+                ? DateFormat.yMMMEd(locale).format(absence.usStartDate!) +
                     " (" +
-                    absence.hours.toString() +
-                    " hours)",
+                    absence.uaAantalUren.toString() +
+                    " " +
+                    AppLocalizations.of(context)!.hours +
+                    ")"
+                : DateFormat.MMMEd(locale).format(absence.usStartDate!) +
+                    " " +
+                    AppLocalizations.of(context)!.towith +
+                    " " +
+                    DateFormat.yMMMEd(locale).format(absence.uaEindDat!),
             style: TextStyle(
               color: RainbowColor.letter,
               fontFamily: RainbowTextStyle.fontFamily,
@@ -43,7 +46,7 @@ class AbsenceTile extends StatelessWidget {
             ),
           ),
           Text(
-            absence.typeOfLeave!,
+            absence.hourType?.usOmschrijving ?? "",
             style: TextStyle(
               color: RainbowColor.letter,
               fontFamily: RainbowTextStyle.fontFamily,

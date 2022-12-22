@@ -1,8 +1,17 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rainbow_app/Components/Buttons/Button.dart';
 import 'package:rainbow_app/Components/TextInputs/DropdownTextField.dart';
 
+import '../../Backend/APIS/UserEmployeeService.dart';
+import '../../Backend/Models/Employee.dart';
+import '../../Backend/Models/Role.dart';
 import '../../Backend/Models/UserModel.dart';
 import '../../Components/Navigation.dart';
 import '../../Components/OnlyReadFields/RTextField.dart';
@@ -18,22 +27,26 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  List<String> roles = [
-    "Employee",
-    "Supervisor",
-    "Payroll officer",
-    "Crewleader"
-  ];
+  int leaveBalance = 0;
+  Employee employee = Employee();
+  bool photoSet = false;
+  Uint8List bytes = Uint8List.fromList([]);
+
+  @override
+  void initState() {
+    super.initState();
+    setEmployeeInfo();
+    setPhoto();
+    final photo = employee.photo;
+    if (photo != null) {
+      convertBase64Image(photo.phImage).then((value) {
+        bytes = value;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    String firstName, lastName;
-    if (LoggedInUser.loggedInUser != null) {
-      firstName = LoggedInUser.loggedInUser?.firstName ?? "";
-      lastName = LoggedInUser.loggedInUser?.lastName ?? "";
-    } else {
-      firstName = "User";
-      lastName = "";
-    }
     return Scaffold(
         appBar: AppBar(
           elevation: 2,
@@ -44,69 +57,153 @@ class _ProfilePageState extends State<ProfilePage> {
           backgroundColor: RainbowColor.secondary,
         ),
         drawer: const Navigation(),
-        body: Container(
-            margin: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                Container(
-                    margin: const EdgeInsets.only(bottom: 25),
-                    alignment: Alignment.center,
-                    child: InkWell(
+        body: SingleChildScrollView(
+            child: Container(
+                margin: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 20),
+                      decoration: BoxDecoration(
+                          border: Border.all(color: RainbowColor.primary_1),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(20))),
+                      alignment: Alignment.center,
+                      child: InkWell(
                         onTap: () {
-                          _editProfileImage(context);
+                          // _editProfileImage(context);
                         },
                         child: CircleAvatar(
-                          radius: 65.0,
-                          child: const CircleAvatar(
-                              radius: 60.0,
-                              backgroundImage: AssetImage(
-                                  'assets/images/blank-profile.png')),
-                          backgroundColor: RainbowColor.primary_1,
-                        ))),
-                RTextField(
-                  title: AppLocalizations.of(context)!.username,
-                  data_1: LoggedInUser.loggedInUser?.username ?? "",
-                  fontSize: 17.0,
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                RTextField(
-                  title: AppLocalizations.of(context)!.name,
-                  data_1: LoggedInUser.loggedInUser?.firstName ?? "",
-                  data_2: LoggedInUser.loggedInUser?.lastName ?? "",
-                  fontSize: 17.0,
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                RTextField(
-                  title: AppLocalizations.of(context)!.department,
-                  data_1:
-                      LoggedInUser.loggedInUser?.departmentDescription ?? "",
-                  fontSize: 17.0,
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                DropdownTextField(
-                  title: AppLocalizations.of(context)!.role,
-                  dropdownList: roles,
-                  fontSize: 17.0,
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                Button(
-                    label: (AppLocalizations.of(context)!.changePassword),
-                    onTap: () {})
-              ],
-            )));
-  }
+                            radius: 65.0,
+                            backgroundColor: RainbowColor.primary_1,
+                            child: photoSet
+                                ? Image.memory(bytes)
+                                : Image.asset(
+                                    'assets/images/blank-profile.png')),
+                      ),
+                    ),
+                    RTextField(
+                      title: AppLocalizations.of(context)!.employeeCode,
+                      data_1: employee.emCode ?? "",
+                      fontSize: 17.0,
+                      color_1: RainbowColor.primary_1,
+                    ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    RTextField(
+                      title: AppLocalizations.of(context)!.username,
+                      data_1: LoggedInUser.loggedInUser?.username ?? "",
+                      fontSize: 17.0,
+                      color_1: RainbowColor.primary_1,
+                    ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    RTextField(
+                      title: AppLocalizations.of(context)!.name,
+                      data_1: employee.emVoorNaam,
+                      data_2: employee.emNaam,
+                      color_1: RainbowColor.primary_1,
+                      color_2: RainbowColor.primary_1,
+                      fontSize: 17.0,
+                    ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    RTextField(
+                      title: AppLocalizations.of(context)!.email,
+                      data_1: employee.email ?? "",
+                      fontSize: 17.0,
+                      color_1: RainbowColor.primary_1,
+                    ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    // RTextField(
+                    //   title: AppLocalizations.of(context)!.status,
+                    //   data_1: employee.emStatus ?? "",
+                    //   fontSize: 17.0,
+                    //   color_1: RainbowColor.primary_1,
+                    // ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    RTextField(
+                      title: AppLocalizations.of(context)!.telephone,
+                      data_1: employee.emTelefoon ?? "",
+                      fontSize: 17.0,
+                      color_1: RainbowColor.primary_1,
+                    ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    RTextField(
+                      title: AppLocalizations.of(context)!.company,
+                      data_1: employee.bedrijf?.beNaam ?? "",
+                      fontSize: 17.0,
+                      color_1: RainbowColor.primary_1,
+                    ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    RTextField(
+                      title: AppLocalizations.of(context)!.department,
+                      data_1: employee.hrmAfdeling?.afOmschrijving ?? "",
+                      fontSize: 17.0,
+                      color_1: RainbowColor.primary_1,
+                    ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    RTextField(
+                      title: AppLocalizations.of(context)!.job,
+                      data_1: employee.hrmFunctie?.fuOmschrijving ?? "",
+                      fontSize: 17.0,
+                      color_1: RainbowColor.primary_1,
+                    ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    RTextField(
+                      title: AppLocalizations.of(context)!.inServiceSince,
+                      data_1: showDate(employee.emInDienstDat),
+                      fontSize: 17.0,
+                      color_1: RainbowColor.primary_1,
+                    ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    RTextField(
+                      title: AppLocalizations.of(context)!.leaveBalance,
+                      data_1: leaveBalance.toString(),
+                      fontSize: 17.0,
+                      color_1: RainbowColor.primary_1,
+                    ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    RTextField(
+                      title: AppLocalizations.of(context)!.roles,
+                      data_1:
+                          LoggedInUser.loggedInUser?.roles?[0].roleName ?? "",
+                      fontSize: 17.0,
+                      color_1: RainbowColor.primary_1,
+                    ),
 
-  @override
-  void initState() {
-    super.initState();
+                    // DropdownTextField(
+                    //   title: AppLocalizations.of(context)!.role,
+                    //   dropdownList: roles,
+                    //   fontSize: 17.0,
+                    // ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    // Button(
+                    //     label: (AppLocalizations.of(context)!.changePassword),
+                    //     onTap: () {})
+                  ],
+                ))));
   }
 
   void _editProfileImage(BuildContext context) {
@@ -144,5 +241,50 @@ class _ProfilePageState extends State<ProfilePage> {
                 borderRadius: BorderRadius.circular(40),
               ));
         });
+  }
+
+  String showDate(DateTime? date) {
+    String formatter;
+    if (date != null) {
+      formatter = DateFormat.yMMMMd().format(date);
+    } else {
+      formatter = "";
+    }
+    return formatter;
+  }
+
+  void setEmployeeInfo() {
+    UserEmployeeService service = UserEmployeeService();
+    service.getEmployeeInfo().then((value) {
+      setState(() {
+        employee = value;
+      });
+    });
+    service.getLeaveBalance().then((value) {
+      leaveBalance = leaveBalance + value;
+    });
+  }
+
+  void setPhoto() {
+    if (employee.photo != null) if (employee.photo != null) {
+      setState(() {
+        photoSet = true;
+      });
+    }
+  }
+
+//   Image imageFromBase64String(String base64String) {
+//         Uint8List bytes = BASE64.decode(base64String);
+
+//   return Image.memory(base64Decode(base64String));
+// }
+
+  Future<Uint8List> convertBase64Image(String? base64String) async {
+    // return const Base64Decoder().convert(base64String.split(',').last);
+    String base = base64String ?? "";
+    final path = (await getExternalStorageDirectory())?.path;
+    File file =
+        await File('$path/profile_image').writeAsBytes(base64.decode(base));
+    return file.readAsBytesSync();
   }
 }

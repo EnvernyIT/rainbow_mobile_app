@@ -79,5 +79,22 @@
     "declined": "Afgewezen",
     "approval": "Goedkeuring",
     "fileOrPhoto": "File of foto",
-    "color": "Kleur"
+    "color": "Kleur",
+    "requestSuccesfull": "Verzoek is succesvol verzonden",
+    "absences": "Verloven",
+    "status": "Status",
+    "dayss": "Dag(en)",
+    "employeeCode": "Werknemers code",
+    "company": "Bedrijf",
+    "requestUnsuccesfull": "Request Unsuccessful",
+    "notEnoughLeave": "Niet voldoende verlofdagen",
+    "dateNotAllowed": "Datum moet vandaag of later zijn",
+    "forgotHours": "Geef een bepaald aantal uren op",
+    "credentialsDoNotMatch": "Inloggegevens komen niet overeen",
+    "email": "E-mail",
+    "telephone": "Telefoon",
+    "job": "Functie",
+    "inServiceSince": "In dienst sinds",
+    "noPayslipsFound": "Geen loonstroken gevonden voor dit jaar",
+    "incorrectDate": "Incorrecte datum!"
 }

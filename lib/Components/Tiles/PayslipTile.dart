@@ -7,6 +7,7 @@ import 'package:rainbow_app/Pages/Payslips/PayslipPage/FileViewer.dart';
 import 'package:rainbow_app/Theme/ThemeColor.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../Pages/Payslips/PayslipPage/PayslipViewPage.dart';
 import '../../Theme/ThemeTextStyle.dart';
 
 class PayslipTile extends StatefulWidget {
@@ -36,17 +37,16 @@ class _PayslipTileState extends State<PayslipTile> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => FileViewer(payslip: widget.payslip)),
+                  builder: (context) =>
+                      PayslipViewPage(payslip: widget.payslip)),
             );
           },
           leading: const Icon(
-            Icons.picture_as_pdf,
+            Icons.payment,
             color: Colors.redAccent,
           ),
           title: Text(
-            DateFormat.MMMM(locale).format(widget.payslip.date) +
-                ", " +
-                widget.payslip.date.year.toString(),
+            showDate(widget.payslip.peDatumVan, widget.payslip.hsPeriode),
             style: TextStyle(
               color: RainbowColor.primary_1,
               fontFamily: RainbowTextStyle.fontFamily,
@@ -61,8 +61,7 @@ class _PayslipTileState extends State<PayslipTile> {
             },
             child: _isVisible != false
                 ? Text(
-                    double.parse(widget.payslip.amount.toString())
-                        .toStringAsFixed(2),
+                    widget.payslip.hsBedrag1.toString(),
                     style: TextStyle(
                       color: RainbowColor.hint,
                       fontFamily: RainbowTextStyle.fontFamily,
@@ -89,5 +88,10 @@ class _PayslipTileState extends State<PayslipTile> {
     setState(() {
       _isVisible = !_isVisible!;
     });
+  }
+
+  String showDate(DateTime? date, int? periode) {
+    String formatter = DateFormat.y().format(date!);
+    return periode.toString() + " - " + formatter;
   }
 }

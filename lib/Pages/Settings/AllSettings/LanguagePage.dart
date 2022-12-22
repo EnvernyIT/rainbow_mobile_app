@@ -18,6 +18,7 @@ class LanguagePage extends StatefulWidget {
 class _LanguagePageState extends State<LanguagePage> {
   @override
   Widget build(BuildContext context) {
+    Locale myLocale = Localizations.localeOf(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 2,
@@ -34,6 +35,13 @@ class _LanguagePageState extends State<LanguagePage> {
             Container(
                 alignment: Alignment.center,
                 child: ListTile(
+                  trailing: myLocale.languageCode == 'nl'
+                      ? Icon(
+                          Icons.check,
+                          color: RainbowColor.primary_1,
+                          size: 24.0,
+                        )
+                      : null,
                   onTap: () {
                     setState(() {
                       MyApp.of(context)?.setLocale(
@@ -57,6 +65,13 @@ class _LanguagePageState extends State<LanguagePage> {
             Container(
                 alignment: Alignment.center,
                 child: ListTile(
+                  trailing: myLocale.languageCode == 'en'
+                      ? Icon(
+                          Icons.check,
+                          color: RainbowColor.primary_1,
+                          size: 24.0,
+                        )
+                      : null,
                   onTap: () {
                     setState(() {
                       MyApp.of(context)?.setLocale(

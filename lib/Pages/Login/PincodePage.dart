@@ -72,7 +72,8 @@ class _PincodePageState extends State<PincodePage> {
             jobCode: value.jobCode,
             jobDescription: value.jobDescription,
             leaveBalance: value.leaveBalance,
-            selectedRoleId: value.selectedRoleId);
+            selectedRoleId: value.selectedRoleId,
+            token: value.token);
         LoggedInUser(
           true,
           UserModel(
@@ -87,10 +88,11 @@ class _PincodePageState extends State<PincodePage> {
               jobCode: value.jobCode,
               jobDescription: value.jobDescription,
               leaveBalance: value.leaveBalance,
-              selectedRoleId: value.selectedRoleId),
-          UserRoleModel(value.roles),
+              selectedRoleId: value.selectedRoleId,
+              token: value.token),
         );
-        LoggedInUser.role = UserRoleModel(value.roles);
+        // LoggedInUser.role = UserRoleModel(value.roles);
+        LoggedInUser.setToken(value.token);
         setState(() {
           isApiCallProcess = false;
         });

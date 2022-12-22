@@ -79,5 +79,22 @@
     "declined": "Declined",
     "approval": "Approval",
     "fileOrPhoto": "File or photo",
-    "color": "Color"
+    "color": "Color",
+    "requestSuccesfull": "Request has been sent succesfully!",
+    "absences": "Absences",
+    "status": "Status",
+    "dayss": "Day(s)",
+    "employeeCode": "Employee code",
+    "company": "Company",
+    "requestUnsuccesfull": "Aanvraag mislukt",
+    "notEnoughLeave": "Not sufficient leave days",
+    "dateNotAllowed": "Date must be today or after",
+    "forgotHours": "Please give a certain amount of hours",
+    "credentialsDoNotMatch": "Credentials do not match",
+    "email": "Email",
+    "telephone": "Telephone",
+    "job": "Job",
+    "inServiceSince": "In service since",
+    "noPayslipsFound": "No payslips found for this year",
+    "incorrectDate": "Incorrect date!"
 }

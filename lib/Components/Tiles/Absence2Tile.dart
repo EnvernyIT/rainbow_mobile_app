@@ -3,8 +3,10 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:rainbow_app/Backend/Models/Status.dart';
 
 import '../../Backend/Models/Absence.dart';
+import '../../Backend/Models/HourType.dart';
 import '../../Pages/Calendar/Absence/AbsenceInfoPage.dart';
 import '../../Theme/ThemeColor.dart';
 import '../../Theme/ThemeTextStyle.dart';
@@ -22,27 +24,30 @@ class _Absence2TileState extends State<Absence2Tile> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: widget.absence.accepted == null
+      onLongPress: () {},
+      leading: widget.absence.status?.statusNumber ==
+              Standardstatus.PR_70_APPROVED
           ? const Icon(
-              Icons.access_time_outlined,
-              color: Colors.grey,
+              Icons.check_circle_outline,
+              color: Colors.green,
             )
-          : widget.absence.accepted != true
+          : widget.absence.status?.statusNumber == Standardstatus.PR_70_REJECTED
               ? const Icon(Icons.block, color: Colors.redAccent)
-              : const Icon(Icons.check_circle_outline, color: Colors.green),
+              : const Icon(Icons.access_time_outlined,
+                  color: Color.fromARGB(255, 193, 186, 186)),
       subtitle: Text(
-        widget.absence.days == true
-            ? DateFormat.MMMEd(locale).format(widget.absence.startDay!) +
+        widget.absence.usStartDate == widget.absence.uaEindDat
+            ? DateFormat.yMMMEd(locale).format(widget.absence.usStartDate!) +
+                " (" +
+                widget.absence.uaAantalUren.toString() +
+                " " +
+                AppLocalizations.of(context)!.hours +
+                ")"
+            : DateFormat.MMMEd(locale).format(widget.absence.usStartDate!) +
                 " " +
                 AppLocalizations.of(context)!.towith +
                 " " +
-                DateFormat.yMMMEd(locale).format(widget.absence.endDay!)
-            : DateFormat.yMMMEd(locale).format(widget.absence.startDay!) +
-                " (" +
-                widget.absence.hours.toString() +
-                " " +
-                AppLocalizations.of(context)!.hours +
-                ")",
+                DateFormat.yMMMEd(locale).format(widget.absence.uaEindDat!),
         style: TextStyle(
           color: RainbowColor.letter,
           fontFamily: RainbowTextStyle.fontFamily,
@@ -51,13 +56,13 @@ class _Absence2TileState extends State<Absence2Tile> {
         ),
       ),
       title: Text(
-        widget.absence.typeOfLeave == "Sick"
+        widget.absence.hourType?.usId == HourTypeId.SICK.value
             ? AppLocalizations.of(context)!.sick
-            : widget.absence.typeOfLeave == "Personal"
-                ? AppLocalizations.of(context)!.personal
+            : widget.absence.hourType?.usId == HourTypeId.AWP.value
+                ? "\"Absent Without Perm\""
                 : AppLocalizations.of(context)!.medical +
                     " " +
-                    (widget.absence.days != true
+                    (widget.absence.numberOfLeaveDays == 1
                         ? AppLocalizations.of(context)!.day
                         : AppLocalizations.of(context)!.days),
         style: TextStyle(

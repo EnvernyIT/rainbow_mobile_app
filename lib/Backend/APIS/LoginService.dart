@@ -9,18 +9,23 @@ class LoginService {
     String? password = loginRequestModel.password;
     String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$username:$password'));
-    final response = await http.post(
-      Uri.parse(loginRequestModel.url!),
-      body: loginRequestModel.toJson(),
-      headers: <String, String>{
-        'authorization': basicAuth,
-      },
-    );
+    bool _validURL = Uri.parse(loginRequestModel.url!).isAbsolute;
+    if (_validURL) {
+      final response = await http.post(
+        Uri.parse(loginRequestModel.url!),
+        body: loginRequestModel.toJson(),
+        headers: <String, String>{
+          'authorization': basicAuth,
+        },
+      );
 
-    if (response.statusCode == 200 || response.statusCode == 400) {
-      return LoginResponseModel.fromJson(json.decode(response.body));
+      if (response.statusCode == 200 || response.statusCode == 400) {
+        return LoginResponseModel.fromJson(json.decode(response.body));
+      } else {
+        throw Exception("Failed to load data!");
+      }
     } else {
-      throw Exception("Failed to load data!");
+      throw Exception("URL is incorrect!");
     }
   }
 }

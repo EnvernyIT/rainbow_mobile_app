@@ -14,13 +14,11 @@ class AbsenceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     UserEmployeeService userEmployeeService = UserEmployeeService();
-    String leaveBalance = "";
-    userEmployeeService
-        .getLeaveBalance(LoggedInUser.loggedInUser!.username!)
-        .then((String i) {
-      leaveBalance = i;
+    int leaveBalance = 0;
+    userEmployeeService.getLeaveBalance().then((value) {
+      leaveBalance = leaveBalance + value;
+      print(value);
     });
-    int userLeaveBalance = 12;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
@@ -90,15 +88,14 @@ class AbsenceCard extends StatelessWidget {
                 height: 10,
               ),
               Text(
-                userLeaveBalance.toString() +
+                leaveBalance.toString() +
                     " " +
-                    (userLeaveBalance > 1
-                        ? AppLocalizations.of(context)!.days
-                        : AppLocalizations.of(context)!.day) +
-                    "/" +
-                    daysToHours(userLeaveBalance) +
-                    " " +
-                    AppLocalizations.of(context)!.hours,
+                    AppLocalizations.of(context)!.dayss,
+                //  +
+                // "/" +
+                // daysToHours(userLeaveBalance) +
+                // " " +
+                // AppLocalizations.of(context)!.hours,
                 style: TextStyle(
                     color: Colors.green,
                     fontFamily: RainbowTextStyle.fontFamily,
@@ -128,7 +125,9 @@ class AbsenceCard extends StatelessWidget {
                   height: 10,
                 ),
                 Text(
-                  "10 Days",
+                  leaveBalance.toString() +
+                      " " +
+                      AppLocalizations.of(context)!.dayss,
                   style: TextStyle(
                       color: Colors.green,
                       fontFamily: RainbowTextStyle.fontFamily,

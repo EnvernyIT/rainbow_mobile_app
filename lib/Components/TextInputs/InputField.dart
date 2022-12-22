@@ -11,6 +11,7 @@ class InputField extends StatelessWidget {
   final Widget? widget;
   final TextInputType? keyboardType;
   final double? width;
+  final Color? color;
   const InputField(
       {Key? key,
       required this.title,
@@ -18,7 +19,8 @@ class InputField extends StatelessWidget {
       this.controller,
       this.widget,
       this.keyboardType,
-      this.width})
+      this.width,
+      this.color})
       : super(key: key);
 
   @override
@@ -42,7 +44,8 @@ class InputField extends StatelessWidget {
             margin: const EdgeInsets.only(top: 8.0, bottom: 10.0),
             padding: const EdgeInsets.only(left: 14),
             decoration: BoxDecoration(
-              border: Border.all(color: RainbowColor.primary_1, width: 1.0),
+              border: Border.all(
+                  color: color ?? RainbowColor.primary_1, width: 1.0),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(

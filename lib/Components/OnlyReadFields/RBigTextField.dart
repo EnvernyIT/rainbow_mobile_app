@@ -21,34 +21,46 @@ class RBigTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Container(
-            padding: const EdgeInsets.all(4),
-            margin: const EdgeInsets.only(bottom: 7),
-            child: Text(
-              title + ": ",
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: fontSize,
-                  fontFamily: RainbowTextStyle.fontFamily),
-            )),
-        Column(children: [
-          Container(
-              padding: const EdgeInsets.all(4),
-              margin: const EdgeInsets.only(bottom: 7, left: 5),
-              child: Text(
-                data ?? "",
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                    color: color ?? Colors.black,
-                    fontSize: fontSize,
-                    fontFamily: RainbowTextStyle.fontFamily),
-              )),
-        ])
-      ],
-    );
+    return Wrap(
+        spacing: 5.0,
+        runSpacing: 5.0,
+        direction: Axis.vertical, // main axis (rows or columns)
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                  padding: const EdgeInsets.all(4),
+                  margin: const EdgeInsets.only(bottom: 7),
+                  child: Text(
+                    title + ": ",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: fontSize,
+                        fontFamily: RainbowTextStyle.fontFamily),
+                  )),
+              Column(children: [
+                Container(
+                    padding: const EdgeInsets.all(4),
+                    margin: const EdgeInsets.only(bottom: 7, left: 5),
+                    child: SizedBox(
+                        height: 200,
+                        width: 250,
+                        child: Text(
+                          data ?? "",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                              color: color ?? Colors.black,
+                              fontSize: fontSize,
+                              fontFamily: RainbowTextStyle.fontFamily),
+                          maxLines: null,
+                          // overflow: TextOverflow.ellipsis,
+                        ))),
+              ])
+            ],
+          )
+        ]);
   }
 }

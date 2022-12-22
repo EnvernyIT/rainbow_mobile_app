@@ -36,13 +36,13 @@ class _NotificationTileState extends State<NotificationTile> {
           onTap: () {
             if (widget.notification.type == NotificationType.loonslip) {
               if (widget.notification.payslip != null) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => FileViewer(
-                            payslip: widget.notification.payslip!,
-                          )),
-                );
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //       builder: (context) => FileViewer(
+                //             payslip: widget.notification.payslip!,
+                //           )),
+                // );
               } else {
                 Navigator.push(
                   context,

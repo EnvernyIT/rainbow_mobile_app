@@ -1,173 +1,417 @@
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
+import 'package:rainbow_app/Backend/Models/Employee.dart';
+import 'dart:typed_data'; //Bundled with Dart
+
+import 'UserModel.dart';
+
 class Payslip {
-  final int? id;
-  final String title;
-  final DateTime date;
-  final double? amount;
-  final bool? paid;
-  final String url;
+  int? beCode;
+  String? beNaam;
+  String? beAdres;
+  String? beLand;
+  DateTime? peDatumVan;
+  DateTime? peDatumTm;
+  String? vaCode;
+  String? klant;
+  String? emCode;
+  String? employeeNaam;
+  int? emId;
+  String? emIdNr;
+  String? emNaam;
+  String? emVoornaam;
+  String? emAdres;
+  String? emWoonplaats;
+  int? hsJaar;
+  int? hsPeriode;
+  DateTime? emIndienstDat;
+  DateTime? emUitdienstDat;
+  String? afCode;
+  String? afOmschrijving;
+  String? fiCode;
+  String? fiOmschrijving;
+  String? scCode;
+  String? scOmschrijving;
+  String? fuCode;
+  String? fuOmschrijving;
+  String? emLoonType;
+  double? emPerLoon;
+  double? emUurLoon;
+  String? btType1;
+  String? btOmschrijving1;
+  String? hsRekening1;
+  String? hsBank1;
+  double? hsBedrag1;
+  String? hsVaCode1;
+  String? beTaalLoonslip;
+  double? hsVacantieSaldo;
+  num? debet;
+  String? loOmschrijving;
+  int? loCode;
+  String? loType;
+  String? loKlasse;
+  String? loSalderend;
+  String? loVaCode;
+  String? loNette;
+  String? loLoonslip;
+  String? loBijzloon;
+  String? loBelastbaar;
+  String? loCalculatie;
+  String? hmExtraVerw;
+  num? hmFactor;
+  num? hmPerBedrag;
+  double? hmExtraBedrag1;
+  double? hmBelastVrij;
+  double? hmRente;
+  double? hmCumVa;
+  double? hmCumBedrag;
+  String? hmActief;
+  double? hsDagLoon;
+  int? hsUrenPerWeek;
+  String? wtCode;
+  String? beVaCode;
+  String? beTelefoon;
+  String? logo;
+  String? orderBy;
+  String? applicationName;
+  String? historical;
 
   Payslip(
-      {this.id,
-      required this.title,
-      required this.date,
-      this.amount,
-      this.paid,
-      required this.url});
+      {beCode,
+      beNaam,
+      beAdres,
+      beLand,
+      peDatumVan,
+      peDatumTm,
+      vaCode,
+      klant,
+      emCode,
+      employeeNaam,
+      emId,
+      emIdNr,
+      emNaam,
+      emVoornaam,
+      emAdres,
+      emWoonplaats,
+      hsJaar,
+      hsPeriode,
+      emIndienstDat,
+      emUitdienstDat,
+      afCode,
+      afOmschrijving,
+      fiCode,
+      fiOmschrijving,
+      scCode,
+      scOmschrijving,
+      fuCode,
+      fuOmschrijving,
+      emLoonType,
+      emPerLoon,
+      emUurLoon,
+      btType1,
+      btOmschrijving1,
+      hsRekening1,
+      hsBank1,
+      hsBedrag1,
+      hsVaCode1,
+      beTaalLoonslip,
+      hsVacantieSaldo,
+      debet,
+      loOmschrijving,
+      loCode,
+      loType,
+      loKlasse,
+      loSalderend,
+      loVaCode,
+      loNette,
+      loLoonslip,
+      loBijzloon,
+      loBelastbaar,
+      loCalculatie,
+      hmExtraVerw,
+      hmFactor,
+      hmPerBedrag,
+      hmExtraBedrag1,
+      hmBelastVrij,
+      hmRente,
+      hmCumVa,
+      hmCumBedrag,
+      hmActief,
+      hsDagLoon,
+      hsUrenPerWeek,
+      wtCode,
+      beVaCode,
+      beTelefoon,
+      logo,
+      orderBy,
+      applicationName,
+      historical});
 
-  static List<Payslip> payslips = [
-    Payslip(
-        title: "1 - Rainbow",
-        date: DateTime(2022, 6, 6),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "2 - Rainbow",
-        date: DateTime(2022, 5, 5),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "3 - Rainbow",
-        date: DateTime(2022, 4, 4),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "4 - Rainbow",
-        date: DateTime(2022, 3, 3),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "5 - Rainbow",
-        date: DateTime(2022, 2, 2),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "6 - Rainbow",
-        date: DateTime(2022, 1, 1),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "7 - Rainbow",
-        date: DateTime(2021, 12, 1),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "8 - Rainbow",
-        date: DateTime(2021, 11, 1),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "9 - Rainbow",
-        date: DateTime(2021, 10, 1),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "10 - Rainbow",
-        date: DateTime(2021, 9, 1),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "11 - Rainbow",
-        date: DateTime(2021, 8, 1),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "12 - Rainbow",
-        date: DateTime(2021, 7, 1),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "13 - Rainbow",
-        date: DateTime(2021, 6, 1),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "14 - Rainbow",
-        date: DateTime(2021, 5, 1),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "15 - Rainbow",
-        date: DateTime(2021, 4, 1),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "16 - Rainbow",
-        date: DateTime(2021, 3, 1),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "17 - Rainbow",
-        date: DateTime(2021, 2, 1),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "18 - Rainbow",
-        date: DateTime(2021, 1, 1),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "19 - Rainbow",
-        date: DateTime(2020, 12, 1),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "20 - Rainbow",
-        date: DateTime(2020, 11, 1),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "21 - Rainbow",
-        date: DateTime(2020, 10, 1),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-    Payslip(
-        title: "22 - Rainbow",
-        date: DateTime(2020, 9, 1),
-        amount: 4000.00,
-        paid: true,
-        url:
-            "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf"),
-  ];
+  String fromFileJson(List<dynamic> json) {
+    return json[0].toString();
+  }
+
+  List<Payslip> configureListFromJson(List<dynamic> json) {
+    List<Payslip> payslips = [];
+    for (int q = 0; q <= json.length - 1; q++) {
+      if (json[q]["list"][0]["list"] != null) {
+        List<dynamic> data = json[q]["list"][0]["list"];
+        for (int i = 0; i <= data.length - 1; i++) {
+          // Payslip payslip = Payslip.fromJson(json[i]);
+          if (data[i]['loCode'] == 9997) {
+            Payslip payslip = Payslip();
+            payslip.beCode = data[i]['beCode'] as int;
+            payslip.beNaam = data[i]['beNaam'] as String;
+            payslip.beAdres = data[i]['beAdres'] as String;
+            payslip.beLand = data[i]['beLand'] as String;
+            payslip.peDatumVan =
+                DateTime.parse(data[i]['peDatumVan'] as String);
+            payslip.peDatumTm = DateTime.parse(data[i]['peDatumTm'] as String);
+            payslip.vaCode = data[i]['vaCode'] as String;
+            payslip.klant = data[i]['klant'] as String;
+            payslip.emCode = data[i]['emCode'] as String;
+            payslip.employeeNaam = data[i]['employeeNaam'] as String;
+            payslip.emId = data[i]['emId'] as int;
+            payslip.emIdNr = data[i]['emIdNr'] as String;
+            payslip.emNaam = data[i]['emNaam'] as String;
+            payslip.emVoornaam = data[i]['emVoornaam'] as String;
+            payslip.emAdres = data[i]['emAdres'] as String;
+            payslip.emWoonplaats = data[i]['emWoonplaats'] as String;
+            payslip.hsJaar = data[i]['hsJaar'] as int;
+            payslip.hsPeriode = data[i]['hsPeriode'] as int;
+            payslip.emIndienstDat =
+                DateTime.parse(data[i]['emIndienstDat'] as String);
+            // final emUitdienstDat = DateTime.parse(json['emUitdienstDat'] as String);
+            payslip.afCode = data[i]['afCode'] as String;
+            payslip.afOmschrijving = data[i]['afOmschrijving'] as String;
+            payslip.fiCode = data[i]['fiCode'] as String;
+            payslip.fiOmschrijving = data[i]['fiOmschrijving'] as String;
+            payslip.scCode = data[i]['scCode'] as String;
+            payslip.scOmschrijving = data[i]['scOmschrijving'] as String;
+            payslip.fuCode = data[i]['fuCode'] as String;
+            payslip.fuOmschrijving = data[i]['fuOmschrijving'] as String;
+            payslip.emLoonType = data[i]['emLoonType'] as String;
+            payslip.emPerLoon = data[i]['emPerLoon'] as double?;
+            payslip.emUurLoon = data[i]['emUurLoon'] as double?;
+            payslip.btType1 = data[i]['btType1'] as String;
+            payslip.btOmschrijving1 = data[i]['btOmschrijving1'] as String;
+            payslip.hsRekening1 = data[i]['hsRekening1'] as String;
+            payslip.hsBank1 = data[i]['hsBank1'] as String;
+            payslip.hsBedrag1 = data[i]['hsBedrag1'] as double;
+            payslip.hsVaCode1 = data[i]['hsVaCode1'] as String;
+            payslip.beTaalLoonslip = data[i]['beTaalLoonslip'] as String;
+            payslip.hsVacantieSaldo = data[i]['hsVacantieSaldo'] as double?;
+            payslip.debet = data[i]['debet'] as num;
+            payslip.loOmschrijving = data[i]['loOmschrijving'] as String;
+            payslip.loCode = data[i]['loCode'] as int;
+            payslip.loType = data[i]['loType'] as String;
+            payslip.loKlasse = data[i]['loKlasse'] as String;
+            payslip.loSalderend = data[i]['loSalderend'] as String;
+            payslip.loVaCode = data[i]['loVaCode'] as String;
+            payslip.loNette = data[i]['loNette'] as String;
+            payslip.loLoonslip = data[i]['loLoonslip'] as String;
+            payslip.loBijzloon = data[i]['loBijzloon'] as String;
+            payslip.loBelastbaar = data[i]['loBelastbaar'] as String;
+            payslip.loCalculatie = data[i]['loCalculatie'] as String;
+            payslip.hmExtraVerw = data[i]['hmExtraVerw'] as String;
+            payslip.hmFactor = data[i]['hmFactor'] as num;
+            payslip.hmPerBedrag = data[i]['hmPerBedrag'] as num;
+            // payslip.hmExtraBedrag1 = json[i]['hmExtraBedrag1'] as num;
+            // payslip.hmBelastVrij = json[i]['hmBelastVrij'] as num;
+            // payslip.hmRente = json[i]['hmRente'] as num;
+            // payslip.hmCumVa = json[i]['hmCumVa'] as num;
+            // payslip.hmCumBedrag = json[i]['hmCumBedrag'] as num;
+            payslip.hmActief = data[i]['hmActief'] as String;
+            payslip.hsDagLoon = data[i]['hsDagLoon'] as double?;
+            payslip.hsUrenPerWeek = data[i]['hsUrenPerWeek'] as int;
+            payslip.wtCode = data[i]['wtCode'] as String;
+            payslip.beVaCode = data[i]['beVaCode'] as String;
+            payslip.beTelefoon = data[i]['beTelefoon'] as String;
+            payslip.logo = data[i]['logo'] as String;
+            payslip.orderBy = data[i]['orderBy'] as String;
+            payslip.applicationName = data[i]['applicationName'] as String;
+            payslip.historical = data[i]['historical'] as String;
+
+            payslips.add(payslip);
+          }
+        }
+      }
+    }
+
+    return payslips;
+  }
+
+  factory Payslip.fromJson(Map<String, dynamic> json) {
+    final beCode = json['beCode'] as int;
+    final beNaam = json['beNaam'] as String;
+    final beAdres = json['beAdres'] as String;
+    final beLand = json['beLand'] as String;
+    final peDatumVan = DateTime.parse(json['peDatumVan'] as String);
+    final peDatumTm = DateTime.parse(json['peDatumTm'] as String);
+    final vaCode = json['vaCode'] as String;
+    final klant = json['klant'] as String;
+    final emCode = json['emCode'] as String;
+    final employeeNaam = json['employeeNaam'] as String;
+    final emId = json['emId'] as int;
+    final emIdNr = json['emIdNr'] as String;
+    final emNaam = json['emNaam'] as String;
+    final emVoornaam = json['emVoornaam'] as String;
+    final emAdres = json['emAdres'] as String;
+    final emWoonplaats = json['emWoonplaats'] as String;
+    final hsJaar = json['hsJaar'] as int;
+    final hsPeriode = json['hsPeriode'] as int;
+    final emIndienstDat = DateTime.parse(json['emIndienstDat'] as String);
+    // final emUitdienstDat = DateTime.parse(json['emUitdienstDat'] as String);
+    final afCode = json['afCode'] as String;
+    final afOmschrijving = json['afOmschrijving'] as String;
+    final fiCode = json['fiCode'] as String;
+    final fiOmschrijving = json['fiOmschrijving'] as String;
+    final scCode = json['scCode'] as String;
+    final scOmschrijving = json['scOmschrijving'] as String;
+    final fuCode = json['fuCode'] as String;
+    final fuOmschrijving = json['fuOmschrijving'] as String;
+    final emLoonType = json['emLoonType'] as String;
+    final emPerLoon = json['emPerLoon'] as num;
+    final emUurLoon = json['emUurLoon'] as num;
+    final btType1 = json['btType1'] as String;
+    final btOmschrijving1 = json['btOmschrijving1'] as String;
+    final hsRekening1 = json['hsRekening1'] as String;
+    final hsBank1 = json['hsBank1'] as String;
+    final hsBedrag1 = json['hsBedrag1'] as double;
+    final hsVaCode1 = json['hsVaCode1'] as String;
+    final beTaalLoonslip = json['beTaalLoonslip'] as String;
+    final hsVacantieSaldo = json['hsVacantieSaldo'] as num;
+    final debet = json['debet'] as num;
+    final loOmschrijving = json['loOmschrijving'] as String;
+    final loCode = json['loCode'] as int;
+    final loType = json['loType'] as String;
+    final loKlasse = json['loKlasse'] as String;
+    final loSalderend = json['loSalderend'] as String;
+    final loVaCode = json['loVaCode'] as String;
+    final loNette = json['loNette'] as String;
+    final loLoonslip = json['loLoonslip'] as String;
+    final loBijzloon = json['loBijzloon'] as String;
+    final loBelastbaar = json['loBelastbaar'] as String;
+    final loCalculatie = json['loCalculatie'] as String;
+    final hmExtraVerw = json['hmExtraVerw'] as String;
+    final hmFactor = json['hmFactor'] as num;
+    final hmPerBedrag = json['hmPerBedrag'] as num;
+    // final hmExtraBedrag1 = json['hmExtraBedrag1'] as double;
+    // final hmBelastVrij = json['hmBelastVrij'] as double;
+    // final hmRente = json['hmRente'] as double;
+    // final hmCumVa = json['hmCumVa'] as double;
+    // final hmCumBedrag = json['hmCumBedrag'] as double;
+    final hmActief = json['hmActief'] as String;
+    final hsDagLoon = json['hsDagLoon'] as num;
+    final hsUrenPerWeek = json['hsUrenPerWeek'] as int;
+    final wtCode = json['wtCode'] as String;
+    final beVaCode = json['beVaCode'] as String;
+    final beTelefoon = json['beTelefoon'] as String;
+    final logo = json['logo'] as String;
+    final orderBy = json['orderBy'] as String;
+    final applicationName = json['applicationName'] as String;
+    final historical = json['historical'] as String;
+
+    return Payslip(
+        beCode: beCode,
+        beNaam: beNaam,
+        beAdres: beAdres,
+        beLand: beLand,
+        peDatumVan: peDatumVan,
+        peDatumTm: peDatumTm,
+        vaCode: vaCode,
+        klant: klant,
+        emCode: emCode,
+        employeeNaam: employeeNaam,
+        emId: emId,
+        emIdNr: emIdNr,
+        emNaam: emNaam,
+        emVoornaam: emVoornaam,
+        emAdres: emAdres,
+        emWoonplaats: emWoonplaats,
+        hsJaar: hsJaar,
+        hsPeriode: hsPeriode,
+        emIndienstDat: emIndienstDat,
+        // emUitdienstDat: emUitdienstDat,
+        afCode: afCode,
+        afOmschrijving: afOmschrijving,
+        fiCode: fiCode,
+        fiOmschrijving: fiOmschrijving,
+        scCode: scCode,
+        scOmschrijving: scOmschrijving,
+        fuCode: fuCode,
+        fuOmschrijving: fuOmschrijving,
+        emLoonType: emLoonType,
+        emPerLoon: emPerLoon,
+        emUurLoon: emUurLoon,
+        btType1: btType1,
+        btOmschrijving1: btOmschrijving1,
+        hsRekening1: hsRekening1,
+        hsBank1: hsBank1,
+        hsBedrag1: hsBedrag1,
+        hsVaCode1: hsVaCode1,
+        beTaalLoonslip: beTaalLoonslip,
+        hsVacantieSaldo: hsVacantieSaldo,
+        debet: debet,
+        loOmschrijving: loOmschrijving,
+        loCode: loCode,
+        loType: loType,
+        loKlasse: loKlasse,
+        loSalderend: loSalderend,
+        loVaCode: loVaCode,
+        loNette: loNette,
+        loLoonslip: loLoonslip,
+        loBijzloon: loBijzloon,
+        loBelastbaar: loBelastbaar,
+        loCalculatie: loCalculatie,
+        hmExtraVerw: hmExtraVerw,
+        hmFactor: hmFactor,
+        hmPerBedrag: hmPerBedrag,
+        // hmExtraBedrag1: hmExtraBedrag1,
+        // hmBelastVrij: hmBelastVrij,
+        // hmRente: hmRente,
+        // hmCumVa: hmCumVa,
+        // hmCumBedrag: hmCumBedrag,
+        hmActief: hmActief,
+        hsDagLoon: hsDagLoon,
+        hsUrenPerWeek: hsUrenPerWeek,
+        wtCode: wtCode,
+        beVaCode: beVaCode,
+        beTelefoon: beTelefoon,
+        logo: logo,
+        orderBy: orderBy,
+        applicationName: applicationName,
+        historical: historical);
+  }
+}
+
+class PayslipRequestModel {
+  String url = "http://10.0.2.2:8080/module.web/rest/api/v1/payslip/list";
+  String urlFile = "http://10.0.2.2:8080/module.web/rest/api/v1/payslip/get";
+  String? token = LoggedInUser.loggedInUser!.token;
+  int? year;
+  int? period;
+
+  PayslipRequestModel({required this.year, this.period});
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      "beCode": 10,
+      "peJaar": year,
+      "languageNumber": 1,
+      "sortSlip": 1,
+      "concept": "N"
+    };
+    return map;
+  }
+
+  Map<String, dynamic> toFileJson() {
+    Map<String, dynamic> map = {
+      "peJaar": year,
+      "peCode": period,
+      "typeVerw": "N",
+    };
+    return map;
+  }
 }

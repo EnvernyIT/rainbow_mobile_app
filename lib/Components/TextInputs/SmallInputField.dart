@@ -57,6 +57,8 @@ class SmallInputField extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextFormField(
+                    textAlign: TextAlign.left,
+                    textAlignVertical: TextAlignVertical.center,
                     validator: (input) {
                       if (int.parse(input!) > 24) {
                         return AppLocalizations.of(context)!.tooManyHours;
@@ -69,7 +71,7 @@ class SmallInputField extends StatelessWidget {
                     autofocus: false,
                     controller: controller,
                     style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 17,
                         fontWeight: FontWeight.w400,
                         color: Colors.black,
                         fontStyle: FontStyle.italic,
@@ -77,7 +79,7 @@ class SmallInputField extends StatelessWidget {
                     decoration: InputDecoration(
                       hintText: hint,
                       hintStyle: TextStyle(
-                          fontSize: 15,
+                          fontSize: 17,
                           fontWeight: FontWeight.w400,
                           color: Colors.black,
                           fontFamily: RainbowTextStyle.fontFamily),
@@ -97,6 +99,7 @@ class SmallInputField extends StatelessWidget {
                 widget == null
                     ? Container()
                     : Container(
+                        alignment: Alignment.center,
                         child: widget,
                       )
               ],

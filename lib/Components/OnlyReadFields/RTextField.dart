@@ -14,6 +14,7 @@ class RTextField extends StatelessWidget {
   final Color? color_2;
   final Color? color_3;
   final double? fontSize;
+  final MainAxisAlignment? mainAxisAlignment;
 
   const RTextField({
     Key? key,
@@ -25,12 +26,13 @@ class RTextField extends StatelessWidget {
     this.color_2,
     this.color_3,
     this.fontSize,
+    this.mainAxisAlignment,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: mainAxisAlignment ?? MainAxisAlignment.spaceBetween,
       children: [
         Container(
             padding: const EdgeInsets.all(4),
@@ -43,9 +45,8 @@ class RTextField extends StatelessWidget {
                   fontSize: fontSize,
                   fontFamily: RainbowTextStyle.fontFamily),
             )),
-        Row(children: [
+        Row(mainAxisAlignment: MainAxisAlignment.start, children: [
           Container(
-              padding: const EdgeInsets.all(4),
               margin: const EdgeInsets.only(bottom: 7, left: 5),
               child: Text(
                 data_1 ?? "",
@@ -55,8 +56,10 @@ class RTextField extends StatelessWidget {
                     fontSize: fontSize,
                     fontFamily: RainbowTextStyle.fontFamily),
               )),
+          const SizedBox(
+            width: 3,
+          ),
           Container(
-              padding: const EdgeInsets.all(4),
               margin: const EdgeInsets.only(bottom: 7),
               child: Text(
                 data_2 ?? "",
@@ -67,7 +70,6 @@ class RTextField extends StatelessWidget {
                     fontFamily: RainbowTextStyle.fontFamily),
               )),
           Container(
-              padding: const EdgeInsets.all(4),
               margin: const EdgeInsets.only(bottom: 7),
               child: Text(
                 data_3 ?? "",

@@ -3,9 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rainbow_app/Pages/Payslips/PayslipListPage/PayslipListPage.dart';
 import 'package:rainbow_app/Pages/Payslips/PayslipPage/FileViewer.dart';
+import 'package:rainbow_app/Pages/Payslips/PayslipPage/PayslipViewPage.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
+import '../../Backend/APIS/PayslipService.dart';
 import '../../Backend/Models/Payslip.dart';
 import '../../Theme/ThemeColor.dart';
 import '../../Theme/ThemeTextStyle.dart';
@@ -20,9 +24,25 @@ class PayslipCard extends StatefulWidget {
 class _PayslipCardState extends State<PayslipCard> {
   List<Payslip> payslips = [];
   int i = 0;
+  late PayslipRequestModel payslipRequestModel;
+  Payslip payslip = Payslip();
+  bool _isLoading = false;
+  DateTime? month = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    setList(2021);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    Payslip payslip = Payslip.payslips[i];
+    // Payslip payslip = payslips[i];
     String locale = Localizations.localeOf(context).languageCode;
     return SingleChildScrollView(
       child: Container(
@@ -32,7 +52,7 @@ class _PayslipCardState extends State<PayslipCard> {
             gradient: LinearGradient(
               colors: [
                 // Colors.lightBlue[100]!,
-                RainbowColor.primary_1,
+                RainbowColor.primary_2,
                 RainbowColor.secondary,
               ],
               begin: Alignment.topRight,
@@ -97,7 +117,7 @@ class _PayslipCardState extends State<PayslipCard> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => FileViewer(
+                                    builder: (context) => PayslipViewPage(
                                           payslip: payslip,
                                         )),
                               );
@@ -122,7 +142,19 @@ class _PayslipCardState extends State<PayslipCard> {
                               backgroundColor: RainbowColor.primary_1,
                               shape: const StadiumBorder(),
                             ),
-                            onPressed: () {},
+                            onPressed: () async {
+                              final filepath = getFilePath(
+                                  payslip.hsPeriode.toString(),
+                                  payslip.hsJaar.toString());
+                              PayslipService service = PayslipService();
+                              PayslipRequestModel payslipRequestModel =
+                                  PayslipRequestModel(
+                                      year: payslip.hsJaar,
+                                      period: payslip.hsPeriode);
+                              String bytes = await service
+                                  .getPayslipFile(payslipRequestModel);
+                              _createPdf(bytes, filepath);
+                            },
                             child: Text(
                               AppLocalizations.of(context)!.download,
                               style: TextStyle(
@@ -138,35 +170,33 @@ class _PayslipCardState extends State<PayslipCard> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                          color: RainbowColor.secondary,
-                          boxShadow: [
-                            BoxShadow(
-                                color: RainbowColor.hint.withOpacity(0.6),
-                                offset: const Offset(0, 10),
-                                blurRadius: 20)
-                          ],
-                          borderRadius: BorderRadius.circular(15)),
-                      child: Text(
-                        DateFormat.MMMM(locale).format(payslip.date) +
-                            " " +
-                            payslip.date.year.toString(),
-                        style: TextStyle(
-                            color: RainbowColor.primary_1,
-                            fontFamily: RainbowTextStyle.fontFamily,
-                            fontSize: 18,
-                            height: 1,
-                            fontWeight: FontWeight.w700),
-                      ),
-                    ),
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                            color: RainbowColor.secondary,
+                            boxShadow: [
+                              BoxShadow(
+                                  color: RainbowColor.hint.withOpacity(0.6),
+                                  offset: const Offset(0, 10),
+                                  blurRadius: 20)
+                            ],
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Text(
+                          showDate(month),
+                          style: TextStyle(
+                              color: RainbowColor.primary_1,
+                              fontFamily: RainbowTextStyle.fontFamily,
+                              fontSize: 18,
+                              height: 1,
+                              fontWeight: FontWeight.w700),
+                        )),
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           InkWell(
                               onTap: () {
                                 goThroughList("neg");
+                                print("i is now = " + i.toString());
                               },
                               child: Icon(
                                 Icons.arrow_left_rounded,
@@ -176,6 +206,7 @@ class _PayslipCardState extends State<PayslipCard> {
                           InkWell(
                               onTap: () {
                                 goThroughList("pos");
+                                print("i is now = " + i.toString());
                               },
                               child: Icon(
                                 Icons.arrow_right_rounded,
@@ -195,28 +226,80 @@ class _PayslipCardState extends State<PayslipCard> {
   }
 
   void goThroughList(String t) {
-    setState(() {
-      for (int x = 0; x < 7; x++) {
-        payslips.add(Payslip.payslips[x]);
+    if (t == "pos") {
+      if (i == payslips.length - 1) {
+        i = 0;
+        setState(() {
+          payslip = payslips.first;
+          month = payslips.first.peDatumVan;
+        });
+      } else {
+        i++;
+        setState(() {
+          payslip = payslips[i];
+          month = payslips[i].peDatumVan;
+        });
       }
+    } else if (t == "neg") {
+      if (i == 0) {
+        i = payslips.length - 1;
+        setState(() {
+          payslip = payslips[i];
+          month = payslips[i].peDatumVan;
+        });
+      } else {
+        i--;
+        setState(() {
+          payslip = payslips[i];
+          month = payslips[i].peDatumVan;
+        });
+      }
+    }
+  }
 
-      if (t == "neg") {
-        // for (i = 0; i < 7; i++) {
-        if (i == 6) {
-          i = 0;
-        } else {
-          i++;
-        }
-        // }
-      } else if (t == "pos") {
-        // for (i = 0; i < 7; i++) {
-        if (i == 0) {
-          i = 6;
-        } else {
-          i--;
-        }
-        // }
-      }
+  void setList(int year) {
+    PayslipService payslipService = PayslipService();
+    payslipRequestModel = PayslipRequestModel(year: year);
+    payslipService.getList(payslipRequestModel).then((value) {
+      setState(() {
+        payslips = value!;
+        payslip = value.first;
+        month = value.first.peDatumVan;
+        _isLoading = true;
+      });
     });
+  }
+
+  String showDate(DateTime? date) {
+    if (date != null) {
+      String formatter = DateFormat.yMMMM().format(date);
+      return formatter;
+    }
+    return " ";
+  }
+
+  String getFilePath(String periode, String jaar) {
+    return 'Rainbow_Payslip_' + periode + '-' + jaar + '.pdf';
+  }
+
+  Future<void> _createPdf(String bytes, String fileName) async {
+    try {
+      PdfDocument document = PdfDocument.fromBase64String(bytes);
+      final path = (await getExternalStorageDirectory())?.path;
+      List<int> pdfByte = await document.save();
+      File('$path/$fileName').writeAsBytes(pdfByte).then((value) => null);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => FileViewer(
+                  payslip: File('$path/$fileName'),
+                  title: fileName,
+                )),
+      );
+      document.dispose();
+    } catch (e) {
+      print(e);
+    }
   }
 }

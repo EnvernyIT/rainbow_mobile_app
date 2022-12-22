@@ -29,6 +29,9 @@ class RTitle extends StatelessWidget {
                 fontSize: 26.0,
                 fontFamily: RainbowTextStyle.fontFamily),
           ),
+          const SizedBox(
+            height: 10,
+          ),
           Text(
             subTitle ?? "",
             style: TextStyle(

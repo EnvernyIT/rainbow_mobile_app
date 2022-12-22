@@ -30,6 +30,10 @@ class DropdownTextField extends StatefulWidget {
 class _DropdownTextField extends State<DropdownTextField> {
   String value = "";
 
+  String getValue() {
+    return value;
+  }
+
   @override
   void initState() {
     super.initState();

@@ -98,34 +98,34 @@ class _SettingsPageState extends State<SettingsPage> {
             //         ),
             //       ),
             //     )),
-            Container(
-                height: 52,
-                alignment: Alignment.center,
-                child: ListTile(
-                  style: ListTileStyle.list,
-                  trailing: const Icon(
-                    Icons.arrow_forward_ios_outlined,
-                    size: 16,
-                    color: RainbowColor.hint,
-                  ),
-                  iconColor: RainbowColor.primary_1,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const FontPage()),
-                    );
-                  },
-                  title: Text(
-                    AppLocalizations.of(context)!.font,
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontFamily: RainbowTextStyle.fontFamily),
-                  ),
-                )),
-            SizedBox(
-              height: 10.0,
-            ),
+            // Container(
+            //     height: 52,
+            //     alignment: Alignment.center,
+            //     child: ListTile(
+            //       style: ListTileStyle.list,
+            //       trailing: const Icon(
+            //         Icons.arrow_forward_ios_outlined,
+            //         size: 16,
+            //         color: RainbowColor.hint,
+            //       ),
+            //       iconColor: RainbowColor.primary_1,
+            //       onTap: () {
+            //         Navigator.push(
+            //           context,
+            //           MaterialPageRoute(builder: (context) => const FontPage()),
+            //         );
+            //       },
+            //       title: Text(
+            //         AppLocalizations.of(context)!.font,
+            //         style: TextStyle(
+            //             color: Colors.black,
+            //             fontSize: 16,
+            //             fontFamily: RainbowTextStyle.fontFamily),
+            //       ),
+            //     )),
+            // SizedBox(
+            //   height: 10.0,
+            // ),
             Container(
                 alignment: Alignment.topLeft,
                 padding: const EdgeInsets.only(left: 15),

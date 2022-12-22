@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -9,12 +10,14 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
+import 'package:rainbow_app/Backend/APIS/AbsenceService.dart';
 import 'package:rainbow_app/Backend/Models/Absence.dart';
 import 'package:rainbow_app/Backend/Models/UserModel.dart';
 import 'package:rainbow_app/Components/TextInputs/InputField.dart';
 import 'package:rainbow_app/Components/TextInputs/MultiLineInputField.dart';
 import 'package:rainbow_app/Components/Tiles/AbsenceTile.dart';
 
+import '../../../Backend/APIS/UserEmployeeService.dart';
 import '../../../Components/Buttons/Button.dart';
 import '../../../Components/Navigation.dart';
 import '../../../Components/TextInputs/DropdownTextField.dart';
@@ -22,6 +25,8 @@ import '../../../Components/TextInputs/SmallInputField.dart';
 import '../../../Components/Tiles/Absence2Tile.dart';
 import '../../../Theme/ThemeColor.dart';
 import '../../../Theme/ThemeTextStyle.dart';
+import '../Absence/AbsenceInfoPage.dart';
+import '../AbsenceListPage/AbsenceListPage.dart';
 
 class AbsenceRequestPage extends StatefulWidget {
   const AbsenceRequestPage({Key? key}) : super(key: key);
@@ -33,36 +38,62 @@ class AbsenceRequestPage extends StatefulWidget {
 
 class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   DateTime fromDate = DateTime.now();
-  late DateTime toDate;
+  DateTime toDate = DateTime.now();
   String toDateString = "";
-  String fileName = "filename.co";
   bool typeDaysRequest = false;
   int selectedColor = 0;
+  Color _color_1 = RainbowColor.primary_1;
+  Color _color_2 = RainbowColor.primary_1;
   TextEditingController numberController = TextEditingController();
   TextEditingController controller_1 = TextEditingController();
   TextEditingController controller_2 = TextEditingController();
   TextEditingController controller_3 = TextEditingController();
+  List<Absence> absences = [];
+  int listLength = 0;
+  String newValue = "";
+  int userLeaveBalance = 0;
+  String fileName = "Choose file";
+  List<String> items = [];
+  late File image;
 
-  File? image;
+  String fileAsString = "";
+  // File image;
+
+  @override
+  void initState() {
+    super.initState();
+    setList();
+    setUserLeaveBalance();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return uiBuild(context);
   }
 
+  clearAll() {
+    controller_1.clear();
+    controller_2.clear();
+    controller_3.clear();
+    numberController.clear();
+    fileName = "Choose file";
+    fileAsString = "";
+  }
+
   Widget uiBuild(BuildContext context) {
-    var items = [
-      AppLocalizations.of(context)!.sick,
-      AppLocalizations.of(context)!.personal,
-      AppLocalizations.of(context)!.medical,
-      AppLocalizations.of(context)!.maternity,
-      AppLocalizations.of(context)!.training,
-      AppLocalizations.of(context)!.special,
-    ];
-    String value = AppLocalizations.of(context)!.sick;
     String locale = Localizations.localeOf(context).languageCode;
-    int userLeaveBalance =
-        int.parse(LoggedInUser.loggedInUser?.leaveBalance ?? "12");
+    UserEmployeeService userEmployeeService = UserEmployeeService();
+
+    userEmployeeService.getLeaveBalance().then((value) {
+      userLeaveBalance = userLeaveBalance + value;
+      print(value);
+    });
+
     return DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -119,9 +150,11 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                           ? AppLocalizations.of(context)!.from + ":"
                           : AppLocalizations.of(context)!.day + ":",
                       hint: DateFormat.yMd(locale).format(fromDate),
+                      color: _color_1,
                       widget: IconButton(
                           onPressed: () {
-                            _getFromDateFromUser();
+                            _getFromDateFromUser(locale);
+                            getDateDifferenceInHours(fromDate, toDate);
                           },
                           icon: Icon(
                             Icons.calendar_today_outlined,
@@ -131,29 +164,66 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                       controller: controller_2,
                       title: AppLocalizations.of(context)!.towith + ":",
                       hint: toDateString,
+                      color: _color_2,
                       widget: IconButton(
                           onPressed: () {
                             _getToDateFromUser(locale);
+                            getDateDifferenceInHours(fromDate, toDate);
                           },
                           icon: Icon(
                             Icons.calendar_today_outlined,
                             color: RainbowColor.primary_1,
                           ))),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                            color: RainbowColor.primary_1, width: 1.0),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.only(left: 20, right: 20),
+                      margin: const EdgeInsets.only(bottom: 6),
+                      child: DropdownButton(
+                        value: newValue,
+                        icon: const Padding(
+                            padding: EdgeInsets.only(left: 2),
+                            child: Icon(Icons.arrow_circle_down_sharp)),
+                        iconEnabledColor: RainbowColor.primary_1, //Icon color
+                        style: TextStyle(
+                            color: RainbowColor.primary_1, //Font color
+                            fontSize: 17, //font size on dropdown button
+                            fontFamily: RainbowTextStyle.fontFamily),
+                        dropdownColor:
+                            RainbowColor.secondary, //dropdown background color
+                        underline: Container(), //remove underline
+                        isExpanded: false, //make true to make width 100%
+                        items: items.map((String value) {
+                          return DropdownMenuItem(
+                            value: value,
+                            child: Text(value,
+                                style: TextStyle(
+                                    fontFamily: RainbowTextStyle.fontFamily)),
+                          );
+                        }).toList(),
+                        onChanged: (String? changedValue) {
+                          setState(() {
+                            newValue = changedValue!;
+                          });
+                        },
+                      )),
+                  const SizedBox(
+                    height: 10,
+                  ),
                   SmallInputField(
                     controller: numberController,
                     title: AppLocalizations.of(context)!.hours + ":",
                     keyboardType: TextInputType.number,
                     width: 100,
-                    hint: '8',
                   ),
                   const SizedBox(
                     height: 10,
-                  ),
-                  DropdownTextField(
-                    title: AppLocalizations.of(context)!.type,
-                    dropdownList: items,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    fontSize: 18,
                   ),
                   MultiLineInputField(
                       controller: controller_3,
@@ -162,54 +232,41 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                   Container(
                       alignment: Alignment.center,
                       margin: const EdgeInsets.all(3),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          InkWell(
-                            onTap: () => _chooseTypeOfFile(context),
-                            child: Icon(
-                              Icons.upload_file,
-                              color: RainbowColor.primary_1,
-                              size: 30,
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          Flexible(
-                              child: InkWell(
-                                  onTap: () => _chooseTypeOfFile(context),
-                                  child: Text(
-                                    fileName,
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w400,
-                                        fontStyle: FontStyle.italic,
-                                        color: Colors.black,
-                                        fontFamily:
-                                            RainbowTextStyle.fontFamily),
-                                  )))
-                        ],
-                      )),
+                      child: InkWell(
+                          onTap: () => _chooseTypeOfFile(context),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Icon(
+                                Icons.upload_file,
+                                color: RainbowColor.primary_1,
+                                size: 30,
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              Flexible(
+                                  child: InkWell(
+                                      onTap: () => _chooseTypeOfFile(context),
+                                      child: Text(
+                                        fileName,
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w400,
+                                            fontStyle: FontStyle.italic,
+                                            color: Colors.black,
+                                            fontFamily:
+                                                RainbowTextStyle.fontFamily),
+                                      )))
+                            ],
+                          ))),
                   Container(
                       alignment: Alignment.bottomCenter,
                       margin: const EdgeInsets.all(10),
                       child: Button(
                         label: AppLocalizations.of(context)!.request,
                         onTap: () {
-                          Absence absence = Absence(
-                              startDay: DateTime.parse(controller_1.text),
-                              endDay: DateTime.parse(controller_2.text),
-                              accepted: false,
-                              description: controller_3.text,
-                              typeOfLeave: value,
-                              hours: controller_2.text != null ||
-                                      controller_2.text != ""
-                                  ? double.parse(controller_2.text)
-                                  : 0,
-                              days: true);
-
-                          Absence.absences.add(absence);
+                          sendLeaveRequest(userLeaveBalance, context);
                         },
                       ))
                 ],
@@ -223,10 +280,10 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                   onRefresh: refresh,
                   child: ListView.builder(
                       shrinkWrap: true,
-                      itemCount: Absence.absences.length,
+                      itemCount: listLength,
                       itemBuilder: (BuildContext context, int index) {
                         return Absence2Tile(
-                          absence: Absence.absences[index],
+                          absence: absences[index],
                         );
                       }),
                 ))
@@ -234,7 +291,68 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
         ));
   }
 
-  _getFromDateFromUser() async {
+  void sendLeaveRequest(int userLeaveBalance, BuildContext context) {
+    if (userLeaveBalance > getDateDifferenceInDays(fromDate, toDate)) {
+      if (numberController.text.isNotEmpty) {
+        AbsenceRequest absenceRequest = AbsenceRequest(
+          dateFrom: fromDateString(fromDate),
+          dateTo: fromDateString(toDate),
+          usId: newValue == AppLocalizations.of(context)!.sick
+              ? 1004
+              : newValue == AppLocalizations.of(context)!.maternity
+                  ? 1009
+                  : newValue == AppLocalizations.of(context)!.training
+                      ? 1014
+                      : 1003,
+          days: getDateDifferenceInDays(fromDate, toDate),
+          uaAantaluren: int.parse(numberController.text),
+          uaOpmerking: controller_3.text,
+          fileBytes: fileAsString,
+        );
+        AbsenceService service = AbsenceService();
+        Absence absence = Absence();
+        if (fromDate.isAfter(DateTime.now()) ||
+            toDate.isAfter(DateTime.now())) {
+          service.request(absenceRequest)?.then((value) {
+            absence = value;
+            clearAll();
+            SnackBar snackBar = SnackBar(
+              content: Text(AppLocalizations.of(context)!.requestSuccesfull),
+              backgroundColor: Colors.green,
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AbsenceInfoPage(
+                        absence: absence,
+                      )),
+            );
+          });
+        } else {
+          SnackBar snackBar = SnackBar(
+            content: Text(AppLocalizations.of(context)!.dateNotAllowed),
+            backgroundColor: Colors.red,
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      } else {
+        SnackBar snackBar = SnackBar(
+          content: Text(AppLocalizations.of(context)!.forgotHours),
+          backgroundColor: Colors.red,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    } else {
+      SnackBar snackBar = SnackBar(
+        content: Text(AppLocalizations.of(context)!.notEnoughLeave),
+        backgroundColor: Colors.red,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  _getFromDateFromUser(locale) async {
     DateTime? pickDate = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
@@ -251,8 +369,26 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
 
     if (pickDate != null) {
       setState(() {
-        fromDate = pickDate;
+        if (pickDate.isAfter(DateTime.now())) {
+          _color_1 = RainbowColor.primary_1;
+          _color_2 = RainbowColor.primary_1;
+
+          fromDate = pickDate;
+          toDate = fromDate;
+          toDateString = DateFormat.yMd(locale).format(toDate);
+        } else {
+          SnackBar snackBar = SnackBar(
+            content: Text(AppLocalizations.of(context)!.incorrectDate),
+            backgroundColor: Colors.red,
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          setState(() {
+            _color_1 = Colors.red;
+            _color_2 = Colors.red;
+          });
+        }
       });
+      getDateDifferenceInHours(pickDate, toDate);
     } else {
       print(AppLocalizations.of(context)!.somethingWentWrong);
     }
@@ -261,7 +397,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   _getToDateFromUser(locale) async {
     DateTime? pickDate = await showDatePicker(
         context: context,
-        initialDate: DateTime.now().add(const Duration(days: 5)),
+        initialDate: DateTime.now(),
         firstDate: DateTime(2015),
         lastDate: DateTime(2121),
         builder: (context, child) {
@@ -275,9 +411,21 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
 
     if (pickDate != null) {
       setState(() {
-        toDate = pickDate;
-        toDateString = DateFormat.yMd(locale).format(toDate);
+        if (pickDate.isAfter(DateTime.now())) {
+          toDate = pickDate;
+          toDateString = DateFormat.yMd(locale).format(toDate);
+        } else {
+          SnackBar snackBar = SnackBar(
+            content: Text(AppLocalizations.of(context)!.incorrectDate),
+            backgroundColor: Colors.red,
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          setState(() {
+            _color_2 = Colors.red;
+          });
+        }
       });
+      getDateDifferenceInHours(fromDate, pickDate);
     } else {
       print(AppLocalizations.of(context)!.somethingWentWrong);
     }
@@ -306,11 +454,14 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
 
                           final imageTemporary = File(image.path);
                           this.image = imageTemporary;
-                          setState(() {
-                            fileName = this.image!.path.toString();
+                          setState(() async {
+                            fileName = this.image.path.toString();
                             print(fileName);
+                            List<int> bytes = await image.readAsBytes();
+                            print(bytes);
+                            fileAsString = base64Encode(bytes);
                           });
-                          Navigator.pop(context);
+                          // Navigator.pop(context);
                         } on PlatformException catch (e) {
                           print('Failed to pick image: $e');
                         }
@@ -322,21 +473,17 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                       )),
                   InkWell(
                       onTap: () async {
-                        // final result = await FilePicker.platform.pickFiles(
-                        //   allowMultiple: false,
-                        //   type: FileType.image,
-                        // );
-                        // if (result != null) {
-                        //   fileName = result.files.toString();
-                        // }
-                        // if (result == null) return;
-
-                        // //Open single file
-                        // final file = result.files.first;
-                        // openFile(file);
-
-                        await ImagePicker()
+                        XFile? xFile = await ImagePicker()
                             .pickImage(source: ImageSource.gallery);
+                        if (xFile != null) {
+                          setState(() async {
+                            String? path = xFile.path;
+                            File file = File(path);
+                            List<int> bytes = await file.readAsBytes();
+                            print(bytes);
+                            fileAsString = base64Encode(bytes);
+                          });
+                        }
                       },
                       child: Icon(
                         Icons.photo,
@@ -355,11 +502,16 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                         if (result == null) return;
 
                         //Open single file
-                        final file = result.files.first;
-                        openFile(file);
-
-                        await ImagePicker()
-                            .pickImage(source: ImageSource.gallery);
+                        PlatformFile platformFile = result.files.first;
+                        if (platformFile.path != "" ||
+                            platformFile.path != null) {
+                          String? path = platformFile.path;
+                          File file = File(path!);
+                          List<int> bytes = await file.readAsBytes();
+                          print(bytes);
+                          fileAsString = base64Encode(bytes);
+                        }
+                        // openFile(file);
                       },
                       child: Icon(
                         Icons.picture_as_pdf_outlined,
@@ -379,46 +531,68 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
     OpenFile.open(file.path!);
   }
 
-  colorPallette() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          AppLocalizations.of(context)!.color,
-          style: const TextStyle(
-              fontSize: 18, fontWeight: FontWeight.w400, color: Colors.black),
-        ),
-        const SizedBox(
-          height: 18.0,
-        ),
-        Wrap(
-          children: List<Widget>.generate(3, (index) {
-            return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedColor = index;
-                  });
-                },
-                child: Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: CircleAvatar(
-                      radius: 14,
-                      backgroundColor: index == 0
-                          ? Colors.lightBlueAccent
-                          : index == 1
-                              ? Colors.redAccent
-                              : Colors.greenAccent,
-                      child: selectedColor == index
-                          ? const Icon(
-                              Icons.done,
-                              color: Colors.white,
-                              size: 16,
-                            )
-                          : Container(),
-                    )));
-          }),
-        )
-      ],
-    );
+  void setList() {
+    AbsenceService absenceService = AbsenceService();
+    AbsenceRequest absenceRequest = AbsenceRequest();
+    absenceService.getList(absenceRequest).then((value) {
+      setState(() {
+        if (value != null) {
+          absences = value;
+          listLength = absences.length;
+          items = <String>[
+            AppLocalizations.of(context)!.sick,
+            AppLocalizations.of(context)!.maternity,
+            AppLocalizations.of(context)!.training,
+            AppLocalizations.of(context)!.special,
+          ];
+          newValue = items[0];
+        }
+      });
+    });
+  }
+
+  void setUserLeaveBalance() {
+    UserEmployeeService employeeService = UserEmployeeService();
+    employeeService.getLeaveBalance().then((value) {
+      setState(() {
+        userLeaveBalance = value;
+      });
+    });
+  }
+
+  fromDateString(DateTime date) {
+    DateFormat formatter = DateFormat('yyyy-MM-dd');
+    String dateString = formatter.format(date);
+    return dateString;
+  }
+
+  getDateDifferenceInDays(DateTime fromDate, DateTime toDate) {
+    if (fromDate != toDate) {
+      Duration diff = toDate.difference(fromDate);
+      return diff.inDays;
+    }
+    return 1;
+  }
+
+  getDateDifferenceInHours(DateTime fromDate, DateTime toDate) {
+    if (numberController.text.isEmpty) {
+      dateDifferenceInHours(fromDate, toDate);
+    } else {
+      numberController.clear;
+      dateDifferenceInHours(fromDate, toDate);
+    }
+  }
+
+  void dateDifferenceInHours(DateTime fromDate, DateTime toDate) {
+    if (fromDate != toDate) {
+      Duration diff = toDate.difference(fromDate);
+      setState(() {
+        numberController.text = ((diff.inDays * 8) + 8).toString();
+      });
+    } else {
+      setState(() {
+        numberController.text = 8.toString();
+      });
+    }
   }
 }

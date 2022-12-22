@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
   bool hidePassword = true;
   late LoginRequestModel requestModel;
-  bool? checkedValue = false;
+  bool checkedValue = false;
 
   final TextEditingController _urlController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
@@ -41,7 +41,8 @@ class _LoginPageState extends State<LoginPage> {
   ];
   String langCode = "English";
   String theme = "Open Sans";
-  int? i = 1;
+  // int? i = 1;
+
   @override
   Widget build(BuildContext context) {
     return ProgressHUD(
@@ -51,8 +52,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     _loadUrlUsernameAndPassword();
-    super.initState();
     requestModel = LoginRequestModel();
+    super.initState();
   }
 
   Widget uiBuild(BuildContext context) {
@@ -311,16 +312,16 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   //handle remember me function
-  void _handleRememberme(bool? value) {
+  void _handleRememberme(bool value) {
     checkedValue = value;
     SharedPreferences.getInstance().then(
       (prefs) {
-        prefs.setString('url', _urlController.text);
-        prefs.setString('username', _usernameController.text);
-        prefs.setString('password', _passwordController.text);
-        prefs.setString('language', langCode);
+        prefs.setString("url", _urlController.text);
+        prefs.setString("username", _usernameController.text);
+        prefs.setString("password", _passwordController.text);
+        prefs.setString("language", langCode);
         prefs.setBool("loggedIn", true);
-        prefs.setString("theme", theme);
+        prefs.setBool("remember_me", true);
       },
     );
     setState(() {
@@ -330,69 +331,70 @@ class _LoginPageState extends State<LoginPage> {
 
   //load email and password
   void _loadUrlUsernameAndPassword() async {
-    // int? i;
+    var _url;
+    var _username;
+    var _password;
+    var _rememberMe;
+    var _langCode;
+    var _theme;
+
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
-      var _url = preferences.getString("url") ?? "";
-      var _username = preferences.getString("username") ?? "";
-      var _password = preferences.getString("password") ?? "";
-      var _rememberMe = preferences.getBool("remember_me") ?? false;
-      var _langCode = preferences.getString("language") ?? "English";
-      var _theme = preferences.getInt("theme");
-
-      setState(() {
-        checkedValue = true;
-      });
-      _urlController.text = _url;
-      _usernameController.text = _username;
-      _passwordController.text = _password;
-      langCode = _langCode;
-      languageValue = _langCode;
-      i = _theme;
-
-      if (_langCode == "Nederlands") {
-        MyApp.of(context)
-            ?.setLocale(const Locale.fromSubtags(languageCode: 'nl'));
-        languageValue = "Nederlands";
-      } else if (_langCode == "English") {
-        MyApp.of(context)
-            ?.setLocale(const Locale.fromSubtags(languageCode: 'en'));
-        languageValue = "English";
-      }
-
-      if (i == 1) {
-        // setState(() {
-        RainbowColor.primary_1 = Colors.blueAccent;
-        RainbowColor.variant = Colors.blue;
-        RainbowColor.primary_2 = Colors.blueAccent;
-        // });
-      } else if (i == 2) {
-        // setState(() {
-        RainbowColor.primary_1 = Colors.green;
-        RainbowColor.variant = Colors.greenAccent;
-        RainbowColor.primary_2 = Colors.lightGreen;
-        // });
-      } else if (i == 3) {
-        // setState(() {
-        RainbowColor.primary_1 = Colors.black;
-        RainbowColor.variant = Colors.grey;
-        RainbowColor.primary_2 = Colors.black;
-        // });
-      } else if (i == 4) {
-        // setState(() {
-        RainbowColor.primary_1 = Colors.purpleAccent;
-        RainbowColor.variant = Colors.purple;
-        RainbowColor.primary_2 = Colors.deepPurple;
-        // });
-      } else {
-        // setState(() {
-        RainbowColor.primary_1 = Colors.blueAccent;
-        RainbowColor.variant = Colors.blue;
-        RainbowColor.primary_2 = Colors.blueAccent;
-        // });
-      }
+      _url = preferences.getString("url") ?? "";
+      _username = preferences.getString("username") ?? "";
+      // _password = preferences.getString("password") ?? "";
+      _rememberMe = preferences.getBool("remember_me") ?? true;
+      _langCode = preferences.getString("language") ?? "English";
+      _theme = preferences.getInt("theme");
     } catch (e) {
       print(e);
+    }
+    _urlController.text = _url;
+    _usernameController.text = _username;
+    // _passwordController.text = _password;
+    langCode = _langCode;
+    languageValue = _langCode;
+
+    if (_langCode == "Nederlands") {
+      MyApp.of(context)
+          ?.setLocale(const Locale.fromSubtags(languageCode: 'nl'));
+      languageValue = "Nederlands";
+    } else if (_langCode == "English") {
+      MyApp.of(context)
+          ?.setLocale(const Locale.fromSubtags(languageCode: 'en'));
+      languageValue = "English";
+    }
+
+    if (_theme == 1) {
+      // setState(() {
+      RainbowColor.primary_1 = Colors.blueAccent;
+      RainbowColor.variant = Colors.blue;
+      RainbowColor.primary_2 = Colors.blueAccent;
+      // });
+    } else if (_theme == 2) {
+      // setState(() {
+      RainbowColor.primary_1 = Colors.green;
+      RainbowColor.variant = Colors.greenAccent;
+      RainbowColor.primary_2 = Colors.lightGreen;
+      // });
+    } else if (_theme == 3) {
+      // setState(() {
+      RainbowColor.primary_1 = Colors.black;
+      RainbowColor.variant = Colors.grey;
+      RainbowColor.primary_2 = Colors.black;
+      // });
+    } else if (_theme == 4) {
+      // setState(() {
+      RainbowColor.primary_1 = Colors.purpleAccent;
+      RainbowColor.variant = Colors.purple;
+      RainbowColor.primary_2 = Colors.deepPurple;
+      // });
+    } else {
+      // setState(() {
+      RainbowColor.primary_1 = Colors.blueAccent;
+      RainbowColor.variant = Colors.blue;
+      RainbowColor.primary_2 = Colors.blueAccent;
+      // });
     }
   }
 
@@ -407,8 +409,9 @@ class _LoginPageState extends State<LoginPage> {
     return false;
   }
 
-  void loginFunction() {
+  void loginFunction() async {
     LoginService loginService = LoginService();
+    SharedPreferences preferences = await SharedPreferences.getInstance();
     loginService.login(requestModel).then((value) {
       if (value.valid == true) {
         LoggedInUser.loggedInUser = UserModel(
@@ -423,8 +426,8 @@ class _LoginPageState extends State<LoginPage> {
             jobCode: value.jobCode,
             jobDescription: value.jobDescription,
             leaveBalance: value.leaveBalance,
-            selectedRoleId: value.selectedRoleId);
-        print(LoggedInUser.loggedInUser?.firstName.toString());
+            selectedRoleId: value.selectedRoleId,
+            token: value.token);
         LoggedInUser(
           true,
           UserModel(
@@ -439,13 +442,14 @@ class _LoginPageState extends State<LoginPage> {
               jobCode: value.jobCode,
               jobDescription: value.jobDescription,
               leaveBalance: value.leaveBalance,
-              selectedRoleId: value.selectedRoleId),
-          UserRoleModel(value.roles),
+              selectedRoleId: value.selectedRoleId,
+              token: value.token),
         );
-        LoggedInUser.role = UserRoleModel(value.roles);
+        LoggedInUser.setToken(value.token);
         setState(() {
           isApiCallProcess = false;
         });
+        _handleRememberme(true);
         SnackBar snackBar = SnackBar(
           content: Text(AppLocalizations.of(context)!.loginSuccesful),
           backgroundColor: Colors.green,
@@ -455,13 +459,12 @@ class _LoginPageState extends State<LoginPage> {
           context,
           MaterialPageRoute(builder: (context) => const PincodePage()),
         );
-        _handleRememberme(true);
       } else {
         setState(() {
           isApiCallProcess = false;
         });
         SnackBar snackBar = SnackBar(
-          content: Text(AppLocalizations.of(context)!.loginUnSuccessful),
+          content: Text(AppLocalizations.of(context)!.credentialsDoNotMatch),
           backgroundColor: Colors.redAccent,
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);

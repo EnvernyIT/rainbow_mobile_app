@@ -16,7 +16,7 @@ class Routes {
   static const String login = LoginPage.routeName;
   static const String pincode = PincodePage.routeName;
   static const String dashboard = DashboardPage.routeName;
-  static const String calendar = CalendarPage.routeName;
+  // static const String calendar = CalendarPage.routeName;
   static const String payslips = PayslipListPage.routeName;
   static const String profile = ProfilePage.routeName;
   static const String settings = SettingsPage.routeName;
