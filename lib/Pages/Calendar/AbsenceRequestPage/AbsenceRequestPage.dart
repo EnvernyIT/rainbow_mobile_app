@@ -87,13 +87,6 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
 
   Widget uiBuild(BuildContext context) {
     String locale = Localizations.localeOf(context).languageCode;
-    UserEmployeeService userEmployeeService = UserEmployeeService();
-
-    userEmployeeService.getLeaveBalance().then((value) {
-      userLeaveBalance = userLeaveBalance + value;
-      print(value);
-    });
-
     return DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -138,12 +131,22 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                               fontFamily: RainbowTextStyle.fontFamily),
                         ),
                         Text(
-                          userLeaveBalance.toString(),
+                          userLeaveBalance.toString() +
+                              " " +
+                              AppLocalizations.of(context)!.hours +
+                              " (" +
+                              userLeaveHoursToDays(userLeaveBalance) +
+                              " " +
+                              AppLocalizations.of(context)!.dayss +
+                              ")",
                           style: TextStyle(
                               fontSize: 20,
                               fontFamily: RainbowTextStyle.fontFamily),
                         ),
                       ]),
+                  const SizedBox(
+                    height: 16,
+                  ),
                   InputField(
                       controller: controller_1,
                       title: typeDaysRequest == true
@@ -594,5 +597,13 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
         numberController.text = 8.toString();
       });
     }
+  }
+
+  String userLeaveHoursToDays(int userLeaveBalance) {
+    if (userLeaveBalance != 0) {
+      double number = (userLeaveBalance / 8);
+      return number.toString();
+    }
+    return "0";
   }
 }

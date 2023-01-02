@@ -96,5 +96,6 @@
     "job": "Functie",
     "inServiceSince": "In dienst sinds",
     "noPayslipsFound": "Geen loonstroken gevonden voor dit jaar",
-    "incorrectDate": "Incorrecte datum!"
+    "incorrectDate": "Incorrecte datum!",
+    "downloadAndRead": "Download & lees"
 }

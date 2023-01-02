@@ -87,11 +87,6 @@ class Absence {
         ),
       );
       absence.status = status;
-
-      // absence.usStartDate =
-      //     DateTime.parse((json[i]['usStartDate'] as int).toString());
-      // absence.uaEindDat =
-      //     DateTime.parse((json[i]['uaEindDat'] as int).toString());
       absence.usStartDate =
           DateTime.fromMillisecondsSinceEpoch(json[i]['usStartDate'] as int);
       absence.uaEindDat =
@@ -234,7 +229,7 @@ class AbsenceRequest {
     this.fileBytes,
   });
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toAskJson() {
     Map<String, dynamic> map = {
       'usId': usId,
       'dateFrom': dateFrom,
@@ -243,6 +238,18 @@ class AbsenceRequest {
       'days': days,
       'uaOpmerking': uaOpmerking,
       'fileBytes': fileBytes,
+    };
+    return map;
+  }
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      'usId': usId,
+      'dateFrom': dateFrom,
+      'dateTo': dateTo,
+      'uaAantaluren': uaAantaluren,
+      'days': days,
+      'uaOpmerking': uaOpmerking,
     };
     return map;
   }

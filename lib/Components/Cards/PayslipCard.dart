@@ -28,6 +28,7 @@ class _PayslipCardState extends State<PayslipCard> {
   Payslip payslip = Payslip();
   bool _isLoading = false;
   DateTime? month = DateTime.now();
+  int yearNow = DateTime.now().year;
 
   @override
   void initState() {
@@ -156,7 +157,7 @@ class _PayslipCardState extends State<PayslipCard> {
                               _createPdf(bytes, filepath);
                             },
                             child: Text(
-                              AppLocalizations.of(context)!.download,
+                              AppLocalizations.of(context)!.downloadAndRead,
                               style: TextStyle(
                                   color: RainbowColor.secondary,
                                   fontFamily: RainbowTextStyle.fontFamily,

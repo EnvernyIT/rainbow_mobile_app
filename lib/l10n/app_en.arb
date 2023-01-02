@@ -96,5 +96,6 @@
     "job": "Job",
     "inServiceSince": "In service since",
     "noPayslipsFound": "No payslips found for this year",
-    "incorrectDate": "Incorrect date!"
+    "incorrectDate": "Incorrect date!",
+    "downloadAndRead": "Download & read"
 }

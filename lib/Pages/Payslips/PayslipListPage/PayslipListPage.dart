@@ -25,14 +25,15 @@ class _PayslipListPageState extends State<PayslipListPage> {
   int listLength = 0;
   late PayslipRequestModel payslipRequestModel;
   late String locale = Localizations.localeOf(context).languageCode;
-  List<int> years = [2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014];
-  int year = 2022;
+  List<int> years = [];
+  int year = DateTime.now().year;
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     setList(2022);
+    setYearList();
   }
 
   @override
@@ -143,5 +144,11 @@ class _PayslipListPageState extends State<PayslipListPage> {
         _isLoading = true;
       });
     });
+  }
+
+  void setYearList() {
+    for (int i = 0; i <= 5; i++) {
+      years.add(year - i);
+    }
   }
 }

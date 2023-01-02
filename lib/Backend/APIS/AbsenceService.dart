@@ -32,7 +32,7 @@ class AbsenceService {
     String token = 'Bearer ' + LoggedInUser.token;
 
     final response = await http.post(Uri.parse(absenceRequest.urlRequest),
-        body: jsonEncode(absenceRequest.toJson()),
+        body: jsonEncode(absenceRequest.toAskJson()),
         headers: <String, String>{
           'authorization': token,
           'Content-Type': 'application/json',

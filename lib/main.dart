@@ -72,26 +72,6 @@ class _MyAppState extends State<MyApp> {
           // primarySwatch: Colors.blue,
           ),
       initialRoute: '/splashScreen',
-      // home: SplashScreen(
-      //   seconds: 8,
-      //   navigateAfterSeconds: LoggedInUser.loggedIn != true
-      //       ? const LoginPage()
-      //       : const PincodePage(),
-      //   backgroundColor: RainbowColor.secondary,
-      //   image: Image.asset('assets/images/rainbow.png'),
-      //   photoSize: 150.0,
-      //   title: const Text(
-      //     "version - 1.0.0",
-      //     textAlign: TextAlign.center,
-      //     style: TextStyle(
-      //       color: Colors.black,
-      //       fontSize: 21.0,
-      //       fontWeight: FontWeight.w500,
-      //     ),
-      //   ),
-      //   loaderColor: RainbowColor.primary_1,
-      //   useLoader: true,
-      // ),
       routes: {
         '/login': (context) => const LoginPage(),
         '/pincode': (context) => const PincodePage(),
