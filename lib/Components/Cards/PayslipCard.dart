@@ -157,7 +157,7 @@ class _PayslipCardState extends State<PayslipCard> {
                               _createPdf(bytes, filepath);
                             },
                             child: Text(
-                              AppLocalizations.of(context)!.downloadAndRead,
+                              AppLocalizations.of(context)!.download,
                               style: TextStyle(
                                   color: RainbowColor.secondary,
                                   fontFamily: RainbowTextStyle.fontFamily,
@@ -263,9 +263,12 @@ class _PayslipCardState extends State<PayslipCard> {
     payslipRequestModel = PayslipRequestModel(year: year);
     payslipService.getList(payslipRequestModel).then((value) {
       setState(() {
-        payslips = value!;
-        payslip = value.first;
-        month = value.first.peDatumVan;
+        for (int i = 0; i <= 10; i++) {
+          payslips.add(value![i]);
+        }
+        // payslips = value!;
+        payslip = payslips.first;
+        month = payslips.first.peDatumVan;
         _isLoading = true;
       });
     });

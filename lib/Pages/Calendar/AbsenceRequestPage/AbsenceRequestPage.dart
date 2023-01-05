@@ -457,14 +457,10 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
 
                           final imageTemporary = File(image.path);
                           this.image = imageTemporary;
-                          setState(() async {
-                            fileName = this.image.path.toString();
-                            print(fileName);
-                            List<int> bytes = await image.readAsBytes();
-                            print(bytes);
-                            fileAsString = base64Encode(bytes);
+                          setState(() {
+                            pickImageFile(image);
                           });
-                          // Navigator.pop(context);
+                          Navigator.pop(context);
                         } on PlatformException catch (e) {
                           print('Failed to pick image: $e');
                         }
@@ -479,14 +475,11 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                         XFile? xFile = await ImagePicker()
                             .pickImage(source: ImageSource.gallery);
                         if (xFile != null) {
-                          setState(() async {
-                            String? path = xFile.path;
-                            File file = File(path);
-                            List<int> bytes = await file.readAsBytes();
-                            print(bytes);
-                            fileAsString = base64Encode(bytes);
+                          setState(() {
+                            choosePhotoFile(xFile);
                           });
                         }
+                        Navigator.pop(context);
                       },
                       child: Icon(
                         Icons.photo,
@@ -508,13 +501,12 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                         PlatformFile platformFile = result.files.first;
                         if (platformFile.path != "" ||
                             platformFile.path != null) {
-                          String? path = platformFile.path;
-                          File file = File(path!);
-                          List<int> bytes = await file.readAsBytes();
-                          print(bytes);
-                          fileAsString = base64Encode(bytes);
+                          setState(() {
+                            choosePdfFile(platformFile);
+                          });
                         }
                         // openFile(file);
+                        Navigator.pop(context);
                       },
                       child: Icon(
                         Icons.picture_as_pdf_outlined,
@@ -528,6 +520,26 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                 borderRadius: BorderRadius.circular(40),
               ));
         });
+  }
+
+  Future<void> choosePdfFile(PlatformFile platformFile) async {
+    String? path = platformFile.path;
+    File file = File(path!);
+    List<int> bytes = await file.readAsBytes();
+    fileAsString = base64Encode(bytes);
+  }
+
+  Future<void> choosePhotoFile(XFile xFile) async {
+    String? path = xFile.path;
+    File file = File(path);
+    List<int> bytes = await file.readAsBytes();
+    fileAsString = base64Encode(bytes);
+  }
+
+  Future<void> pickImageFile(XFile image) async {
+    fileName = this.image.path.toString();
+    List<int> bytes = await image.readAsBytes();
+    fileAsString = base64Encode(bytes);
   }
 
   void openFile(PlatformFile file) {
