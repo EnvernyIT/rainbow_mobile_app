@@ -218,6 +218,7 @@ class AbsenceRequest {
   int? days;
   String? uaOpmerking;
   String? fileBytes;
+  String? typeFile;
 
   AbsenceRequest({
     this.usId,
@@ -227,6 +228,7 @@ class AbsenceRequest {
     this.days,
     this.uaOpmerking,
     this.fileBytes,
+    this.typeFile,
   });
 
   Map<String, dynamic> toAskJson() {
@@ -238,6 +240,7 @@ class AbsenceRequest {
       'days': days,
       'uaOpmerking': uaOpmerking,
       'fileBytes': fileBytes,
+      'typeFile': typeFile,
     };
     return map;
   }

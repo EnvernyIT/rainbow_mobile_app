@@ -1,12 +1,30 @@
 import 'dart:convert';
 
+import 'package:rainbow_app/Backend/APIS/LoginService.dart';
 import 'package:rainbow_app/Backend/Models/Absence.dart';
+import 'package:rainbow_app/Backend/Models/LoginModel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Models/UserModel.dart';
 import 'package:http/http.dart' as http;
 
 class AbsenceService {
   Future<List<Absence>?> getList(AbsenceRequest absenceRequest) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    LoginRequestModel requestModel = LoginRequestModel(
+        url: preferences.getString("url") ?? "",
+        username: preferences.getString("username") ?? "",
+        password: preferences.getString("password") ?? "");
+
+    LoginService loginService = LoginService();
+    loginService.login(requestModel).then((value) {
+      if (value.valid == true) {
+        LoggedInUser.setToken(value.token);
+      } else {
+        throw Exception("The token is not valid anymore!");
+      }
+    });
+
     String token = 'Bearer ' + LoggedInUser.token;
 
     final response = await http.post(Uri.parse(absenceRequest.urlList),
@@ -29,6 +47,21 @@ class AbsenceService {
   }
 
   Future<Absence>? request(AbsenceRequest absenceRequest) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    LoginRequestModel requestModel = LoginRequestModel(
+        url: preferences.getString("url") ?? "",
+        username: preferences.getString("username") ?? "",
+        password: preferences.getString("password") ?? "");
+
+    LoginService loginService = LoginService();
+    loginService.login(requestModel).then((value) {
+      if (value.valid == true) {
+        LoggedInUser.setToken(value.token);
+      } else {
+        throw Exception("The token is not valid anymore!");
+      }
+    });
+
     String token = 'Bearer ' + LoggedInUser.token;
 
     final response = await http.post(Uri.parse(absenceRequest.urlRequest),

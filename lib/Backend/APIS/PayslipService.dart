@@ -21,14 +21,14 @@ class PayslipService {
         username: preferences.getString("username") ?? "",
         password: preferences.getString("password") ?? "");
 
-    // LoginService loginService = LoginService();
-    // loginService.login(requestModel).then((value) {
-    //   if (value.valid == true) {
-    //     LoggedInUser.setToken(value.token);
-    //   } else {
-    //     throw Exception("The token is not valid anymore!");
-    //   }
-    // });
+    LoginService loginService = LoginService();
+    loginService.login(requestModel).then((value) {
+      if (value.valid == true) {
+        LoggedInUser.setToken(value.token);
+      } else {
+        throw Exception("The token is not valid anymore!");
+      }
+    });
 
     String token = 'Bearer ' + LoggedInUser.token;
 
@@ -58,6 +58,15 @@ class PayslipService {
         username: preferences.getString("username") ?? "",
         password: preferences.getString("password") ?? "");
 
+    LoginService loginService = LoginService();
+    loginService.login(requestModel).then((value) {
+      if (value.valid == true) {
+        LoggedInUser.setToken(value.token);
+      } else {
+        throw Exception("The token is not valid anymore!");
+      }
+    });
+
     String token = 'Bearer ' + LoggedInUser.token;
 
     final response = await http.post(Uri.parse(payslipRequestModel.urlFile),
@@ -80,7 +89,6 @@ class PayslipService {
 
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
-
     return directory.path;
   }
 

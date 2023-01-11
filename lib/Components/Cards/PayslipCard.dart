@@ -262,15 +262,16 @@ class _PayslipCardState extends State<PayslipCard> {
     PayslipService payslipService = PayslipService();
     payslipRequestModel = PayslipRequestModel(year: year);
     payslipService.getList(payslipRequestModel).then((value) {
-      setState(() {
-        for (int i = 0; i <= 10; i++) {
-          payslips.add(value![i]);
-        }
-        // payslips = value!;
-        payslip = payslips.first;
-        month = payslips.first.peDatumVan;
-        _isLoading = true;
-      });
+      if (value != null) {
+        setState(() {
+          for (int i = 0; i <= 10; i++) {
+            payslips.add(value[i]);
+          }
+          payslip = payslips.first;
+          month = payslips.first.peDatumVan;
+          _isLoading = true;
+        });
+      }
     });
   }
 
@@ -289,7 +290,7 @@ class _PayslipCardState extends State<PayslipCard> {
   Future<void> _createPdf(String bytes, String fileName) async {
     try {
       PdfDocument document = PdfDocument.fromBase64String(bytes);
-      final path = (await getExternalStorageDirectory())?.path;
+      final path = (await getApplicationDocumentsDirectory()).path;
       List<int> pdfByte = await document.save();
       File('$path/$fileName').writeAsBytes(pdfByte).then((value) => null);
 

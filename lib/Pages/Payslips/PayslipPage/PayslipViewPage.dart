@@ -197,7 +197,7 @@ class _PayslipViewPageState extends State<PayslipViewPage> {
   Future<void> _createPdf(String bytes, String fileName) async {
     try {
       PdfDocument document = PdfDocument.fromBase64String(bytes);
-      final path = (await getExternalStorageDirectory())?.path;
+      final path = (await getApplicationDocumentsDirectory()).path;
       List<int> pdfByte = await document.save();
       File('$path/$fileName').writeAsBytes(pdfByte).then((value) => null);
 

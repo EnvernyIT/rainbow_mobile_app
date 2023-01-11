@@ -311,11 +311,13 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
           uaAantaluren: int.parse(numberController.text),
           uaOpmerking: controller_3.text,
           fileBytes: fileAsString,
+          typeFile: fileName,
         );
         AbsenceService service = AbsenceService();
         Absence absence = Absence();
-        if (fromDate.isAfter(DateTime.now()) ||
-            toDate.isAfter(DateTime.now())) {
+        if (fromDate
+                .isAfter(DateTime.now().subtract(const Duration(days: 1))) ||
+            toDate.isAfter(DateTime.now().subtract(const Duration(days: 1)))) {
           service.request(absenceRequest)?.then((value) {
             absence = value;
             clearAll();
@@ -525,6 +527,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   Future<void> choosePdfFile(PlatformFile platformFile) async {
     String? path = platformFile.path;
     File file = File(path!);
+    fileName = file.path.toString();
     List<int> bytes = await file.readAsBytes();
     fileAsString = base64Encode(bytes);
   }
@@ -532,6 +535,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   Future<void> choosePhotoFile(XFile xFile) async {
     String? path = xFile.path;
     File file = File(path);
+    fileName = file.path.toString();
     List<int> bytes = await file.readAsBytes();
     fileAsString = base64Encode(bytes);
   }
@@ -540,6 +544,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
     fileName = this.image.path.toString();
     List<int> bytes = await image.readAsBytes();
     fileAsString = base64Encode(bytes);
+    print(fileAsString);
   }
 
   void openFile(PlatformFile file) {

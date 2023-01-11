@@ -64,6 +64,9 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+          const SizedBox(
+            height: 20,
+          ),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
