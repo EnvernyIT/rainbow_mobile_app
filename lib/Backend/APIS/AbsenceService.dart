@@ -36,13 +36,14 @@ class AbsenceService {
           'Connection': 'keep-alive',
         });
 
+    List<Absence> absences = [];
+
     if (response.statusCode == 200 || response.statusCode == 400) {
       Absence absence = Absence();
-      List<Absence> absences =
-          absence.getAbsenceList(json.decode(response.body));
+      absences = absence.getAbsenceList(json.decode(response.body));
       return absences;
     } else {
-      throw Exception("Failed to absence list load data!");
+      return absences;
     }
   }
 

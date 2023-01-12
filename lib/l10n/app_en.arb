@@ -97,5 +97,7 @@
     "inServiceSince": "In service since",
     "noPayslipsFound": "No payslips found for this year",
     "incorrectDate": "Incorrect date!",
-    "downloadAndRead": "Download & read"
+    "downloadAndRead": "Download & read",
+    "listIsEmpty" : "List is empty!",
+    "noPayslipReadOrDownload" : "Cannot read or download empty payslip!"
 }

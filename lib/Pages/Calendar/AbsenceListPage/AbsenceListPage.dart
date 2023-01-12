@@ -64,8 +64,8 @@ class _AbsenceListPageState extends State<AbsenceListPage> {
                       itemBuilder: (BuildContext context, int index) {
                         return Absence2Tile(absence: absences[index]);
                       })))
-          : const Center(
-              child: CircularProgressIndicator(),
+          : Center(
+              child: CircularProgressIndicator(color: RainbowColor.primary_1),
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

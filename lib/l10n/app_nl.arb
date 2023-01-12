@@ -97,5 +97,7 @@
     "inServiceSince": "In dienst sinds",
     "noPayslipsFound": "Geen loonstroken gevonden voor dit jaar",
     "incorrectDate": "Incorrecte datum!",
-    "downloadAndRead": "Download & lees"
+    "downloadAndRead": "Download & lees",
+    "listIsEmpty" : "Lijst is leeg!",
+    "noPayslipReadOrDownload" : "Kan lege loonstrook niet lezen of downloaden!"
 }

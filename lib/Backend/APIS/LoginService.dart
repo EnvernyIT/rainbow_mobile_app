@@ -22,10 +22,10 @@ class LoginService {
       if (response.statusCode == 200 || response.statusCode == 400) {
         return LoginResponseModel.fromJson(json.decode(response.body));
       } else {
-        throw Exception("Failed to load data!");
+        return LoginResponseModel(valid: false, token: '');
       }
     } else {
-      throw Exception("URL is incorrect!");
+      return LoginResponseModel(valid: false, token: '');
     }
   }
 }

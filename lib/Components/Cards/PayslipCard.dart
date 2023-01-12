@@ -33,7 +33,7 @@ class _PayslipCardState extends State<PayslipCard> {
   @override
   void initState() {
     super.initState();
-    setList(2021);
+    setList(yearNow);
   }
 
   @override
@@ -115,13 +115,23 @@ class _PayslipCardState extends State<PayslipCard> {
                               shape: const StadiumBorder(),
                             ),
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => PayslipViewPage(
-                                          payslip: payslip,
-                                        )),
-                              );
+                              if (payslips.isNotEmpty) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => PayslipViewPage(
+                                            payslip: payslip,
+                                          )),
+                                );
+                              } else {
+                                SnackBar snackBar = SnackBar(
+                                  content: Text(AppLocalizations.of(context)!
+                                      .noPayslipReadOrDownload),
+                                  backgroundColor: Colors.redAccent,
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                              }
                             },
                             child: Text(
                               AppLocalizations.of(context)!.read,
@@ -144,17 +154,27 @@ class _PayslipCardState extends State<PayslipCard> {
                               shape: const StadiumBorder(),
                             ),
                             onPressed: () async {
-                              final filepath = getFilePath(
-                                  payslip.hsPeriode.toString(),
-                                  payslip.hsJaar.toString());
-                              PayslipService service = PayslipService();
-                              PayslipRequestModel payslipRequestModel =
-                                  PayslipRequestModel(
-                                      year: payslip.hsJaar,
-                                      period: payslip.hsPeriode);
-                              String bytes = await service
-                                  .getPayslipFile(payslipRequestModel);
-                              _createPdf(bytes, filepath);
+                              if (payslips.isNotEmpty) {
+                                final filepath = getFilePath(
+                                    payslip.hsPeriode.toString(),
+                                    payslip.hsJaar.toString());
+                                PayslipService service = PayslipService();
+                                PayslipRequestModel payslipRequestModel =
+                                    PayslipRequestModel(
+                                        year: payslip.hsJaar,
+                                        period: payslip.hsPeriode);
+                                String bytes = await service
+                                    .getPayslipFile(payslipRequestModel);
+                                _createPdf(bytes, filepath);
+                              } else {
+                                SnackBar snackBar = SnackBar(
+                                  content: Text(AppLocalizations.of(context)!
+                                      .noPayslipReadOrDownload),
+                                  backgroundColor: Colors.redAccent,
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                              }
                             },
                             child: Text(
                               AppLocalizations.of(context)!.download,
@@ -183,7 +203,9 @@ class _PayslipCardState extends State<PayslipCard> {
                             ],
                             borderRadius: BorderRadius.circular(10)),
                         child: Text(
-                          showDate(month),
+                          payslips.isNotEmpty
+                              ? showDate(month)
+                              : showEmptyList(month),
                           style: TextStyle(
                               color: RainbowColor.primary_1,
                               fontFamily: RainbowTextStyle.fontFamily,
@@ -227,34 +249,42 @@ class _PayslipCardState extends State<PayslipCard> {
   }
 
   void goThroughList(String t) {
-    if (t == "pos") {
-      if (i == payslips.length - 1) {
-        i = 0;
-        setState(() {
-          payslip = payslips.first;
-          month = payslips.first.peDatumVan;
-        });
-      } else {
-        i++;
-        setState(() {
-          payslip = payslips[i];
-          month = payslips[i].peDatumVan;
-        });
+    if (payslips.isNotEmpty) {
+      if (t == "pos") {
+        if (i == payslips.length - 1) {
+          i = 0;
+          setState(() {
+            payslip = payslips.first;
+            month = payslips.first.peDatumVan;
+          });
+        } else {
+          i++;
+          setState(() {
+            payslip = payslips[i];
+            month = payslips[i].peDatumVan;
+          });
+        }
+      } else if (t == "neg") {
+        if (i == 0) {
+          i = payslips.length - 1;
+          setState(() {
+            payslip = payslips[i];
+            month = payslips[i].peDatumVan;
+          });
+        } else {
+          i--;
+          setState(() {
+            payslip = payslips[i];
+            month = payslips[i].peDatumVan;
+          });
+        }
       }
-    } else if (t == "neg") {
-      if (i == 0) {
-        i = payslips.length - 1;
-        setState(() {
-          payslip = payslips[i];
-          month = payslips[i].peDatumVan;
-        });
-      } else {
-        i--;
-        setState(() {
-          payslip = payslips[i];
-          month = payslips[i].peDatumVan;
-        });
-      }
+    } else {
+      SnackBar snackBar = SnackBar(
+        content: Text(AppLocalizations.of(context)!.listIsEmpty),
+        backgroundColor: Colors.redAccent,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
@@ -263,13 +293,23 @@ class _PayslipCardState extends State<PayslipCard> {
     payslipRequestModel = PayslipRequestModel(year: year);
     payslipService.getList(payslipRequestModel).then((value) {
       if (value != null) {
-        setState(() {
+        List<Payslip> slips = [];
+        if (value.length > 10) {
           for (int i = 0; i <= 10; i++) {
-            payslips.add(value[i]);
+            slips.add(value[i]);
           }
-          payslip = payslips.first;
-          month = payslips.first.peDatumVan;
-          _isLoading = true;
+        } else {
+          for (int i = 0; i <= value.length - 1; i++) {
+            slips.add(value[i]);
+          }
+        }
+        setState(() {
+          if (value.isNotEmpty) {
+            payslips.addAll(slips);
+            payslip = payslips.first;
+            month = payslips.first.peDatumVan;
+            _isLoading = true;
+          }
         });
       }
     });
@@ -306,5 +346,10 @@ class _PayslipCardState extends State<PayslipCard> {
     } catch (e) {
       print(e);
     }
+  }
+
+  String showEmptyList(DateTime? date) {
+    String message = date?.year.toString() ?? "";
+    return message + " is empty!";
   }
 }
