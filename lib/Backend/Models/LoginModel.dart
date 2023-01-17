@@ -1,3 +1,4 @@
+import 'package:rainbow_app/Backend/Constants/ConstantUtil.dart';
 import 'package:rainbow_app/Backend/Models/Role.dart';
 
 class LoginResponseModel {
@@ -15,22 +16,27 @@ class LoginResponseModel {
   List<Role>? roles;
   String? selectedRoleId;
   String token;
+  bool? success;
+  String response;
 
-  LoginResponseModel(
-      {this.valid,
-      this.emId,
-      this.emCode,
-      this.username,
-      this.firstName,
-      this.lastName,
-      this.departmentCode,
-      this.departmentDescription,
-      this.jobCode,
-      this.jobDescription,
-      this.leaveBalance,
-      this.roles,
-      this.selectedRoleId,
-      required this.token});
+  LoginResponseModel({
+    this.valid,
+    this.emId,
+    this.emCode,
+    this.username,
+    this.firstName,
+    this.lastName,
+    this.departmentCode,
+    this.departmentDescription,
+    this.jobCode,
+    this.jobDescription,
+    this.leaveBalance,
+    this.roles,
+    this.selectedRoleId,
+    required this.token,
+    this.success,
+    required this.response,
+  });
 
   LoginResponseModel getLoginResponse(Map<String, dynamic> json) {
     List<Role> roles = [];
@@ -55,6 +61,8 @@ class LoginResponseModel {
       jobDescription: json['jobDescription'] as String,
       leaveBalance: json['leaveBalance'] as int,
       roles: roles,
+      response: '',
+      success: true,
     );
 
     return loginResponseModel;
@@ -73,7 +81,6 @@ class LoginResponseModel {
       final jobCode = json['jobCode'] as String;
       final jobDescription = json['jobDescription'] as String;
       final leaveBalance = json['leaveBalance'] as int;
-      // final role = json['roles'][0]['roleName'] as String;
 
       List<Role> roles = [];
       for (int i = 0; i <= json['roles'].length - 1; i++) {
@@ -96,9 +103,15 @@ class LoginResponseModel {
           jobCode: jobCode,
           jobDescription: jobDescription,
           leaveBalance: leaveBalance,
-          roles: roles);
+          roles: roles,
+          response: '',
+          success: true);
     }
-    return LoginResponseModel(valid: valid, token: '');
+    return LoginResponseModel(
+        valid: valid,
+        token: '',
+        response: ConstantUtil.CREDENTIALS_INVALID,
+        success: false);
   }
 }
 

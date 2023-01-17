@@ -1,21 +1,49 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:rainbow_app/Backend/Models/LoginModel.dart';
 import 'package:rainbow_app/Backend/Models/UserModel.dart';
 import 'package:rainbow_app/Pages/Dashboard/DashboardPage.dart';
 import 'package:rainbow_app/Pages/Login/LoginPage.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../Backend/APIS/LoginService.dart';
+import '../../Backend/APIS/UserEmployeeService.dart';
 import '../../Theme/ThemeColor.dart';
 import '../../Theme/ThemeTextStyle.dart';
 
-class UserProfileTile extends StatelessWidget {
-  UserProfileTile({Key? key}) : super(key: key);
+class UserProfileTile extends StatefulWidget {
+  bool loginSuccessfull;
+  String message;
+
+  UserProfileTile({
+    Key? key,
+    required this.loginSuccessfull,
+    required this.message,
+  }) : super(key: key);
+
+  @override
+  State<UserProfileTile> createState() => _UserProfileTileState();
+}
+
+class _UserProfileTileState extends State<UserProfileTile> {
   final pin = TextEditingController();
+  bool loginSuccessfull = false;
+  String message = "";
+  bool photoSet = false;
+  String image = "";
 
   @override
   void dispose() {
     pin.dispose();
+  }
+
+  @override
+  void initState() {
+    setEmployeePhoto();
+    super.initState();
   }
 
   @override
@@ -42,11 +70,21 @@ class UserProfileTile extends StatelessWidget {
               Container(
                   child: Row(children: [
                 CircleAvatar(
-                  radius: 25.0,
-                  backgroundImage:
-                      const AssetImage('assets/images/blank-profile.png'),
-                  backgroundColor: RainbowColor.primary_1,
-                ),
+                    radius: 25.0,
+                    backgroundColor: widget.loginSuccessfull
+                        ? RainbowColor.primary_1
+                        : Colors.red,
+                    child: SizedBox(
+                        width: 80,
+                        height: 80,
+                        child: ClipOval(
+                            child: image.isNotEmpty
+                                ? Image.memory(
+                                    base64Decode(image),
+                                    fit: BoxFit.fill,
+                                  )
+                                : Image.asset(
+                                    'assets/images/blank-profile.png')))),
                 const SizedBox(
                   width: 15.0,
                 ),
@@ -54,25 +92,38 @@ class UserProfileTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(LoggedInUser.loggedInUser?.username ?? "",
+                    Text(
+                        widget.loginSuccessfull
+                            ? LoggedInUser.loggedInUser?.username ?? ""
+                            : AppLocalizations.of(context)!.notLoggedIn,
                         style: TextStyle(
                             fontFamily: RainbowTextStyle.fontFamily,
-                            fontSize: 18.0)),
+                            fontSize: 18.0,
+                            color: widget.loginSuccessfull
+                                ? Colors.black
+                                : Colors.red)),
                     const SizedBox(
                       height: 3,
                     ),
                     Text(
-                        (LoggedInUser.loggedInUser?.firstName ?? "") +
-                            " " +
-                            (LoggedInUser.loggedInUser?.lastName ?? ""),
+                        widget.loginSuccessfull
+                            ? (LoggedInUser.loggedInUser?.firstName ?? "") +
+                                " " +
+                                (LoggedInUser.loggedInUser?.lastName ?? "")
+                            : AppLocalizations.of(context)!.pleaseGoToLogin,
                         style: TextStyle(
                             fontFamily: RainbowTextStyle.fontFamily,
-                            fontSize: 14.0)),
+                            fontSize: 14.0,
+                            color: widget.loginSuccessfull
+                                ? Colors.black
+                                : Colors.red)),
                   ],
                 )
               ])),
               IconButton(
-                color: RainbowColor.primary_1,
+                color: widget.loginSuccessfull
+                    ? RainbowColor.primary_1
+                    : Colors.red,
                 iconSize: 30,
                 icon: const Icon(Icons.logout_outlined),
                 onPressed: () {
@@ -93,10 +144,9 @@ class UserProfileTile extends StatelessWidget {
           TextFormField(
             controller: pin,
             keyboardType: TextInputType.number,
-            // onSaved: (input) => String pincode = input,
             style: TextStyle(fontFamily: RainbowTextStyle.fontFamily),
             validator: (input) {
-              if (input == null) {
+              if (input == null || input.isEmpty) {
                 return AppLocalizations.of(context)!.givePincode;
               } else if (input.length < 4) {
                 return AppLocalizations.of(context)!.fourOrMore;
@@ -129,10 +179,31 @@ class UserProfileTile extends StatelessWidget {
           ),
           TextButton.icon(
               onPressed: () {
-                if (GetStorage("data").read("pin") != null) {
-                  if (pin.text == GetStorage("data").read("pin")) {
+                if (widget.loginSuccessfull) {
+                  if (GetStorage("data").read("pin") != null) {
+                    if (pin.text == GetStorage("data").read("pin")) {
+                      SnackBar snackBar = SnackBar(
+                        content: Text(AppLocalizations.of(context)!.correctPin),
+                        backgroundColor: Colors.green,
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const DashboardPage()),
+                      );
+                    } else {
+                      SnackBar snackBar = SnackBar(
+                        content:
+                            Text(AppLocalizations.of(context)!.incorrectPin),
+                        backgroundColor: Colors.redAccent,
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    }
+                  } else {
+                    GetStorage("data").write("pin", pin.text);
                     SnackBar snackBar = SnackBar(
-                      content: Text(AppLocalizations.of(context)!.correctPin),
+                      content: Text(AppLocalizations.of(context)!.pinSaved),
                       backgroundColor: Colors.green,
                     );
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -141,25 +212,37 @@ class UserProfileTile extends StatelessWidget {
                       MaterialPageRoute(
                           builder: (context) => const DashboardPage()),
                     );
-                  } else {
-                    SnackBar snackBar = SnackBar(
-                      content: Text(AppLocalizations.of(context)!.incorrectPin),
-                      backgroundColor: Colors.redAccent,
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   }
                 } else {
-                  GetStorage("data").write("pin", pin.text);
                   SnackBar snackBar = SnackBar(
-                    content: Text(AppLocalizations.of(context)!.pinSaved),
-                    backgroundColor: Colors.green,
+                    duration: const Duration(seconds: 10),
+                    content: SizedBox(
+                      height: 35,
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                                AppLocalizations.of(context)!.loginUnSuccessful,
+                                style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white)),
+                            Text(
+                                widget.message.isNotEmpty
+                                    ? AppLocalizations.of(context)!.reason +
+                                        " " +
+                                        widget.message
+                                    : "",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ))
+                          ]),
+                    ),
+                    backgroundColor: Colors.redAccent,
                   );
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const DashboardPage()),
-                  );
                 }
               },
               icon: Icon(
@@ -175,5 +258,83 @@ class UserProfileTile extends StatelessWidget {
                     color: RainbowColor.primary_1),
               ))
         ]));
+  }
+
+  void _loadUrlUsernameAndPassword() async {
+    try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      var _url = preferences.getString("url") ?? "";
+      var _username = preferences.getString("username") ?? "";
+      var _password = preferences.getString("password") ?? "";
+      var _langCode = preferences.getString("language") ?? "English";
+      var _theme = preferences.getInt("theme");
+
+      LoginService loginService = LoginService();
+      LoginRequestModel loginRequestModel = LoginRequestModel(
+          url: _url, username: _username, password: _password);
+      loginService.login(loginRequestModel).then((value) {
+        if (value.valid == true) {
+          LoggedInUser.loggedInUser = UserModel(
+              emId: value.emId,
+              emCode: value.emCode,
+              username: value.username,
+              firstName: value.firstName,
+              lastName: value.lastName,
+              roles: value.roles,
+              departmentCode: value.departmentCode,
+              departmentDescription: value.departmentDescription,
+              jobCode: value.jobCode,
+              jobDescription: value.jobDescription,
+              leaveBalance: value.leaveBalance,
+              selectedRoleId: value.selectedRoleId,
+              token: value.token);
+          LoggedInUser(
+            true,
+            UserModel(
+                emId: value.emId,
+                emCode: value.emCode,
+                username: value.username,
+                firstName: value.firstName,
+                lastName: value.lastName,
+                roles: value.roles,
+                departmentCode: value.departmentCode,
+                departmentDescription: value.departmentDescription,
+                jobCode: value.jobCode,
+                jobDescription: value.jobDescription,
+                leaveBalance: value.leaveBalance,
+                selectedRoleId: value.selectedRoleId,
+                token: value.token),
+          );
+          // LoggedInUser.role = UserRoleModel(value.roles);
+          LoggedInUser.setToken(value.token);
+          setState(() {
+            loginSuccessfull = true;
+          });
+        } else {
+          setState(() {
+            loginSuccessfull = false;
+            message = value.response;
+          });
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void setEmployeePhoto() {
+    UserEmployeeService service = UserEmployeeService();
+    service.getEmployeeInfo().then((value) {
+      setState(() {
+        if (value.valid) {
+          if (value.photo != null) {
+            photoSet = true;
+            if (value.photo?.phImage != null) {
+              image = value.photo?.phImage ?? "";
+            }
+          }
+        }
+      });
+    });
   }
 }

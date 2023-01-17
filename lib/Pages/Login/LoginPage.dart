@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:rainbow_app/Backend/Constants/ConstantUtil.dart';
 import 'package:rainbow_app/Backend/Models/UserModel.dart';
 import 'package:rainbow_app/Theme/ThemeColor.dart';
 import 'package:rainbow_app/Theme/ThemeTextStyle.dart';
@@ -41,7 +42,6 @@ class _LoginPageState extends State<LoginPage> {
   ];
   String langCode = "English";
   String theme = "Open Sans";
-  // int? i = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +110,7 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(fontFamily: RainbowTextStyle.fontFamily),
                     onSaved: (input) => requestModel.url = input,
                     validator: (input) {
-                      if (input == null) {
+                      if (input == null || input.isEmpty) {
                         return AppLocalizations.of(context)!.giveLink;
                       }
                       return null;
@@ -147,7 +147,7 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(fontFamily: RainbowTextStyle.fontFamily),
                     onSaved: (input) => requestModel.username = input,
                     validator: (input) {
-                      if (input == null) {
+                      if (input == null || input.isEmpty) {
                         return AppLocalizations.of(context)!.giveUsername;
                       }
                       return null;
@@ -185,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(fontFamily: RainbowTextStyle.fontFamily),
                     onSaved: (input) => requestModel.password = input,
                     validator: (input) {
-                      if (input == null || input.length < 3) {
+                      if (input == null || input.isEmpty) {
                         return AppLocalizations.of(context)!.passwordCharacters;
                       }
                       return null;
@@ -467,7 +467,21 @@ class _LoginPageState extends State<LoginPage> {
           isApiCallProcess = false;
         });
         SnackBar snackBar = SnackBar(
-          content: Text(AppLocalizations.of(context)!.credentialsDoNotMatch),
+          content: SizedBox(
+              height: 40,
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(AppLocalizations.of(context)!.loginUnSuccessful,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.white)),
+                    Text(
+                        AppLocalizations.of(context)!.reason +
+                            " " +
+                            value.response,
+                        style: const TextStyle(color: Colors.white))
+                  ])),
           backgroundColor: Colors.redAccent,
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);

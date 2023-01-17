@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:rainbow_app/Theme/ThemeColor.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../Backend/APIS/UserEmployeeService.dart';
 import '../Backend/Models/UserModel.dart';
 import '../Pages/Routes/Routes.dart';
 
@@ -13,11 +16,23 @@ class Navigation extends StatefulWidget {
 }
 
 class _NavigationState extends State<Navigation> {
-  static const String _imageUrl = "assets/images/rainbow.png";
+  bool photoSet = false;
+  String image = "";
 
   @override
   Widget build(BuildContext context) {
     return createDrawer(context);
+  }
+
+  @override
+  void initState() {
+    setEmployeePhoto();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   Widget createDrawer(BuildContext context) {
@@ -100,7 +115,7 @@ class _NavigationState extends State<Navigation> {
         accountName: Text(
           username,
           style: const TextStyle(
-              fontSize: 22,
+              fontSize: 20,
               height: 2,
               color: RainbowColor.secondary,
               fontStyle: FontStyle.italic),
@@ -108,19 +123,29 @@ class _NavigationState extends State<Navigation> {
         accountEmail: Text(
           name + " " + lastName,
           style: const TextStyle(
-              fontSize: 16,
+              fontSize: 15,
               color: RainbowColor.secondary,
               fontStyle: FontStyle.italic),
         ),
-        currentAccountPicture:
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-          CircleAvatar(
-            radius: 35.0,
-            backgroundImage:
-                const AssetImage('assets/images/blank-profile.png'),
-            backgroundColor: RainbowColor.primary_1,
-          ),
-        ]));
+        currentAccountPicture: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              CircleAvatar(
+                  radius: 36.0,
+                  backgroundColor: RainbowColor.primary_1,
+                  child: SizedBox(
+                      width: 80,
+                      height: 80,
+                      child: ClipOval(
+                          child: image.isNotEmpty
+                              ? Image.memory(
+                                  base64Decode(image),
+                                  fit: BoxFit.fill,
+                                )
+                              : Image.asset(
+                                  'assets/images/blank-profile.png')))),
+            ]));
   }
 
   Widget createDrawerItem(
@@ -144,5 +169,21 @@ class _NavigationState extends State<Navigation> {
       ]),
       onTap: onTap,
     );
+  }
+
+  void setEmployeePhoto() {
+    UserEmployeeService service = UserEmployeeService();
+    service.getEmployeeInfo().then((value) {
+      setState(() {
+        if (value.valid) {
+          if (value.photo != null) {
+            photoSet = true;
+            if (value.photo?.phImage != null) {
+              image = value.photo?.phImage ?? "";
+            }
+          }
+        }
+      });
+    });
   }
 }

@@ -25,8 +25,8 @@ class _AbsenceListPageState extends State<AbsenceListPage> {
   int listLength = 0;
   late String locale = Localizations.localeOf(context).languageCode;
   bool _isLoading = false; //bool variable created
-
   bool isCurrentRoutePincode = false;
+  String message = "";
   @override
   void initState() {
     super.initState();
@@ -54,16 +54,49 @@ class _AbsenceListPageState extends State<AbsenceListPage> {
       body: _isLoading
           ? Container(
               color: RainbowColor.secondary,
-              child: RefreshIndicator(
-                  backgroundColor: RainbowColor.secondary,
-                  color: RainbowColor.primary_1,
-                  onRefresh: refresh,
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: listLength,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Absence2Tile(absence: absences[index]);
-                      })))
+              child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: RefreshIndicator(
+                      backgroundColor: RainbowColor.secondary,
+                      color: RainbowColor.primary_1,
+                      onRefresh: refresh,
+                      child: absences.isEmpty
+                          ? Column(children: [
+                              const SizedBox(
+                                height: 25,
+                              ),
+                              Center(
+                                  child: Column(children: [
+                                const Icon(
+                                  size: 100,
+                                  Icons.list_alt_outlined,
+                                  color: RainbowColor.hint,
+                                ),
+                                Text(
+                                  AppLocalizations.of(context)!.noAbsencesFound,
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18,
+                                      fontFamily: RainbowTextStyle.fontFamily),
+                                ),
+                                Text(
+                                  message.isNotEmpty ? "(" + message + ")" : "",
+                                  style: TextStyle(
+                                      color: Colors.redAccent,
+                                      fontSize: 18,
+                                      fontFamily: RainbowTextStyle.fontFamily),
+                                )
+                              ])),
+                              const SizedBox(
+                                height: 6,
+                              ),
+                            ])
+                          : ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: listLength,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Absence2Tile(absence: absences[index]);
+                              }))))
           : Center(
               child: CircularProgressIndicator(color: RainbowColor.primary_1),
             ),
@@ -92,9 +125,20 @@ class _AbsenceListPageState extends State<AbsenceListPage> {
     absenceService.getList(absenceRequest).then((value) {
       setState(() {
         if (value != null) {
-          absences = value;
-          listLength = absences.length;
-          _isLoading = true;
+          if (value.length == 1) {
+            if (value.first.valid) {
+              absences = value;
+              listLength = absences.length;
+              _isLoading = true;
+            } else {
+              message = value.first.response!;
+              _isLoading = true;
+            }
+          } else {
+            absences = value;
+            listLength = absences.length;
+            _isLoading = true;
+          }
         }
       });
     });

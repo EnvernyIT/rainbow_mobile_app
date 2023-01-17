@@ -25,10 +25,11 @@ class _PayslipCardState extends State<PayslipCard> {
   List<Payslip> payslips = [];
   int i = 0;
   late PayslipRequestModel payslipRequestModel;
-  Payslip payslip = Payslip();
+  Payslip payslip = Payslip(valid: true);
   bool _isLoading = false;
   DateTime? month = DateTime.now();
   int yearNow = DateTime.now().year;
+  String message = "";
 
   @override
   void initState() {
@@ -53,7 +54,7 @@ class _PayslipCardState extends State<PayslipCard> {
             gradient: LinearGradient(
               colors: [
                 // Colors.lightBlue[100]!,
-                RainbowColor.primary_2,
+                RainbowColor.primary_1,
                 RainbowColor.secondary,
               ],
               begin: Alignment.topRight,
@@ -294,23 +295,48 @@ class _PayslipCardState extends State<PayslipCard> {
     payslipService.getList(payslipRequestModel).then((value) {
       if (value != null) {
         List<Payslip> slips = [];
-        if (value.length > 10) {
-          for (int i = 0; i <= 10; i++) {
-            slips.add(value[i]);
-          }
-        } else {
-          for (int i = 0; i <= value.length - 1; i++) {
-            slips.add(value[i]);
-          }
-        }
-        setState(() {
-          if (value.isNotEmpty) {
-            payslips.addAll(slips);
-            payslip = payslips.first;
-            month = payslips.first.peDatumVan;
+        if (value.length == 1) {
+          if (value.first.valid) {
+            if (value.length > 12) {
+              for (int i = 0; i <= 10; i++) {
+                slips.add(value[i]);
+              }
+            } else {
+              for (int i = 0; i <= value.length - 1; i++) {
+                slips.add(value[i]);
+              }
+            }
+            setState(() {
+              if (value.isNotEmpty) {
+                payslips.addAll(slips);
+                payslip = payslips.first;
+                month = payslips.first.peDatumVan;
+                _isLoading = true;
+              }
+            });
+          } else {
+            message = value.first.response!;
             _isLoading = true;
           }
-        });
+        } else {
+          if (value.length > 12) {
+            for (int i = 0; i <= 10; i++) {
+              slips.add(value[i]);
+            }
+          } else {
+            for (int i = 0; i <= value.length - 1; i++) {
+              slips.add(value[i]);
+            }
+          }
+          setState(() {
+            if (value.isNotEmpty) {
+              payslips.addAll(slips);
+              payslip = payslips.first;
+              month = payslips.first.peDatumVan;
+              _isLoading = true;
+            }
+          });
+        }
       }
     });
   }

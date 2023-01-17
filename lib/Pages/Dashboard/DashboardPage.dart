@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:rainbow_app/Backend/Models/NotificationModel.dart';
 import 'package:rainbow_app/Components/Cards/AbsenceCard.dart';
@@ -5,6 +7,7 @@ import 'package:rainbow_app/Components/Navigation.dart';
 import 'package:rainbow_app/Pages/Notifications/NotificationsPage.dart';
 import 'package:rainbow_app/Pages/Profile/ProfilePage.dart';
 
+import '../../Backend/APIS/UserEmployeeService.dart';
 import '../../Components/Cards/PayslipCard.dart';
 import '../../Theme/ThemeColor.dart';
 import '../../Theme/ThemeTextStyle.dart';
@@ -19,9 +22,12 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   late int notifications_length;
+  bool photoSet = false;
+  String image = "";
 
   @override
   void initState() {
+    setEmployeePhoto();
     super.initState();
     notifications_length = NotificationModel.notifications.length;
     // notifications_length = getNotificationsLength();
@@ -50,18 +56,22 @@ class _DashboardPageState extends State<DashboardPage> {
                   );
                 },
                 icon: CircleAvatar(
-                  radius: 15.0,
-                  child: const CircleAvatar(
-                      radius: 13.0,
-                      backgroundImage:
-                          AssetImage('assets/images/blank-profile.png')),
-                  backgroundColor: RainbowColor.primary_1,
-                )
-                // Icon(
-                //   Icons.person_outline,
-                //   color: RainbowColor.primary_1,
-                // ),
-                ),
+                    radius: 15.0,
+                    backgroundColor: RainbowColor.primary_1,
+                    child: CircleAvatar(
+                        radius: 13.0,
+                        backgroundColor: RainbowColor.primary_1,
+                        child: SizedBox(
+                            width: 80,
+                            height: 80,
+                            child: ClipOval(
+                                child: image.isNotEmpty
+                                    ? Image.memory(
+                                        base64Decode(image),
+                                        fit: BoxFit.contain,
+                                      )
+                                    : Image.asset(
+                                        'assets/images/blank-profile.png')))))),
             // IconButton(
             //   onPressed: () {
             //     Navigator.push(
@@ -140,5 +150,21 @@ class _DashboardPageState extends State<DashboardPage> {
     for (int i = 0; i >= NotificationModel.notifications.length; i++) {
       NotificationModel.notifications[i].read = true;
     }
+  }
+
+  void setEmployeePhoto() {
+    UserEmployeeService service = UserEmployeeService();
+    service.getEmployeeInfo().then((value) {
+      setState(() {
+        if (value.valid) {
+          if (value.photo != null) {
+            photoSet = true;
+            if (value.photo?.phImage != null) {
+              image = value.photo?.phImage ?? "";
+            }
+          }
+        }
+      });
+    });
   }
 }

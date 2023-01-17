@@ -1,7 +1,7 @@
 {
     "welcome": "Welkom",
     "url": "URL",
-    "giveLink": "Geen een link!",
+    "giveLink": "URL is verplicht!",
     "giveUsername": "Geef uw gebruikersnaam!",
     "username": "Gebruikersnaam",
     "password": "Wachtwoord",
@@ -99,5 +99,11 @@
     "incorrectDate": "Incorrecte datum!",
     "downloadAndRead": "Download & lees",
     "listIsEmpty" : "Lijst is leeg!",
-    "noPayslipReadOrDownload" : "Kan lege loonstrook niet lezen of downloaden!"
+    "noPayslipReadOrDownload" : "Kan lege loonstrook niet lezen of downloaden!",
+    "reason": "Reden:",
+    "backToLogin" : "Terug naar login",
+    "buttonDisabled" : "Button has been disabled. Login again",
+    "noAbsencesFound" : "No absences found!",
+    "notLoggedIn" : "Niet ingelogd!",
+    "pleaseGoToLogin" : "Ga terug naar het inlogscherm!"
 }

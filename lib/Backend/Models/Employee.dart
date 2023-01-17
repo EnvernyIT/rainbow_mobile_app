@@ -13,6 +13,8 @@ class Employee {
   DateTime? emInDienstDat;
   Photo? photo;
   String? emIdNr;
+  String? response;
+  bool valid;
 
   Employee({
     this.emId,
@@ -29,6 +31,8 @@ class Employee {
     this.emInDienstDat,
     this.photo,
     this.emIdNr,
+    this.response,
+    required this.valid,
   });
 
   factory Employee.fromJson(Map<String, dynamic> json) {
@@ -71,9 +75,9 @@ class Employee {
     Photo _photo = Photo();
     if (json['photo'] != null) {
       _photo.phId = json['photo']['phId'] as int;
-      _photo.phFile = json['photo'][0]['phFile'] as String;
-      _photo.phImage = json['photo']['phImage'][0] as String;
-      _photo.phType = json['photo'][0]['phType'] as String;
+      _photo.phFile = json['photo']['phFile'] as String;
+      _photo.phImage = json['photo']['phImage'] as String;
+      _photo.phType = json['photo']['phType'] as String;
     }
     final photo = _photo;
     return Employee(
@@ -91,6 +95,8 @@ class Employee {
       emInDienstDat: emInDienstDat,
       photo: photo,
       emIdNr: emIdNr,
+      response: '',
+      valid: true,
     );
   }
 }

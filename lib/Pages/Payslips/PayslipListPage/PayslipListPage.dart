@@ -5,6 +5,7 @@ import 'package:rainbow_app/Backend/APIS/PayslipService.dart';
 import 'package:rainbow_app/Backend/Models/DateInfo.dart';
 import 'package:rainbow_app/Components/Tiles/PayslipTile.dart';
 
+import '../../../Backend/APIS/UserEmployeeService.dart';
 import '../../../Backend/Models/Payslip.dart';
 import '../../../Components/Navigation.dart';
 import '../../../Theme/ThemeColor.dart';
@@ -28,12 +29,13 @@ class _PayslipListPageState extends State<PayslipListPage> {
   List<int> years = [];
   int year = DateTime.now().year;
   bool _isLoading = false;
+  String message = "";
 
   @override
   void initState() {
     super.initState();
-    setList(2022);
-    setYearList();
+    setList(year);
+    setEmployeeYears();
   }
 
   @override
@@ -44,6 +46,7 @@ class _PayslipListPageState extends State<PayslipListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: RainbowColor.secondary,
         appBar: AppBar(
           elevation: 2,
           foregroundColor: RainbowColor.primary_1,
@@ -89,42 +92,56 @@ class _PayslipListPageState extends State<PayslipListPage> {
                 backgroundColor: RainbowColor.secondary,
                 color: RainbowColor.primary_1,
                 onRefresh: refresh,
-                child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: payslipList.isEmpty
-                        ? Column(children: [
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Center(
-                                child: Column(children: [
-                              const Icon(
-                                size: 100,
-                                Icons.list_alt_outlined,
-                                color: RainbowColor.hint,
-                              ),
-                              Text(
-                                AppLocalizations.of(context)!.noPayslipsFound,
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 18,
-                                    fontFamily: RainbowTextStyle.fontFamily),
-                              )
-                            ])),
-                            const SizedBox(
-                              height: 6,
-                            ),
-                          ])
-                        : ListView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: listLength,
-                            itemBuilder: (BuildContext context, int index) {
-                              return PayslipTile(payslip: payslipList[index]);
-                            })),
-              )
-            : const Center(
-                child: CircularProgressIndicator(),
+                child: Container(
+                    color: RainbowColor.secondary,
+                    child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: payslipList.isEmpty
+                            ? Column(children: [
+                                const SizedBox(
+                                  height: 25,
+                                ),
+                                Center(
+                                    child: Column(children: [
+                                  const Icon(
+                                    size: 100,
+                                    Icons.list_alt_outlined,
+                                    color: RainbowColor.hint,
+                                  ),
+                                  Text(
+                                    AppLocalizations.of(context)!
+                                        .noPayslipsFound,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 18,
+                                        fontFamily:
+                                            RainbowTextStyle.fontFamily),
+                                  ),
+                                  Text(
+                                    message.isNotEmpty
+                                        ? "(" + message + ")"
+                                        : "",
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 18,
+                                        fontFamily:
+                                            RainbowTextStyle.fontFamily),
+                                  )
+                                ])),
+                                const SizedBox(
+                                  height: 6,
+                                ),
+                              ])
+                            : ListView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: listLength,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return PayslipTile(
+                                      payslip: payslipList[index]);
+                                }))))
+            : Center(
+                child: CircularProgressIndicator(color: RainbowColor.primary_1),
               ));
   }
 
@@ -139,15 +156,43 @@ class _PayslipListPageState extends State<PayslipListPage> {
     payslipRequestModel = PayslipRequestModel(year: year);
     payslipService.getList(payslipRequestModel).then((value) {
       setState(() {
-        payslipList = value!;
-        listLength = payslipList.length;
-        _isLoading = true;
+        if (value != null) {
+          if (value.length == 1) {
+            if (value.first.valid) {
+              payslipList = value;
+              listLength = payslipList.length;
+              _isLoading = true;
+            } else {
+              message = value.first.response!;
+              _isLoading = true;
+            }
+          } else {
+            payslipList = value;
+            listLength = payslipList.length;
+            _isLoading = true;
+          }
+        }
       });
     });
   }
 
-  void setYearList() {
-    for (int i = 0; i <= 5; i++) {
+  void setEmployeeYears() {
+    UserEmployeeService service = UserEmployeeService();
+    service.getEmployeeInfo().then((value) {
+      setState(() {
+        if (value.valid) {
+          if (value.emInDienstDat != null) {
+            final startYear = value.emInDienstDat?.year;
+            int i = year - startYear!;
+            setYearList(i);
+          }
+        }
+      });
+    });
+  }
+
+  void setYearList(int yearsAsEmployee) {
+    for (int i = 0; i <= yearsAsEmployee; i++) {
       years.add(year - i);
     }
   }

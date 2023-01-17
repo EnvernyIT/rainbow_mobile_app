@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:rainbow_app/Backend/APIS/LoginService.dart';
 import 'package:rainbow_app/Backend/Models/LoginModel.dart';
+import 'package:rainbow_app/Pages/Login/LoginPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../Backend/APIS/UserEmployeeService.dart';
 import '../../Backend/Models/UserModel.dart';
 import '../../Components/Tiles/UserProfileTile.dart';
 import '../../Theme/ThemeColor.dart';
+import '../../Theme/ThemeTextStyle.dart';
 import '../../main.dart';
 
 class PincodePage extends StatefulWidget {
@@ -19,6 +23,8 @@ class PincodePage extends StatefulWidget {
 class _PincodePageState extends State<PincodePage> {
   int? i = 1;
   bool isApiCallProcess = false;
+  bool loginSuccessfull = false;
+  String message = "";
 
   @override
   void initState() {
@@ -41,7 +47,10 @@ class _PincodePageState extends State<PincodePage> {
                 const SizedBox(
                   height: 10,
                 ),
-                UserProfileTile()
+                UserProfileTile(
+                  loginSuccessfull: loginSuccessfull,
+                  message: message,
+                )
               ]),
         ));
   }
@@ -60,42 +69,51 @@ class _PincodePageState extends State<PincodePage> {
       LoginRequestModel loginRequestModel = LoginRequestModel(
           url: _url, username: _username, password: _password);
       loginService.login(loginRequestModel).then((value) {
-        LoggedInUser.loggedInUser = UserModel(
-            emId: value.emId,
-            emCode: value.emCode,
-            username: value.username,
-            firstName: value.firstName,
-            lastName: value.lastName,
-            roles: value.roles,
-            departmentCode: value.departmentCode,
-            departmentDescription: value.departmentDescription,
-            jobCode: value.jobCode,
-            jobDescription: value.jobDescription,
-            leaveBalance: value.leaveBalance,
-            selectedRoleId: value.selectedRoleId,
-            token: value.token);
-        LoggedInUser(
-          true,
-          UserModel(
-              emId: value.emId,
-              emCode: value.emCode,
-              username: value.username,
-              firstName: value.firstName,
-              lastName: value.lastName,
-              roles: value.roles,
-              departmentCode: value.departmentCode,
-              departmentDescription: value.departmentDescription,
-              jobCode: value.jobCode,
-              jobDescription: value.jobDescription,
-              leaveBalance: value.leaveBalance,
-              selectedRoleId: value.selectedRoleId,
-              token: value.token),
-        );
-        // LoggedInUser.role = UserRoleModel(value.roles);
-        LoggedInUser.setToken(value.token);
-        setState(() {
-          isApiCallProcess = false;
-        });
+        if (value.valid == true) {
+          setState(() {
+            LoggedInUser.loggedInUser = UserModel(
+                emId: value.emId,
+                emCode: value.emCode,
+                username: value.username,
+                firstName: value.firstName,
+                lastName: value.lastName,
+                roles: value.roles,
+                departmentCode: value.departmentCode,
+                departmentDescription: value.departmentDescription,
+                jobCode: value.jobCode,
+                jobDescription: value.jobDescription,
+                leaveBalance: value.leaveBalance,
+                selectedRoleId: value.selectedRoleId,
+                token: value.token);
+            LoggedInUser(
+              true,
+              UserModel(
+                  emId: value.emId,
+                  emCode: value.emCode,
+                  username: value.username,
+                  firstName: value.firstName,
+                  lastName: value.lastName,
+                  roles: value.roles,
+                  departmentCode: value.departmentCode,
+                  departmentDescription: value.departmentDescription,
+                  jobCode: value.jobCode,
+                  jobDescription: value.jobDescription,
+                  leaveBalance: value.leaveBalance,
+                  selectedRoleId: value.selectedRoleId,
+                  token: value.token),
+            );
+            // LoggedInUser.role = UserRoleModel(value.roles);
+            LoggedInUser.setToken(value.token);
+            isApiCallProcess = false;
+            loginSuccessfull = true;
+          });
+        } else {
+          setState(() {
+            isApiCallProcess = false;
+            loginSuccessfull = false;
+            message = value.response;
+          });
+        }
       });
 
       i = _theme;

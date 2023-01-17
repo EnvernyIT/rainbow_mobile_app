@@ -28,21 +28,16 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   int leaveBalance = 0;
-  Employee employee = Employee();
+  Employee employee = Employee(valid: true);
   bool photoSet = false;
   Uint8List bytes = Uint8List.fromList([]);
+  String message = "";
+  String image = "";
 
   @override
   void initState() {
     super.initState();
     setEmployeeInfo();
-    setPhoto();
-    final photo = employee.photo;
-    if (photo != null) {
-      convertBase64Image(photo.phImage).then((value) {
-        bytes = value;
-      });
-    }
   }
 
   @override
@@ -64,10 +59,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     Container(
                       margin: const EdgeInsets.only(bottom: 20),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: RainbowColor.primary_1),
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(20))),
                       alignment: Alignment.center,
                       child: InkWell(
                         onTap: () {
@@ -76,8 +67,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: CircleAvatar(
                             radius: 65.0,
                             backgroundColor: RainbowColor.primary_1,
-                            child: photoSet
-                                ? Image.memory(bytes)
+                            child: image.isNotEmpty
+                                ? Image.memory(
+                                    base64Decode(image),
+                                    fit: BoxFit.fill,
+                                  )
                                 : Image.asset(
                                     'assets/images/blank-profile.png')),
                       ),
@@ -186,7 +180,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     RTextField(
                       title: AppLocalizations.of(context)!.roles,
                       data_1:
-                          LoggedInUser.loggedInUser?.roles?[0].roleName ?? "",
+                          LoggedInUser.loggedInUser?.roles?[0].roleName ?? "s",
                       fontSize: 17.0,
                       color_1: RainbowColor.primary_1,
                     ),
@@ -257,34 +251,29 @@ class _ProfilePageState extends State<ProfilePage> {
     UserEmployeeService service = UserEmployeeService();
     service.getEmployeeInfo().then((value) {
       setState(() {
-        employee = value;
+        if (value.valid) {
+          employee = value;
+          if (employee.photo != null) {
+            photoSet = true;
+            if (employee.photo?.phImage != null) {
+              image = employee.photo?.phImage ?? "";
+            }
+          }
+        } else {
+          message = value.response ?? "";
+          SnackBar snackBar = SnackBar(
+            duration: const Duration(seconds: 8),
+            content: Text(message),
+            backgroundColor: Colors.redAccent,
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
       });
     });
     service.getLeaveBalance().then((value) {
-      leaveBalance = leaveBalance + value;
-    });
-  }
-
-  void setPhoto() {
-    if (employee.photo != null) if (employee.photo != null) {
       setState(() {
-        photoSet = true;
+        leaveBalance = leaveBalance + value;
       });
-    }
-  }
-
-//   Image imageFromBase64String(String base64String) {
-//         Uint8List bytes = BASE64.decode(base64String);
-
-//   return Image.memory(base64Decode(base64String));
-// }
-
-  Future<Uint8List> convertBase64Image(String? base64String) async {
-    // return const Base64Decoder().convert(base64String.split(',').last);
-    String base = base64String ?? "";
-    final path = (await getExternalStorageDirectory())?.path;
-    File file =
-        await File('$path/profile_image').writeAsBytes(base64.decode(base));
-    return file.readAsBytesSync();
+    });
   }
 }

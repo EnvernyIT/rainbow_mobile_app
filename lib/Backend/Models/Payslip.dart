@@ -1,8 +1,8 @@
 import 'dart:convert';
+import 'dart:typed_data'; //Bundled with Dart
 
 import 'package:flutter/services.dart';
 import 'package:rainbow_app/Backend/Models/Employee.dart';
-import 'dart:typed_data'; //Bundled with Dart
 
 import 'UserModel.dart';
 
@@ -36,8 +36,8 @@ class Payslip {
   String? fuCode;
   String? fuOmschrijving;
   String? emLoonType;
-  double? emPerLoon;
-  double? emUurLoon;
+  num? emPerLoon;
+  num? emUurLoon;
   String? btType1;
   String? btOmschrijving1;
   String? hsRekening1;
@@ -45,7 +45,7 @@ class Payslip {
   double? hsBedrag1;
   String? hsVaCode1;
   String? beTaalLoonslip;
-  double? hsVacantieSaldo;
+  num? hsVacantieSaldo;
   num? debet;
   String? loOmschrijving;
   int? loCode;
@@ -67,7 +67,7 @@ class Payslip {
   double? hmCumVa;
   double? hmCumBedrag;
   String? hmActief;
-  double? hsDagLoon;
+  num? hsDagLoon;
   int? hsUrenPerWeek;
   String? wtCode;
   String? beVaCode;
@@ -76,77 +76,82 @@ class Payslip {
   String? orderBy;
   String? applicationName;
   String? historical;
+  String? response;
+  bool valid;
 
-  Payslip(
-      {beCode,
-      beNaam,
-      beAdres,
-      beLand,
-      peDatumVan,
-      peDatumTm,
-      vaCode,
-      klant,
-      emCode,
-      employeeNaam,
-      emId,
-      emIdNr,
-      emNaam,
-      emVoornaam,
-      emAdres,
-      emWoonplaats,
-      hsJaar,
-      hsPeriode,
-      emIndienstDat,
-      emUitdienstDat,
-      afCode,
-      afOmschrijving,
-      fiCode,
-      fiOmschrijving,
-      scCode,
-      scOmschrijving,
-      fuCode,
-      fuOmschrijving,
-      emLoonType,
-      emPerLoon,
-      emUurLoon,
-      btType1,
-      btOmschrijving1,
-      hsRekening1,
-      hsBank1,
-      hsBedrag1,
-      hsVaCode1,
-      beTaalLoonslip,
-      hsVacantieSaldo,
-      debet,
-      loOmschrijving,
-      loCode,
-      loType,
-      loKlasse,
-      loSalderend,
-      loVaCode,
-      loNette,
-      loLoonslip,
-      loBijzloon,
-      loBelastbaar,
-      loCalculatie,
-      hmExtraVerw,
-      hmFactor,
-      hmPerBedrag,
-      hmExtraBedrag1,
-      hmBelastVrij,
-      hmRente,
-      hmCumVa,
-      hmCumBedrag,
-      hmActief,
-      hsDagLoon,
-      hsUrenPerWeek,
-      wtCode,
-      beVaCode,
-      beTelefoon,
-      logo,
-      orderBy,
-      applicationName,
-      historical});
+  Payslip({
+    this.beCode,
+    this.beNaam,
+    this.beAdres,
+    this.beLand,
+    this.peDatumVan,
+    this.peDatumTm,
+    this.vaCode,
+    this.klant,
+    this.emCode,
+    this.employeeNaam,
+    this.emId,
+    this.emIdNr,
+    this.emNaam,
+    this.emVoornaam,
+    this.emAdres,
+    this.emWoonplaats,
+    this.hsJaar,
+    this.hsPeriode,
+    this.emIndienstDat,
+    this.emUitdienstDat,
+    this.afCode,
+    this.afOmschrijving,
+    this.fiCode,
+    this.fiOmschrijving,
+    this.scCode,
+    this.scOmschrijving,
+    this.fuCode,
+    this.fuOmschrijving,
+    this.emLoonType,
+    this.emPerLoon,
+    this.emUurLoon,
+    this.btType1,
+    this.btOmschrijving1,
+    this.hsRekening1,
+    this.hsBank1,
+    this.hsBedrag1,
+    this.hsVaCode1,
+    this.beTaalLoonslip,
+    this.hsVacantieSaldo,
+    this.debet,
+    this.loOmschrijving,
+    this.loCode,
+    this.loType,
+    this.loKlasse,
+    this.loSalderend,
+    this.loVaCode,
+    this.loNette,
+    this.loLoonslip,
+    this.loBijzloon,
+    this.loBelastbaar,
+    this.loCalculatie,
+    this.hmExtraVerw,
+    this.hmFactor,
+    this.hmPerBedrag,
+    this.hmExtraBedrag1,
+    this.hmBelastVrij,
+    this.hmRente,
+    this.hmCumVa,
+    this.hmCumBedrag,
+    this.hmActief,
+    this.hsDagLoon,
+    this.hsUrenPerWeek,
+    this.wtCode,
+    this.beVaCode,
+    this.beTelefoon,
+    this.logo,
+    this.orderBy,
+    this.applicationName,
+    this.historical,
+    this.response,
+    required this.valid,
+  });
 
   String fromFileJson(List<dynamic> json) {
     return json[0].toString();
@@ -160,7 +165,8 @@ class Payslip {
         for (int i = 0; i <= data.length - 1; i++) {
           // Payslip payslip = Payslip.fromJson(json[i]);
           if (data[i]['loCode'] == 9997) {
-            Payslip payslip = Payslip();
+            Payslip payslip = Payslip(valid: true);
+            payslip.response = "";
             payslip.beCode = data[i]['beCode'] as int;
             payslip.beNaam = data[i]['beNaam'] as String;
             payslip.beAdres = data[i]['beAdres'] as String;
@@ -232,7 +238,8 @@ class Payslip {
             payslip.orderBy = data[i]['orderBy'] as String;
             payslip.applicationName = data[i]['applicationName'] as String;
             payslip.historical = data[i]['historical'] as String;
-
+            payslip.valid = true;
+            payslip.response = "";
             payslips.add(payslip);
           }
         }
@@ -314,81 +321,81 @@ class Payslip {
     final historical = json['historical'] as String;
 
     return Payslip(
-        beCode: beCode,
-        beNaam: beNaam,
-        beAdres: beAdres,
-        beLand: beLand,
-        peDatumVan: peDatumVan,
-        peDatumTm: peDatumTm,
-        vaCode: vaCode,
-        klant: klant,
-        emCode: emCode,
-        employeeNaam: employeeNaam,
-        emId: emId,
-        emIdNr: emIdNr,
-        emNaam: emNaam,
-        emVoornaam: emVoornaam,
-        emAdres: emAdres,
-        emWoonplaats: emWoonplaats,
-        hsJaar: hsJaar,
-        hsPeriode: hsPeriode,
-        emIndienstDat: emIndienstDat,
-        // emUitdienstDat: emUitdienstDat,
-        afCode: afCode,
-        afOmschrijving: afOmschrijving,
-        fiCode: fiCode,
-        fiOmschrijving: fiOmschrijving,
-        scCode: scCode,
-        scOmschrijving: scOmschrijving,
-        fuCode: fuCode,
-        fuOmschrijving: fuOmschrijving,
-        emLoonType: emLoonType,
-        emPerLoon: emPerLoon,
-        emUurLoon: emUurLoon,
-        btType1: btType1,
-        btOmschrijving1: btOmschrijving1,
-        hsRekening1: hsRekening1,
-        hsBank1: hsBank1,
-        hsBedrag1: hsBedrag1,
-        hsVaCode1: hsVaCode1,
-        beTaalLoonslip: beTaalLoonslip,
-        hsVacantieSaldo: hsVacantieSaldo,
-        debet: debet,
-        loOmschrijving: loOmschrijving,
-        loCode: loCode,
-        loType: loType,
-        loKlasse: loKlasse,
-        loSalderend: loSalderend,
-        loVaCode: loVaCode,
-        loNette: loNette,
-        loLoonslip: loLoonslip,
-        loBijzloon: loBijzloon,
-        loBelastbaar: loBelastbaar,
-        loCalculatie: loCalculatie,
-        hmExtraVerw: hmExtraVerw,
-        hmFactor: hmFactor,
-        hmPerBedrag: hmPerBedrag,
-        // hmExtraBedrag1: hmExtraBedrag1,
-        // hmBelastVrij: hmBelastVrij,
-        // hmRente: hmRente,
-        // hmCumVa: hmCumVa,
-        // hmCumBedrag: hmCumBedrag,
-        hmActief: hmActief,
-        hsDagLoon: hsDagLoon,
-        hsUrenPerWeek: hsUrenPerWeek,
-        wtCode: wtCode,
-        beVaCode: beVaCode,
-        beTelefoon: beTelefoon,
-        logo: logo,
-        orderBy: orderBy,
-        applicationName: applicationName,
-        historical: historical);
+      beCode: beCode,
+      beNaam: beNaam,
+      beAdres: beAdres,
+      beLand: beLand,
+      peDatumVan: peDatumVan,
+      peDatumTm: peDatumTm,
+      vaCode: vaCode,
+      klant: klant,
+      emCode: emCode,
+      employeeNaam: employeeNaam,
+      emId: emId,
+      emIdNr: emIdNr,
+      emNaam: emNaam,
+      emVoornaam: emVoornaam,
+      emAdres: emAdres,
+      emWoonplaats: emWoonplaats,
+      hsJaar: hsJaar,
+      hsPeriode: hsPeriode,
+      emIndienstDat: emIndienstDat,
+      // emUitdienstDat: emUitdienstDat,
+      afCode: afCode,
+      afOmschrijving: afOmschrijving,
+      fiCode: fiCode,
+      fiOmschrijving: fiOmschrijving,
+      scCode: scCode,
+      scOmschrijving: scOmschrijving,
+      fuCode: fuCode,
+      fuOmschrijving: fuOmschrijving,
+      emLoonType: emLoonType,
+      emPerLoon: emPerLoon,
+      emUurLoon: emUurLoon,
+      btType1: btType1,
+      btOmschrijving1: btOmschrijving1,
+      hsRekening1: hsRekening1,
+      hsBank1: hsBank1,
+      hsBedrag1: hsBedrag1,
+      hsVaCode1: hsVaCode1,
+      beTaalLoonslip: beTaalLoonslip,
+      hsVacantieSaldo: hsVacantieSaldo,
+      debet: debet,
+      loOmschrijving: loOmschrijving,
+      loCode: loCode,
+      loType: loType,
+      loKlasse: loKlasse,
+      loSalderend: loSalderend,
+      loVaCode: loVaCode,
+      loNette: loNette,
+      loLoonslip: loLoonslip,
+      loBijzloon: loBijzloon,
+      loBelastbaar: loBelastbaar,
+      loCalculatie: loCalculatie,
+      hmExtraVerw: hmExtraVerw,
+      hmFactor: hmFactor,
+      hmPerBedrag: hmPerBedrag,
+      // hmExtraBedrag1: hmExtraBedrag1,
+      // hmBelastVrij: hmBelastVrij,
+      // hmRente: hmRente,
+      // hmCumVa: hmCumVa,
+      // hmCumBedrag: hmCumBedrag,
+      hmActief: hmActief,
+      hsDagLoon: hsDagLoon,
+      hsUrenPerWeek: hsUrenPerWeek,
+      wtCode: wtCode,
+      beVaCode: beVaCode,
+      beTelefoon: beTelefoon,
+      logo: logo,
+      orderBy: orderBy,
+      applicationName: applicationName,
+      historical: historical,
+      response: '', valid: true,
+    );
   }
 }
 
 class PayslipRequestModel {
-  String url = "http://10.0.2.2:8080/module.web/rest/api/v1/payslip/list";
-  String urlFile = "http://10.0.2.2:8080/module.web/rest/api/v1/payslip/get";
   String? token = LoggedInUser.loggedInUser!.token;
   int? year;
   int? period;

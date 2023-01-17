@@ -1,7 +1,7 @@
 {
     "welcome": "Welcome",
     "url": "URL",
-    "giveLink": "Give a link!",
+    "giveLink": "URL is required!",
     "giveUsername": "Give your username!",
     "username": "Username",
     "password": "Password",
@@ -99,5 +99,11 @@
     "incorrectDate": "Incorrect date!",
     "downloadAndRead": "Download & read",
     "listIsEmpty" : "List is empty!",
-    "noPayslipReadOrDownload" : "Cannot read or download empty payslip!"
+    "noPayslipReadOrDownload" : "Cannot read or download empty payslip!",
+    "reason": "Reason:",
+    "backToLogin" : "Back to login",
+    "buttonDisabled" : "Button has been disabled. Login again",
+    "noAbsencesFound" : "No absences found!",
+    "notLoggedIn" : "Not logged in!",
+    "pleaseGoToLogin" : "Please go back to login"
 }

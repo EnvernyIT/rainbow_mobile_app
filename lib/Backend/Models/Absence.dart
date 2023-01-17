@@ -21,6 +21,8 @@ class Absence {
   String? systemGenerated;
   int? numberOfLeaveDays;
   bool? lockedTimeKeeping;
+  String? response;
+  bool valid;
 
   Absence({
     this.uaId,
@@ -36,13 +38,15 @@ class Absence {
     this.systemGenerated,
     this.numberOfLeaveDays,
     this.lockedTimeKeeping,
+    this.response,
+    required this.valid,
   });
 
   List<Absence> getAbsenceList(List<dynamic> json) {
     List<Absence> absences = [];
 
     for (int i = 0; i <= json.length - 1; i++) {
-      Absence absence = Absence();
+      Absence absence = Absence(valid: true);
       absence.uaId = json[i]['uaId'] as int;
 
       //Hourtype
@@ -104,7 +108,8 @@ class Absence {
       absence.systemGenerated = json[i]['systemGenerated'] as String;
       absence.numberOfLeaveDays = json[i]['numberOfLeavedays'] as int;
       absence.lockedTimeKeeping = json[i]['lockedTimeKeeping'] as bool;
-
+      absence.response = "";
+      absence.valid = true;
       absences.add(absence);
     }
 
@@ -202,15 +207,12 @@ class Absence {
       // employee: employee,
       systemGenerated: systemGenerated,
       numberOfLeaveDays: numberOfLeaveDays,
-      lockedTimeKeeping: lockedTimeKeeping,
+      lockedTimeKeeping: lockedTimeKeeping, response: "", valid: true,
     );
   }
 }
 
 class AbsenceRequest {
-  String urlRequest =
-      "http://10.0.2.2:8080/module.web/rest/api/v1/hour/request";
-  String urlList = "http://10.0.2.2:8080/module.web/rest/api/v1/hour/list";
   int? usId;
   String? dateFrom;
   String? dateTo;

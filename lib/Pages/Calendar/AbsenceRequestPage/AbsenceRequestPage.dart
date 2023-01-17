@@ -314,25 +314,40 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
           typeFile: fileName,
         );
         AbsenceService service = AbsenceService();
-        Absence absence = Absence();
+        Absence absence = Absence(valid: true);
         if (fromDate
                 .isAfter(DateTime.now().subtract(const Duration(days: 1))) ||
             toDate.isAfter(DateTime.now().subtract(const Duration(days: 1)))) {
           service.request(absenceRequest)?.then((value) {
-            absence = value;
-            clearAll();
-            SnackBar snackBar = SnackBar(
-              content: Text(AppLocalizations.of(context)!.requestSuccesfull),
-              backgroundColor: Colors.green,
-            );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => AbsenceInfoPage(
-                        absence: absence,
-                      )),
-            );
+            if (value.valid) {
+              absence = value;
+              clearAll();
+              SnackBar snackBar = SnackBar(
+                content: Text(AppLocalizations.of(context)!.requestSuccesfull),
+                backgroundColor: Colors.green,
+              );
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => AbsenceInfoPage(
+                          absence: absence,
+                        )),
+              );
+            } else {
+              SnackBar snackBar = SnackBar(
+                content: SizedBox(
+                    height: 40,
+                    child: Column(children: [
+                      Text(AppLocalizations.of(context)!.requestUnsuccesfull),
+                      Text(AppLocalizations.of(context)!.reason +
+                          " " +
+                          value.response!),
+                    ])),
+                backgroundColor: Colors.red,
+              );
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
           });
         } else {
           SnackBar snackBar = SnackBar(
