@@ -105,5 +105,9 @@
     "buttonDisabled" : "Button has been disabled. Login again",
     "noAbsencesFound" : "No absences found!",
     "notLoggedIn" : "Not logged in!",
-    "pleaseGoToLogin" : "Please go back to login"
+    "pleaseGoToLogin" : "Please go back to login",
+    "error" : "Error",
+    "cantDownload" : "Cannot download",
+    "accessDenied" : "Access denied",
+    "urlExample" : "Url wrong. Example: https://rainbow.com/example"
 }

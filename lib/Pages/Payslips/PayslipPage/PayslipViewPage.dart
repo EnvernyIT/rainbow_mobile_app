@@ -13,6 +13,7 @@ import 'dart:typed_data';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 // import 'package:advance_pdf_viewer/advance_pdf_viewer.dart';
 
+import '../../../Backend/Constants/ConstantUtil.dart';
 import '../../../Backend/Models/Payslip.dart';
 import '../../../Components/Navigation.dart';
 import '../../../Theme/ThemeTextStyle.dart';
@@ -26,6 +27,7 @@ class PayslipViewPage extends StatefulWidget {
 }
 
 class _PayslipViewPageState extends State<PayslipViewPage> {
+  String errorMessage = "";
   @override
   void initState() {
     super.initState();
@@ -53,8 +55,41 @@ class _PayslipViewPageState extends State<PayslipViewPage> {
                     period: widget.payslip.hsPeriode);
                 String bytes =
                     await service.getPayslipFile(payslipRequestModel);
-
-                _createPdf(bytes, filepath);
+                if (bytes == ConstantUtil.TOKEN_EXPIRED ||
+                    bytes == ConstantUtil.TOKEN_EXPIRED ||
+                    bytes == ConstantUtil.TOKEN_EXPIRED ||
+                    bytes == ConstantUtil.TOKEN_EXPIRED ||
+                    bytes == ConstantUtil.TOKEN_EXPIRED ||
+                    bytes == ConstantUtil.TOKEN_EXPIRED ||
+                    bytes == ConstantUtil.TOKEN_EXPIRED ||
+                    bytes == ConstantUtil.TOKEN_EXPIRED ||
+                    bytes == ConstantUtil.TOKEN_EXPIRED) {
+                  errorMessage = bytes;
+                  SnackBar snackBar = SnackBar(
+                    content: SizedBox(
+                        height: 40,
+                        child: Column(children: [
+                          Text(
+                            AppLocalizations.of(context)!.cantDownload,
+                            style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                          Text(
+                            AppLocalizations.of(context)!.error +
+                                ": " +
+                                errorMessage,
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.white),
+                          ),
+                        ])),
+                    backgroundColor: Colors.redAccent,
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                } else {
+                  _createPdf(bytes, filepath);
+                }
               },
               icon: Icon(
                 Icons.download_outlined,

@@ -2,7 +2,7 @@ import 'package:rainbow_app/Backend/Constants/ConstantUtil.dart';
 import 'package:rainbow_app/Backend/Models/Role.dart';
 
 class LoginResponseModel {
-  bool? valid;
+  bool valid;
   String? emId;
   String? emCode;
   String? username;
@@ -20,7 +20,7 @@ class LoginResponseModel {
   String response;
 
   LoginResponseModel({
-    this.valid,
+    required this.valid,
     this.emId,
     this.emCode,
     this.username,

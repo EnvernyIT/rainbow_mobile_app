@@ -34,6 +34,8 @@ class _UserProfileTileState extends State<UserProfileTile> {
   String message = "";
   bool photoSet = false;
   String image = "";
+  bool accessGranted = false;
+  String errorMessage = "";
 
   @override
   void dispose() {
@@ -179,11 +181,34 @@ class _UserProfileTileState extends State<UserProfileTile> {
           ),
           TextButton.icon(
               onPressed: () {
+                checkAccess().then((value) => accessGranted = value);
                 if (widget.loginSuccessfull) {
-                  if (GetStorage("data").read("pin") != null) {
-                    if (pin.text == GetStorage("data").read("pin")) {
+                  if (accessGranted) {
+                    if (GetStorage("data").read("pin") != null) {
+                      if (pin.text == GetStorage("data").read("pin")) {
+                        SnackBar snackBar = SnackBar(
+                          content:
+                              Text(AppLocalizations.of(context)!.correctPin),
+                          backgroundColor: Colors.green,
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const DashboardPage()),
+                        );
+                      } else {
+                        SnackBar snackBar = SnackBar(
+                          content:
+                              Text(AppLocalizations.of(context)!.incorrectPin),
+                          backgroundColor: Colors.redAccent,
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      }
+                    } else {
+                      GetStorage("data").write("pin", pin.text);
                       SnackBar snackBar = SnackBar(
-                        content: Text(AppLocalizations.of(context)!.correctPin),
+                        content: Text(AppLocalizations.of(context)!.pinSaved),
                         backgroundColor: Colors.green,
                       );
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -192,26 +217,30 @@ class _UserProfileTileState extends State<UserProfileTile> {
                         MaterialPageRoute(
                             builder: (context) => const DashboardPage()),
                       );
-                    } else {
-                      SnackBar snackBar = SnackBar(
-                        content:
-                            Text(AppLocalizations.of(context)!.incorrectPin),
-                        backgroundColor: Colors.redAccent,
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     }
                   } else {
-                    GetStorage("data").write("pin", pin.text);
                     SnackBar snackBar = SnackBar(
-                      content: Text(AppLocalizations.of(context)!.pinSaved),
-                      backgroundColor: Colors.green,
+                      content: SizedBox(
+                          height: 40,
+                          child: Column(children: [
+                            Text(
+                              AppLocalizations.of(context)!.accessDenied,
+                              style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                            Text(
+                              AppLocalizations.of(context)!.error +
+                                  ": " +
+                                  errorMessage,
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.white),
+                            ),
+                          ])),
+                      backgroundColor: Colors.redAccent,
                     );
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const DashboardPage()),
-                    );
                   }
                 } else {
                   SnackBar snackBar = SnackBar(
@@ -336,5 +365,31 @@ class _UserProfileTileState extends State<UserProfileTile> {
         }
       });
     });
+  }
+
+  Future<bool> checkAccess() async {
+    try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      var _url = preferences.getString("url") ?? "";
+      var _username = preferences.getString("username") ?? "";
+      var _password = preferences.getString("password") ?? "";
+      var _langCode = preferences.getString("language") ?? "English";
+      var _theme = preferences.getInt("theme");
+
+      LoginService loginService = LoginService();
+      LoginRequestModel loginRequestModel = LoginRequestModel(
+          url: _url, username: _username, password: _password);
+      loginService.login(loginRequestModel).then((value) {
+        if (value.valid && value.response.isEmpty) {
+          return true;
+        } else {
+          errorMessage = value.response;
+          return false;
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
+    return false;
   }
 }

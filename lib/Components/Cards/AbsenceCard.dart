@@ -17,7 +17,6 @@ class AbsenceCard extends StatelessWidget {
     int leaveBalance = 0;
     userEmployeeService.getLeaveBalance().then((value) {
       leaveBalance = leaveBalance + value;
-      print(value);
     });
     return Container(
       decoration: BoxDecoration(

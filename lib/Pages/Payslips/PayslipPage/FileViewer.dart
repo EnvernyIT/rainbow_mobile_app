@@ -38,7 +38,8 @@ class _FileViewerState extends State<FileViewer> {
   Widget build(BuildContext context) {
     final PdfViewerController _pdfViewerController = PdfViewerController();
     final GlobalKey<SfPdfViewerState> _pdfViewerStateKey = GlobalKey();
-    return SfPdfViewer.file(
+    return Scaffold(
+        body: SfPdfViewer.file(
       widget.payslip,
       pageLayoutMode: PdfPageLayoutMode.single,
       enableDoubleTapZooming: true,
@@ -47,6 +48,6 @@ class _FileViewerState extends State<FileViewer> {
       canShowScrollHead: false,
       canShowScrollStatus: false,
       canShowPaginationDialog: false,
-    );
+    ));
   }
 }

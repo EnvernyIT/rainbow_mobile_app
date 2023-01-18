@@ -113,6 +113,10 @@ class _LoginPageState extends State<LoginPage> {
                       if (input == null || input.isEmpty) {
                         return AppLocalizations.of(context)!.giveLink;
                       }
+                      if (!input.startsWith("https:") ||
+                          !input.startsWith("http:")) {
+                        return AppLocalizations.of(context)!.wrongHereExample;
+                      }
                       return null;
                     },
                     decoration: InputDecoration(

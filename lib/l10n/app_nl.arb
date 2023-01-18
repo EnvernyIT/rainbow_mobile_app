@@ -105,5 +105,9 @@
     "buttonDisabled" : "Button has been disabled. Login again",
     "noAbsencesFound" : "No absences found!",
     "notLoggedIn" : "Niet ingelogd!",
-    "pleaseGoToLogin" : "Ga terug naar het inlogscherm!"
+    "pleaseGoToLogin" : "Ga terug naar het inlogscherm!",
+    "error" : "Foutmelding",
+    "cantDownload" : "Kan niet downloaden",
+    "accessDenied" : "Toegang geweigerd",
+    "urlExample" : "Url klopt niet. Example: https://rainbow.com/example"
 }
