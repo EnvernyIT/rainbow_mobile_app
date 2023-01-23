@@ -1,7 +1,8 @@
 class ConstantUtil {
   static const String CHECK_AGAIN = "Check again";
   static const String NO_INTERNET = "No internet or Server is down!";
-  static const String SERVICE_UNAVAILABLE = "503 - Service Unavailable";
+  static const String SERVICE_UNAVAILABLE =
+      "503 - Service Unavailable. Check Server or relogin";
   static const String BAD_REQUEST = "400 - Bad Request";
   static const String URL_NOT_VALID = "URL not valid";
   static const String FORBIDDEN = "404 - Forbidden";

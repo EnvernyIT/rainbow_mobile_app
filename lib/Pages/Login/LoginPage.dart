@@ -115,7 +115,7 @@ class _LoginPageState extends State<LoginPage> {
                       }
                       if (!input.startsWith("https:") ||
                           !input.startsWith("http:")) {
-                        return AppLocalizations.of(context)!.wrongHereExample;
+                        return AppLocalizations.of(context)!.urlExample;
                       }
                       return null;
                     },
