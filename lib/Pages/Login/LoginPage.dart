@@ -112,10 +112,10 @@ class _LoginPageState extends State<LoginPage> {
                     validator: (input) {
                       if (input == null || input.isEmpty) {
                         return AppLocalizations.of(context)!.giveLink;
-                      }
-                      if (!input.startsWith("https:") ||
-                          !input.startsWith("http:")) {
-                        return AppLocalizations.of(context)!.urlExample;
+                      } else {
+                        if (!input.startsWith("http:")) {
+                          return AppLocalizations.of(context)!.urlExample;
+                        }
                       }
                       return null;
                     },
