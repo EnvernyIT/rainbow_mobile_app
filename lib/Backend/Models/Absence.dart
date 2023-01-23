@@ -1,8 +1,3 @@
-import 'dart:ffi';
-
-import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
-
 import 'Employee.dart';
 import 'HourType.dart';
 import 'Status.dart';
@@ -13,13 +8,13 @@ class Absence {
   Status? status;
   DateTime? usStartDate;
   DateTime? uaEindDat;
-  int? uaAantalUren;
+  double? uaAantalUren;
   String? uaOpmerking;
   String? indOverwrite;
   String? indOpboeking;
   Employee? employee;
   String? systemGenerated;
-  int? numberOfLeaveDays;
+  double? numberOfLeaveDays;
   bool? lockedTimeKeeping;
   String? response;
   bool valid;
@@ -97,7 +92,7 @@ class Absence {
           DateTime.fromMillisecondsSinceEpoch(json[i]['uaEindDat'] as int);
       ;
 
-      absence.uaAantalUren = json[i]['uaAantalUren'] as int;
+      absence.uaAantalUren = json[i]['uaAantalUren'] as double;
       absence.uaOpmerking = json[i]['uaOpmerking'] as String;
       absence.indOverwrite = json[i]['indOverwrite'] as String;
       absence.indOpboeking = json[i]['indOpboeking'] as String;
@@ -106,7 +101,7 @@ class Absence {
       // absence.employee = json[i]['status'] as Employee;
 
       absence.systemGenerated = json[i]['systemGenerated'] as String;
-      absence.numberOfLeaveDays = json[i]['numberOfLeavedays'] as int;
+      absence.numberOfLeaveDays = json[i]['numberOfLeavedays'] as double;
       absence.lockedTimeKeeping = json[i]['lockedTimeKeeping'] as bool;
       absence.response = "";
       absence.valid = true;
@@ -182,7 +177,7 @@ class Absence {
         DateTime.fromMillisecondsSinceEpoch(json[0]['uaEindDat'] as int);
     ;
 
-    final uaAantalUren = json[0]['uaAantalUren'] as int;
+    final uaAantalUren = json[0]['uaAantalUren'] as double;
     final uaOpmerking = json[0]['uaOpmerking'] as String;
     final indOverwrite = json[0]['indOverwrite'] as String;
     final indOpboeking = json[0]['indOpboeking'] as String;
@@ -191,7 +186,7 @@ class Absence {
     // absence.employee = json[i]['status'] as Employee;
 
     final systemGenerated = json[0]['systemGenerated'] as String;
-    final numberOfLeaveDays = json[0]['numberOfLeavedays'] as int;
+    final numberOfLeaveDays = json[0]['numberOfLeavedays'] as double;
     final lockedTimeKeeping = json[0]['lockedTimeKeeping'] as bool;
 
     return Absence(
@@ -207,7 +202,9 @@ class Absence {
       // employee: employee,
       systemGenerated: systemGenerated,
       numberOfLeaveDays: numberOfLeaveDays,
-      lockedTimeKeeping: lockedTimeKeeping, response: "", valid: true,
+      lockedTimeKeeping: lockedTimeKeeping,
+      response: "",
+      valid: true,
     );
   }
 }
@@ -216,7 +213,7 @@ class AbsenceRequest {
   int? usId;
   String? dateFrom;
   String? dateTo;
-  int? uaAantaluren;
+  double? uaAantaluren;
   int? days;
   String? uaOpmerking;
   String? fileBytes;

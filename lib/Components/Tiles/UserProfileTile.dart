@@ -45,6 +45,7 @@ class _UserProfileTileState extends State<UserProfileTile> {
   @override
   void initState() {
     setEmployeePhoto();
+    checkAccess();
     super.initState();
   }
 
@@ -181,7 +182,6 @@ class _UserProfileTileState extends State<UserProfileTile> {
           ),
           TextButton.icon(
               onPressed: () {
-                checkAccess().then((value) => accessGranted = value);
                 if (widget.loginSuccessfull) {
                   if (accessGranted) {
                     if (GetStorage("data").read("pin") != null) {
@@ -242,6 +242,10 @@ class _UserProfileTileState extends State<UserProfileTile> {
                     );
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   }
+
+                  //
+                  //
+                  //
                 } else {
                   SnackBar snackBar = SnackBar(
                     duration: const Duration(seconds: 10),
@@ -367,7 +371,7 @@ class _UserProfileTileState extends State<UserProfileTile> {
     });
   }
 
-  Future<bool> checkAccess() async {
+  Future<void> checkAccess() async {
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       var _url = preferences.getString("url") ?? "";
@@ -380,16 +384,16 @@ class _UserProfileTileState extends State<UserProfileTile> {
       LoginRequestModel loginRequestModel = LoginRequestModel(
           url: _url, username: _username, password: _password);
       loginService.login(loginRequestModel).then((value) {
-        if (value.valid && value.response.isEmpty) {
-          return true;
+        print(value);
+        if (value.valid) {
+          accessGranted = true;
         } else {
           errorMessage = value.response;
-          return false;
+          accessGranted = false;
         }
       });
     } catch (e) {
       print(e);
     }
-    return false;
   }
 }

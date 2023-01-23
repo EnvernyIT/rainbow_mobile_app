@@ -12,7 +12,7 @@ class LoginResponseModel {
   String? departmentDescription;
   String? jobCode;
   String? jobDescription;
-  int? leaveBalance;
+  double? leaveBalance;
   List<Role>? roles;
   String? selectedRoleId;
   String token;
@@ -59,7 +59,7 @@ class LoginResponseModel {
       departmentCode: json['departmentCode'] as String,
       jobCode: json['jobCode'] as String,
       jobDescription: json['jobDescription'] as String,
-      leaveBalance: json['leaveBalance'] as int,
+      leaveBalance: json['leaveBalance'] as double,
       roles: roles,
       response: '',
       success: true,
@@ -80,7 +80,7 @@ class LoginResponseModel {
       final departmentCode = json['departmentCode'] as String;
       final jobCode = json['jobCode'] as String;
       final jobDescription = json['jobDescription'] as String;
-      final leaveBalance = json['leaveBalance'] as int;
+      final leaveBalance = json['leaveBalance'] as double;
 
       List<Role> roles = [];
       for (int i = 0; i <= json['roles'].length - 1; i++) {

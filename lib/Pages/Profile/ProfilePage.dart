@@ -1,17 +1,12 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:rainbow_app/Components/Buttons/Button.dart';
-import 'package:rainbow_app/Components/TextInputs/DropdownTextField.dart';
 
 import '../../Backend/APIS/UserEmployeeService.dart';
 import '../../Backend/Models/Employee.dart';
-import '../../Backend/Models/Role.dart';
 import '../../Backend/Models/UserModel.dart';
 import '../../Components/Navigation.dart';
 import '../../Components/OnlyReadFields/RTextField.dart';
@@ -27,7 +22,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  int leaveBalance = 0;
+  double leaveBalance = 0;
   Employee employee = Employee(valid: true);
   bool photoSet = false;
   Uint8List bytes = Uint8List.fromList([]);
