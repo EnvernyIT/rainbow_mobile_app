@@ -8,16 +8,29 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../Backend/Models/UserModel.dart';
 import '../../Theme/ThemeTextStyle.dart';
 
-class AbsenceCard extends StatelessWidget {
+class AbsenceCard extends StatefulWidget {
   const AbsenceCard({Key? key}) : super(key: key);
 
   @override
+  State<AbsenceCard> createState() => _AbsenceCardState();
+}
+
+class _AbsenceCardState extends State<AbsenceCard> {
+  int leaveBalance = 0;
+
+  @override
+  void initState() {
+    setLeaveBalance();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    UserEmployeeService userEmployeeService = UserEmployeeService();
-    int leaveBalance = 0;
-    userEmployeeService.getLeaveBalance().then((value) {
-      leaveBalance = leaveBalance + value;
-    });
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
@@ -89,12 +102,7 @@ class AbsenceCard extends StatelessWidget {
               Text(
                 leaveBalance.toString() +
                     " " +
-                    AppLocalizations.of(context)!.dayss,
-                //  +
-                // "/" +
-                // daysToHours(userLeaveBalance) +
-                // " " +
-                // AppLocalizations.of(context)!.hours,
+                    AppLocalizations.of(context)!.hours,
                 style: TextStyle(
                     color: Colors.green,
                     fontFamily: RainbowTextStyle.fontFamily,
@@ -112,7 +120,7 @@ class AbsenceCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.sickLeave + ":",
+                  AppLocalizations.of(context)!.saldoInDays + ":",
                   style: TextStyle(
                       color: RainbowColor.primary_1,
                       fontFamily: RainbowTextStyle.fontFamily,
@@ -124,7 +132,7 @@ class AbsenceCard extends StatelessWidget {
                   height: 10,
                 ),
                 Text(
-                  leaveBalance.toString() +
+                  inDays(leaveBalance) +
                       " " +
                       AppLocalizations.of(context)!.dayss,
                   style: TextStyle(
@@ -164,7 +172,24 @@ class AbsenceCard extends StatelessWidget {
     );
   }
 
+  void setLeaveBalance() {
+    UserEmployeeService userEmployeeService = UserEmployeeService();
+    userEmployeeService.getLeaveBalance().then((value) {
+      setState(() {
+        leaveBalance = value;
+      });
+    });
+  }
+
   String daysToHours(int days) {
     return (days * 8).toString();
+  }
+
+  String inDays(int leaveBalance) {
+    if (leaveBalance > 0) {
+      final days = (leaveBalance / 8);
+      return days.toStringAsFixed(2).toString();
+    }
+    return "0";
   }
 }

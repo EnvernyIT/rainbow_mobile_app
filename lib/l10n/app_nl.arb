@@ -69,7 +69,7 @@
     "special": "Bijzonder",
     "tapForSalary": "Tik voor salaris",
     "department": "Afdeling",
-    "tooManyHours": "Je hebt te veel uren gegeven!",
+    "tooManyHours": "Te veel uren!",
     "opensans": "Open Sans",
     "raleway": "Raleway",
     "montserrat": "Montserrat",
@@ -109,5 +109,6 @@
     "error" : "Foutmelding",
     "cantDownload" : "Kan niet downloaden",
     "accessDenied" : "Toegang geweigerd",
-    "urlExample" : "Url klopt niet. Example: https://rainbow.com/example"
+    "urlExample" : "Url klopt niet. Example: https://rainbow.com/example",
+    "saldoInDays" : "Saldo in dagen"
 }

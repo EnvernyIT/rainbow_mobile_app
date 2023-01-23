@@ -20,6 +20,7 @@ import 'package:rainbow_app/Components/Tiles/AbsenceTile.dart';
 import '../../../Backend/APIS/UserEmployeeService.dart';
 import '../../../Components/Buttons/Button.dart';
 import '../../../Components/Navigation.dart';
+import '../../../Components/ProgressHUD.dart';
 import '../../../Components/TextInputs/DropdownTextField.dart';
 import '../../../Components/TextInputs/SmallInputField.dart';
 import '../../../Components/Tiles/Absence2Tile.dart';
@@ -37,6 +38,7 @@ class AbsenceRequestPage extends StatefulWidget {
 }
 
 class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
+  GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
   DateTime fromDate = DateTime.now();
   DateTime toDate = DateTime.now();
   String toDateString = "";
@@ -55,6 +57,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   String fileName = "Choose file";
   List<String> items = [];
   late File image;
+  bool isApiCallProcess = false;
 
   String fileAsString = "";
   // File image;
@@ -73,7 +76,8 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
 
   @override
   Widget build(BuildContext context) {
-    return uiBuild(context);
+    return ProgressHUD(
+        child: uiBuild(context), inAsyncCall: isApiCallProcess, opacity: 0.5);
   }
 
   clearAll() {
@@ -118,162 +122,178 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
             Container(
               padding: const EdgeInsets.all(15),
               child: SingleChildScrollView(
-                  child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.leaveBalance + ": ",
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontFamily: RainbowTextStyle.fontFamily),
-                        ),
-                        Text(
-                          userLeaveBalance.toString() +
-                              " " +
-                              AppLocalizations.of(context)!.hours +
-                              " (" +
-                              userLeaveHoursToDays(userLeaveBalance) +
-                              " " +
-                              AppLocalizations.of(context)!.dayss +
-                              ")",
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontFamily: RainbowTextStyle.fontFamily),
-                        ),
-                      ]),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  InputField(
-                      controller: controller_1,
-                      title: typeDaysRequest == true
-                          ? AppLocalizations.of(context)!.from + ":"
-                          : AppLocalizations.of(context)!.day + ":",
-                      hint: DateFormat.yMd(locale).format(fromDate),
-                      color: _color_1,
-                      widget: IconButton(
-                          onPressed: () {
-                            _getFromDateFromUser(locale);
-                            getDateDifferenceInHours(fromDate, toDate);
-                          },
-                          icon: Icon(
-                            Icons.calendar_today_outlined,
-                            color: RainbowColor.primary_1,
-                          ))),
-                  InputField(
-                      controller: controller_2,
-                      title: AppLocalizations.of(context)!.towith + ":",
-                      hint: toDateString,
-                      color: _color_2,
-                      widget: IconButton(
-                          onPressed: () {
-                            _getToDateFromUser(locale);
-                            getDateDifferenceInHours(fromDate, toDate);
-                          },
-                          icon: Icon(
-                            Icons.calendar_today_outlined,
-                            color: RainbowColor.primary_1,
-                          ))),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            color: RainbowColor.primary_1, width: 1.0),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.only(left: 20, right: 20),
-                      margin: const EdgeInsets.only(bottom: 6),
-                      child: DropdownButton(
-                        value: newValue,
-                        icon: const Padding(
-                            padding: EdgeInsets.only(left: 2),
-                            child: Icon(Icons.arrow_circle_down_sharp)),
-                        iconEnabledColor: RainbowColor.primary_1, //Icon color
-                        style: TextStyle(
-                            color: RainbowColor.primary_1, //Font color
-                            fontSize: 17, //font size on dropdown button
-                            fontFamily: RainbowTextStyle.fontFamily),
-                        dropdownColor:
-                            RainbowColor.secondary, //dropdown background color
-                        underline: Container(), //remove underline
-                        isExpanded: false, //make true to make width 100%
-                        items: items.map((String value) {
-                          return DropdownMenuItem(
-                            value: value,
-                            child: Text(value,
+                  child: Form(
+                      key: globalFormKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Text(
+                                  AppLocalizations.of(context)!.leaveBalance +
+                                      ": ",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: RainbowTextStyle.fontFamily),
+                                ),
+                                Text(
+                                  userLeaveBalance.toString() +
+                                      " " +
+                                      AppLocalizations.of(context)!.hours +
+                                      " | " +
+                                      userLeaveHoursToDays(userLeaveBalance) +
+                                      " " +
+                                      AppLocalizations.of(context)!.dayss,
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: RainbowTextStyle.fontFamily),
+                                ),
+                              ]),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          InputField(
+                              controller: controller_1,
+                              title: typeDaysRequest == true
+                                  ? AppLocalizations.of(context)!.from + ":"
+                                  : AppLocalizations.of(context)!.day + ":",
+                              hint: DateFormat.yMd(locale).format(fromDate),
+                              color: _color_1,
+                              widget: IconButton(
+                                  onPressed: () {
+                                    _getFromDateFromUser(locale);
+                                    getDateDifferenceInHours(fromDate, toDate);
+                                  },
+                                  icon: Icon(
+                                    Icons.calendar_today_outlined,
+                                    color: RainbowColor.primary_1,
+                                  ))),
+                          InputField(
+                              controller: controller_2,
+                              title: AppLocalizations.of(context)!.towith + ":",
+                              hint: toDateString,
+                              color: _color_2,
+                              widget: IconButton(
+                                  onPressed: () {
+                                    _getToDateFromUser(locale);
+                                    getDateDifferenceInHours(fromDate, toDate);
+                                  },
+                                  icon: Icon(
+                                    Icons.calendar_today_outlined,
+                                    color: RainbowColor.primary_1,
+                                  ))),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: RainbowColor.primary_1, width: 1.0),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding:
+                                  const EdgeInsets.only(left: 20, right: 20),
+                              margin: const EdgeInsets.only(bottom: 6),
+                              child: DropdownButton(
+                                value: newValue,
+                                icon: const Padding(
+                                    padding: EdgeInsets.only(left: 2),
+                                    child: Icon(Icons.arrow_circle_down_sharp)),
+                                iconEnabledColor:
+                                    RainbowColor.primary_1, //Icon color
                                 style: TextStyle(
-                                    fontFamily: RainbowTextStyle.fontFamily)),
-                          );
-                        }).toList(),
-                        onChanged: (String? changedValue) {
-                          setState(() {
-                            newValue = changedValue!;
-                          });
-                        },
-                      )),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  SmallInputField(
-                    controller: numberController,
-                    title: AppLocalizations.of(context)!.hours + ":",
-                    keyboardType: TextInputType.number,
-                    width: 100,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  MultiLineInputField(
-                      controller: controller_3,
-                      title: AppLocalizations.of(context)!.description + ":",
-                      hint: AppLocalizations.of(context)!.giveDescription),
-                  Container(
-                      alignment: Alignment.center,
-                      margin: const EdgeInsets.all(3),
-                      child: InkWell(
-                          onTap: () => _chooseTypeOfFile(context),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Icon(
-                                Icons.upload_file,
-                                color: RainbowColor.primary_1,
-                                size: 30,
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              Flexible(
-                                  child: InkWell(
-                                      onTap: () => _chooseTypeOfFile(context),
-                                      child: Text(
-                                        fileName,
+                                    color: RainbowColor.primary_1, //Font color
+                                    fontSize: 17, //font size on dropdown button
+                                    fontFamily: RainbowTextStyle.fontFamily),
+                                dropdownColor: RainbowColor
+                                    .secondary, //dropdown background color
+                                underline: Container(), //remove underline
+                                isExpanded:
+                                    false, //make true to make width 100%
+                                items: items.map((String value) {
+                                  return DropdownMenuItem(
+                                    value: value,
+                                    child: Text(value,
                                         style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w400,
-                                            fontStyle: FontStyle.italic,
-                                            color: Colors.black,
                                             fontFamily:
-                                                RainbowTextStyle.fontFamily),
-                                      )))
-                            ],
-                          ))),
-                  Container(
-                      alignment: Alignment.bottomCenter,
-                      margin: const EdgeInsets.all(10),
-                      child: Button(
-                        label: AppLocalizations.of(context)!.request,
-                        onTap: () {
-                          sendLeaveRequest(userLeaveBalance, context);
-                        },
-                      ))
-                ],
-              )),
+                                                RainbowTextStyle.fontFamily)),
+                                  );
+                                }).toList(),
+                                onChanged: (String? changedValue) {
+                                  setState(() {
+                                    newValue = changedValue!;
+                                  });
+                                },
+                              )),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          SmallInputField(
+                            controller: numberController,
+                            title: AppLocalizations.of(context)!.hours + ":",
+                            keyboardType: TextInputType.number,
+                            width: 100,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          MultiLineInputField(
+                              controller: controller_3,
+                              title: AppLocalizations.of(context)!.description +
+                                  ":",
+                              hint: AppLocalizations.of(context)!
+                                  .giveDescription),
+                          Container(
+                              alignment: Alignment.center,
+                              margin: const EdgeInsets.all(3),
+                              child: InkWell(
+                                  onTap: () => _chooseTypeOfFile(context),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Icon(
+                                        Icons.upload_file,
+                                        color: RainbowColor.primary_1,
+                                        size: 30,
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      Flexible(
+                                          child: InkWell(
+                                              onTap: () =>
+                                                  _chooseTypeOfFile(context),
+                                              child: Text(
+                                                fileName,
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.w400,
+                                                    fontStyle: FontStyle.italic,
+                                                    color: Colors.black,
+                                                    fontFamily: RainbowTextStyle
+                                                        .fontFamily),
+                                              )))
+                                    ],
+                                  ))),
+                          Container(
+                              alignment: Alignment.bottomCenter,
+                              margin: const EdgeInsets.all(10),
+                              child: Button(
+                                label: AppLocalizations.of(context)!.request,
+                                onTap: () {
+                                  if (validateAndSave()) {
+                                    setState(() {
+                                      isApiCallProcess = true;
+                                    });
+                                    sendLeaveRequest(userLeaveBalance, context);
+                                  }
+                                },
+                              ))
+                        ],
+                      ))),
             ),
             Container(
                 color: RainbowColor.secondary,
@@ -334,7 +354,13 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                           absence: absence,
                         )),
               );
+              setState(() {
+                isApiCallProcess = false;
+              });
             } else {
+              setState(() {
+                isApiCallProcess = false;
+              });
               SnackBar snackBar = SnackBar(
                 content: SizedBox(
                     height: 40,
@@ -350,6 +376,9 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
             }
           });
         } else {
+          setState(() {
+            isApiCallProcess = false;
+          });
           SnackBar snackBar = SnackBar(
             content: Text(AppLocalizations.of(context)!.dateNotAllowed),
             backgroundColor: Colors.red,
@@ -357,6 +386,9 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       } else {
+        setState(() {
+          isApiCallProcess = false;
+        });
         SnackBar snackBar = SnackBar(
           content: Text(AppLocalizations.of(context)!.forgotHours),
           backgroundColor: Colors.red,
@@ -364,6 +396,9 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     } else {
+      setState(() {
+        isApiCallProcess = false;
+      });
       SnackBar snackBar = SnackBar(
         content: Text(AppLocalizations.of(context)!.notEnoughLeave),
         backgroundColor: Colors.red,
@@ -634,8 +669,19 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   String userLeaveHoursToDays(int userLeaveBalance) {
     if (userLeaveBalance != 0) {
       double number = (userLeaveBalance / 8);
-      return number.toString();
+      return number.toStringAsFixed(2).toString();
     }
     return "0";
+  }
+
+  bool validateAndSave() {
+    final form = globalFormKey.currentState;
+    if (form != null) {
+      if (form.validate()) {
+        form.save();
+        return true;
+      }
+    }
+    return false;
   }
 }

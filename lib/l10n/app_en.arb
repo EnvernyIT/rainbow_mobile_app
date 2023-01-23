@@ -69,7 +69,7 @@
     "special": "Special",
     "tapForSalary": "Tap for salary",
     "department": "Department",
-    "tooManyHours": "You have given too many hours!",
+    "tooManyHours": "Too many hours!",
     "opensans": "Open Sans",
     "raleway": "Raleway",
     "montserrat": "Montserrat",
@@ -109,5 +109,6 @@
     "error" : "Error",
     "cantDownload" : "Cannot download",
     "accessDenied" : "Access denied",
-    "urlExample" : "Url wrong. Example: https://rainbow.com/example"
+    "urlExample" : "Url wrong. Example: https://rainbow.com/example",
+    "saldoInDays" : "Balance in days"
 }

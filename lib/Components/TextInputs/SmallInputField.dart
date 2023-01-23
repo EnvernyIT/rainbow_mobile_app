@@ -60,7 +60,7 @@ class SmallInputField extends StatelessWidget {
                     textAlign: TextAlign.left,
                     textAlignVertical: TextAlignVertical.center,
                     validator: (input) {
-                      if (int.parse(input!) > 24) {
+                      if (int.parse(input!) >= 24) {
                         return AppLocalizations.of(context)!.tooManyHours;
                       }
                       return null;
@@ -84,12 +84,12 @@ class SmallInputField extends StatelessWidget {
                           color: Colors.black,
                           fontFamily: RainbowTextStyle.fontFamily),
                       focusedBorder: const UnderlineInputBorder(
-                          borderSide: const BorderSide(
+                          borderSide: BorderSide(
                         color: Colors.white,
                         width: 0,
                       )),
                       enabledBorder: const UnderlineInputBorder(
-                          borderSide: const BorderSide(
+                          borderSide: BorderSide(
                         color: Colors.white,
                         width: 0,
                       )),
