@@ -12,10 +12,8 @@ import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:rainbow_app/Backend/APIS/AbsenceService.dart';
 import 'package:rainbow_app/Backend/Models/Absence.dart';
-import 'package:rainbow_app/Backend/Models/UserModel.dart';
 import 'package:rainbow_app/Components/TextInputs/InputField.dart';
 import 'package:rainbow_app/Components/TextInputs/MultiLineInputField.dart';
-import 'package:rainbow_app/Components/Tiles/AbsenceTile.dart';
 
 import '../../../Backend/APIS/UserEmployeeService.dart';
 import '../../../Components/Buttons/Button.dart';
@@ -27,7 +25,6 @@ import '../../../Components/Tiles/Absence2Tile.dart';
 import '../../../Theme/ThemeColor.dart';
 import '../../../Theme/ThemeTextStyle.dart';
 import '../Absence/AbsenceInfoPage.dart';
-import '../AbsenceListPage/AbsenceListPage.dart';
 
 class AbsenceRequestPage extends StatefulWidget {
   const AbsenceRequestPage({Key? key}) : super(key: key);
@@ -50,11 +47,11 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   TextEditingController controller_1 = TextEditingController();
   TextEditingController controller_2 = TextEditingController();
   TextEditingController controller_3 = TextEditingController();
-  int hours = 0;
+  double hours = 0;
   List<Absence> absences = [];
   int listLength = 0;
   String newValue = "";
-  int userLeaveBalance = 0;
+  double userLeaveBalance = 0;
   String fileName = "Choose file";
   List<String> items = [];
   late File image;
@@ -406,7 +403,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
         ));
   }
 
-  void sendLeaveRequest(int userLeaveBalance, BuildContext context) {
+  void sendLeaveRequest(double userLeaveBalance, BuildContext context) {
     if (userLeaveBalance > getDateDifferenceInDays(fromDate, toDate)) {
       if (numberController.text.isNotEmpty) {
         AbsenceRequest absenceRequest = AbsenceRequest(
@@ -421,7 +418,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                       : 1003,
           days: getDateDifferenceInDays(fromDate, toDate),
           uaAantaluren:
-              (fullDay != 3) ? hours : int.parse(numberController.text),
+              (fullDay != 3) ? hours : double.parse(numberController.text),
           uaOpmerking: controller_3.text,
           fileBytes: fileAsString,
           typeFile: fileName,
@@ -759,7 +756,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
     }
   }
 
-  String userLeaveHoursToDays(int userLeaveBalance) {
+  String userLeaveHoursToDays(double userLeaveBalance) {
     if (userLeaveBalance != 0) {
       double number = (userLeaveBalance / 8);
       return number.toStringAsFixed(2).toString();
