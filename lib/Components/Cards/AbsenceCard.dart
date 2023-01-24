@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rainbow_app/Backend/APIS/UserEmployeeService.dart';
-import 'package:rainbow_app/Pages/Calendar/AbsenceListPage/AbsenceListPage.dart';
 import 'package:rainbow_app/Pages/Calendar/AbsenceRequestPage/AbsenceRequestPage.dart';
+import 'package:rainbow_app/Pages/Calendar/AbsenceListPage/AbsenceListPage.dart';
 import 'package:rainbow_app/Theme/ThemeColor.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../Backend/Models/UserModel.dart';
 import '../../Theme/ThemeTextStyle.dart';
 
 class AbsenceCard extends StatefulWidget {

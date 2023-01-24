@@ -1,7 +1,7 @@
 import 'package:rainbow_app/Backend/Constants/ConstantUtil.dart';
 import 'package:rainbow_app/Backend/Models/Role.dart';
 
-class  LoginResponseModel {
+class LoginResponseModel {
   bool valid;
   String? emId;
   String? emCode;
