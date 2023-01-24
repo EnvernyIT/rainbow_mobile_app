@@ -289,7 +289,29 @@ class _UserProfileTileState extends State<UserProfileTile> {
                 style: TextStyle(
                     fontFamily: RainbowTextStyle.fontFamily,
                     color: RainbowColor.primary_1),
-              ))
+              )),
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.error_outline,
+                    size: 20, color: RainbowColor.primary_1),
+                const SizedBox(width: 13),
+                Column(children: [
+                  SizedBox(
+                      height: 90,
+                      width: 250,
+                      child: Text(
+                        "Deze pincode dient voor een directe inlog mogelijkheid. Om bij het inloggen problemen te voorkomen en ook om u als gebruiker niet te hinderen met het continu inloggegevens te tikken.",
+                        style: TextStyle(
+                            color: RainbowColor.primary_1, fontSize: 14),
+                      ))
+                ]),
+              ],
+            ),
+          )
         ]));
   }
 
