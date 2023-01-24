@@ -110,5 +110,6 @@
     "cantDownload" : "Cannot download",
     "accessDenied" : "Access denied",
     "urlExample" : "Url wrong. Example: https://rainbow.com/example",
-    "saldoInDays" : "Balance in days"
+    "saldoInDays" : "Balance in days",
+    "pincodeExplanation" : "This pin code is used for direct login. To prevent problems when logging in and also not to hinder you as a user by continuously entering login details."
 }

@@ -29,7 +29,10 @@ class SmallInputField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       // margin: const EdgeInsets.only(top: 3.0),
-      padding: const EdgeInsets.all(4),
+      margin: const EdgeInsets.only(
+          top: 5.0, bottom: 15.0, left: 17.0, right: 30.0),
+
+      // padding: const EdgeInsets.all(4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -44,15 +47,15 @@ class SmallInputField extends StatelessWidget {
           ),
           Container(
             height: 40,
-            width: width,
+            width: 150,
             margin: const EdgeInsets.only(
-              left: 15.0,
+              left: 37.0,
             ),
             padding: const EdgeInsets.only(left: 14),
-            decoration: BoxDecoration(
-              border: Border.all(color: RainbowColor.primary_1, width: 1.0),
-              borderRadius: BorderRadius.circular(12),
-            ),
+            // decoration: BoxDecoration(
+            //   border: Border.all(color: RainbowColor.primary_1, width: 1.0),
+            //   borderRadius: BorderRadius.circular(12),
+            // ),
             child: Row(
               children: [
                 Expanded(
@@ -71,7 +74,7 @@ class SmallInputField extends StatelessWidget {
                     autofocus: false,
                     controller: controller,
                     style: TextStyle(
-                        fontSize: 17,
+                        fontSize: 18,
                         fontWeight: FontWeight.w400,
                         color: Colors.black,
                         fontStyle: FontStyle.italic,
@@ -79,19 +82,19 @@ class SmallInputField extends StatelessWidget {
                     decoration: InputDecoration(
                       hintText: hint,
                       hintStyle: TextStyle(
-                          fontSize: 17,
+                          fontSize: 18,
                           fontWeight: FontWeight.w400,
                           color: Colors.black,
                           fontFamily: RainbowTextStyle.fontFamily),
-                      focusedBorder: const UnderlineInputBorder(
+                      focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                        color: Colors.white,
-                        width: 0,
+                        color: RainbowColor.primary_1,
+                        width: 1,
                       )),
-                      enabledBorder: const UnderlineInputBorder(
+                      enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                        color: Colors.white,
-                        width: 0,
+                        color: RainbowColor.primary_1,
+                        width: 1,
                       )),
                     ),
                   ),

@@ -25,6 +25,7 @@ class MultiLineInputField extends StatelessWidget {
       margin: const EdgeInsets.only(top: 3.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Text(
             title,
@@ -37,11 +38,12 @@ class MultiLineInputField extends StatelessWidget {
           LayoutBuilder(builder: ((context, constraints) {
             return Container(
               margin: const EdgeInsets.only(top: 8.0, bottom: 10.0),
-              padding: const EdgeInsets.only(left: 14),
-              decoration: BoxDecoration(
-                border: Border.all(color: RainbowColor.primary_1, width: 1.0),
-                borderRadius: BorderRadius.circular(12),
-              ),
+              // padding: const EdgeInsets.only(left: 14),
+              width: width ?? 350,
+              // decoration: BoxDecoration(
+              //   border: Border.all(color: RainbowColor.primary_1, width: 1.0),
+              //   borderRadius: BorderRadius.circular(12),
+              // ),
               child: SizedBox(
                 height: 100,
                 child: TextField(
@@ -49,6 +51,8 @@ class MultiLineInputField extends StatelessWidget {
                   maxLines: null,
                   autofocus: false,
                   controller: controller,
+                  textAlign: TextAlign.end,
+                  textAlignVertical: TextAlignVertical.bottom,
                   style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w400,
@@ -65,12 +69,12 @@ class MultiLineInputField extends StatelessWidget {
                     focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
                       color: RainbowColor.primary_1,
-                      width: 0,
+                      width: 1,
                     )),
-                    enabledBorder: const UnderlineInputBorder(
-                        borderSide: const BorderSide(
-                      color: Colors.white,
-                      width: 0,
+                    enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                      color: RainbowColor.primary_1,
+                      width: 1,
                     )),
                   ),
                 ),
