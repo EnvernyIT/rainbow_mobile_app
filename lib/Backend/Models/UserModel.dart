@@ -10,7 +10,7 @@ class UserModel {
   final String? departmentDescription;
   final String? jobCode;
   final String? jobDescription;
-  final int? leaveBalance;
+  final double? leaveBalance;
   final List<Role>? roles;
   final String? selectedRoleId;
   final String token;
