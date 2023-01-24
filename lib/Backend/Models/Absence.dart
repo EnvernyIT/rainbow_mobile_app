@@ -92,7 +92,7 @@ class Absence {
           DateTime.fromMillisecondsSinceEpoch(json[i]['uaEindDat'] as int);
       ;
 
-      absence.uaAantalUren = json[i]['uaAantalUren'] as double;
+      absence.uaAantalUren =double.tryParse(json[i]['uaAantalUren'].toString());
       absence.uaOpmerking = json[i]['uaOpmerking'] as String;
       absence.indOverwrite = json[i]['indOverwrite'] as String;
       absence.indOpboeking = json[i]['indOpboeking'] as String;
@@ -101,7 +101,7 @@ class Absence {
       // absence.employee = json[i]['status'] as Employee;
 
       absence.systemGenerated = json[i]['systemGenerated'] as String;
-      absence.numberOfLeaveDays = json[i]['numberOfLeavedays'] as double;
+      absence.numberOfLeaveDays =double.tryParse(json[i]['numberOfLeavedays'].toString());
       absence.lockedTimeKeeping = json[i]['lockedTimeKeeping'] as bool;
       absence.response = "";
       absence.valid = true;

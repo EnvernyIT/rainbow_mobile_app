@@ -299,16 +299,13 @@ class _UserProfileTileState extends State<UserProfileTile> {
                 Icon(Icons.error_outline,
                     size: 20, color: RainbowColor.primary_1),
                 const SizedBox(width: 13),
-                Column(children: [
-                  SizedBox(
-                      height: 90,
-                      width: 250,
-                      child: Text(
-                        AppLocalizations.of(context)!.pincodeExplanation,
-                        style: TextStyle(
-                            color: RainbowColor.primary_1, fontSize: 14),
-                      ))
-                ]),
+                Flexible(
+                  child: Text(
+                    AppLocalizations.of(context)!.pincodeExplanation,
+                    style: TextStyle(
+                        color: RainbowColor.primary_1, fontSize: 14),
+                  ),
+                ),
               ],
             ),
           )

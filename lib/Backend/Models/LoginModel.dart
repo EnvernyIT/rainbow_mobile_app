@@ -1,7 +1,7 @@
 import 'package:rainbow_app/Backend/Constants/ConstantUtil.dart';
 import 'package:rainbow_app/Backend/Models/Role.dart';
 
-class LoginResponseModel {
+class  LoginResponseModel {
   bool valid;
   String? emId;
   String? emCode;
@@ -80,7 +80,7 @@ class LoginResponseModel {
       final departmentCode = json['departmentCode'] as String;
       final jobCode = json['jobCode'] as String;
       final jobDescription = json['jobDescription'] as String;
-      final leaveBalance = json['leaveBalance'] as double;
+      final leaveBalance = double.tryParse(json["leaveBalance"].toString());
 
       List<Role> roles = [];
       for (int i = 0; i <= json['roles'].length - 1; i++) {
