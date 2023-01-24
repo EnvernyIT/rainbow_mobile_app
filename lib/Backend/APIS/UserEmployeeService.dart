@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Models/UserModel.dart';
 
 class UserEmployeeService {
-  Future<int> getLeaveBalance() async {
+  Future<double> getLeaveBalance() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     LoginRequestModel requestModel = LoginRequestModel(
         url: preferences.getString("url") ?? "",

@@ -216,7 +216,7 @@ class AbsenceRequest {
   int? usId;
   String? dateFrom;
   String? dateTo;
-  int? uaAantaluren;
+  double? uaAantaluren;
   int? days;
   String? uaOpmerking;
   String? fileBytes;

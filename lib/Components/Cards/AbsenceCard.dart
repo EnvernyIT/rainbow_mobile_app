@@ -16,7 +16,7 @@ class AbsenceCard extends StatefulWidget {
 }
 
 class _AbsenceCardState extends State<AbsenceCard> {
-  int leaveBalance = 0;
+  double leaveBalance = 0;
 
   @override
   void initState() {
@@ -185,7 +185,7 @@ class _AbsenceCardState extends State<AbsenceCard> {
     return (days * 8).toString();
   }
 
-  String inDays(int leaveBalance) {
+  String inDays(double leaveBalance) {
     if (leaveBalance > 0) {
       final days = (leaveBalance / 8);
       return days.toStringAsFixed(2).toString();

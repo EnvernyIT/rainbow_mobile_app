@@ -27,7 +27,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  int leaveBalance = 0;
+  double leaveBalance = 0;
   Employee employee = Employee(valid: true);
   bool photoSet = false;
   Uint8List bytes = Uint8List.fromList([]);
