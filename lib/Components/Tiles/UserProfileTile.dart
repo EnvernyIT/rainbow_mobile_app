@@ -36,6 +36,7 @@ class _UserProfileTileState extends State<UserProfileTile> {
   String image = "";
   bool accessGranted = false;
   String errorMessage = "";
+  String pincode = "";
 
   @override
   void dispose() {
@@ -46,6 +47,7 @@ class _UserProfileTileState extends State<UserProfileTile> {
   void initState() {
     setEmployeePhoto();
     checkAccess();
+    setPincode();
     super.initState();
   }
 
@@ -130,7 +132,8 @@ class _UserProfileTileState extends State<UserProfileTile> {
                 iconSize: 30,
                 icon: const Icon(Icons.logout_outlined),
                 onPressed: () {
-                  GetStorage("data").remove("pin");
+                  SharedPreferences.getInstance()
+                      .then((prefs) => prefs.setString("pin", ""));
                   SharedPreferences.getInstance()
                       .then((prefs) => prefs.setBool("loggedIn", false));
                   Navigator.push(
@@ -157,7 +160,7 @@ class _UserProfileTileState extends State<UserProfileTile> {
               return null;
             },
             decoration: InputDecoration(
-              hintText: GetStorage("data").read("pin") != null
+              hintText: pincode.isNotEmpty
                   ? AppLocalizations.of(context)!.pincode
                   : AppLocalizations.of(context)!.giveNewPin,
               hintStyle: TextStyle(fontFamily: RainbowTextStyle.fontFamily),
@@ -184,8 +187,8 @@ class _UserProfileTileState extends State<UserProfileTile> {
               onPressed: () {
                 if (widget.loginSuccessfull) {
                   if (accessGranted) {
-                    if (GetStorage("data").read("pin") != null) {
-                      if (pin.text == GetStorage("data").read("pin")) {
+                    if (pincode.isNotEmpty) {
+                      if (pin.text == pincode) {
                         SnackBar snackBar = SnackBar(
                           content:
                               Text(AppLocalizations.of(context)!.correctPin),
@@ -206,7 +209,9 @@ class _UserProfileTileState extends State<UserProfileTile> {
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }
                     } else {
-                      GetStorage("data").write("pin", pin.text);
+                      SharedPreferences.getInstance()
+                          .then((prefs) => prefs.setString("pin", pin.text));
+
                       SnackBar snackBar = SnackBar(
                         content: Text(AppLocalizations.of(context)!.pinSaved),
                         backgroundColor: Colors.green,
@@ -242,10 +247,6 @@ class _UserProfileTileState extends State<UserProfileTile> {
                     );
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   }
-
-                  //
-                  //
-                  //
                 } else {
                   SnackBar snackBar = SnackBar(
                     duration: const Duration(seconds: 10),
@@ -283,7 +284,7 @@ class _UserProfileTileState extends State<UserProfileTile> {
                 color: RainbowColor.primary_1,
               ),
               label: Text(
-                GetStorage("data").read("pin") != null
+                pincode.isNotEmpty
                     ? AppLocalizations.of(context)!.verify
                     : AppLocalizations.of(context)!.create,
                 style: TextStyle(
@@ -313,6 +314,14 @@ class _UserProfileTileState extends State<UserProfileTile> {
             ),
           )
         ]));
+  }
+
+  void setPincode() {
+    SharedPreferences.getInstance().then((prefs) {
+      setState(() {
+        pincode = prefs.getString("pin") ?? "";
+      });
+    });
   }
 
   void _loadUrlUsernameAndPassword() async {

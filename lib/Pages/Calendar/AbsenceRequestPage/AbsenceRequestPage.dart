@@ -50,6 +50,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   TextEditingController controller_1 = TextEditingController();
   TextEditingController controller_2 = TextEditingController();
   TextEditingController controller_3 = TextEditingController();
+  int hours = 0;
   List<Absence> absences = [];
   int listLength = 0;
   String newValue = "";
@@ -58,7 +59,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   List<String> items = [];
   late File image;
   bool isApiCallProcess = false;
-
+  int fullDay = 1;
   String fileAsString = "";
   // File image;
 
@@ -153,7 +154,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                                 ),
                               ]),
                           const SizedBox(
-                            height: 30,
+                            height: 10,
                           ),
                           InputField(
                               textAlign: TextAlign.center,
@@ -193,7 +194,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                           Container(
                               padding:
                                   const EdgeInsets.only(left: 15, right: 20),
-                              margin: const EdgeInsets.only(bottom: 6),
+                              margin: const EdgeInsets.only(bottom: 0),
                               child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
@@ -209,60 +210,127 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                                               fontFamily:
                                                   RainbowTextStyle.fontFamily),
                                         )),
-                                    DropdownButton(
-                                      value: newValue,
-                                      focusColor: RainbowColor.primary_1,
-                                      iconSize: 30,
-                                      icon: const Padding(
-                                          padding: EdgeInsets.only(left: 2),
-                                          child: Icon(
-                                              Icons.arrow_circle_down_sharp)),
-                                      iconEnabledColor:
-                                          RainbowColor.primary_1, //Icon color
-                                      style: TextStyle(
-                                          color: RainbowColor
-                                              .primary_1, //Font color
-                                          fontSize:
-                                              18, //font size on dropdown button
-                                          fontFamily:
-                                              RainbowTextStyle.fontFamily),
-                                      dropdownColor: RainbowColor
-                                          .secondary, //dropdown background color
-                                      underline: Container(
-                                        color: RainbowColor.primary_1,
-                                        width: 15.0,
-                                        height: 1,
-                                      ),
-                                      //remove underline
-                                      isExpanded:
-                                          false, //make true to make width 100%
-                                      items: items.map((String value) {
-                                        return DropdownMenuItem(
-                                          value: value,
-                                          child: Text(value,
-                                              style: TextStyle(
-                                                  fontFamily: RainbowTextStyle
-                                                      .fontFamily)),
-                                        );
-                                      }).toList(),
-                                      onChanged: (String? changedValue) {
-                                        setState(() {
-                                          newValue = changedValue!;
-                                        });
-                                      },
-                                    )
+                                    Container(
+                                        margin: const EdgeInsets.only(left: 5),
+                                        child: DropdownButton(
+                                          value: newValue,
+                                          focusColor: RainbowColor.primary_1,
+                                          iconSize: 30,
+                                          icon: const Padding(
+                                              padding: EdgeInsets.only(left: 2),
+                                              child: Icon(Icons
+                                                  .arrow_circle_down_sharp)),
+                                          iconEnabledColor: RainbowColor
+                                              .primary_1, //Icon color
+                                          style: TextStyle(
+                                              color: RainbowColor
+                                                  .primary_1, //Font color
+                                              fontSize:
+                                                  18, //font size on dropdown button
+                                              fontFamily:
+                                                  RainbowTextStyle.fontFamily),
+                                          dropdownColor: RainbowColor
+                                              .secondary, //dropdown background color
+                                          underline: Container(
+                                            color: RainbowColor.primary_1,
+                                            width: 15.0,
+                                            height: 1,
+                                          ),
+                                          //remove underline
+                                          isExpanded:
+                                              false, //make true to make width 100%
+                                          items: items.map((String value) {
+                                            return DropdownMenuItem(
+                                              value: value,
+                                              child: Text(value,
+                                                  style: TextStyle(
+                                                      fontFamily:
+                                                          RainbowTextStyle
+                                                              .fontFamily)),
+                                            );
+                                          }).toList(),
+                                          onChanged: (String? changedValue) {
+                                            setState(() {
+                                              newValue = changedValue!;
+                                            });
+                                          },
+                                        ))
                                   ])),
                           const SizedBox(
                             height: 10,
                           ),
-                          SmallInputField(
-                            controller: numberController,
-                            title: AppLocalizations.of(context)!.hours + ":",
-                            keyboardType: TextInputType.number,
-                            width: 100,
-                          ),
+                          SizedBox(
+                              // width: 400,
+                              height: 130,
+                              child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Expanded(
+                                        child: RadioListTile(
+                                            activeColor: RainbowColor.primary_1,
+                                            title: Text(
+                                              AppLocalizations.of(context)!
+                                                  .wholeDay,
+                                            ),
+                                            value: 1,
+                                            groupValue: fullDay,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                fullDay =
+                                                    int.parse(value.toString());
+                                                hours = 8;
+                                              });
+                                            })),
+                                    Expanded(
+                                        child: RadioListTile(
+                                            activeColor: RainbowColor.primary_1,
+                                            title: Text(
+                                              AppLocalizations.of(context)!
+                                                  .halfDay,
+                                            ),
+                                            value: 2,
+                                            groupValue: fullDay,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                fullDay =
+                                                    int.parse(value.toString());
+                                                hours = 4;
+                                              });
+                                            })),
+                                    Expanded(
+                                      child: RadioListTile(
+                                          activeColor: RainbowColor.primary_1,
+                                          title: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Text(AppLocalizations.of(
+                                                        context)!
+                                                    .hours),
+                                                const SizedBox(
+                                                  width: 10,
+                                                ),
+                                                SmallInputField(
+                                                  title: "",
+                                                  width: 100,
+                                                  keyboardType:
+                                                      TextInputType.number,
+                                                  controller: numberController,
+                                                )
+                                              ]),
+                                          value: 3,
+                                          groupValue: fullDay,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              fullDay =
+                                                  int.parse(value.toString());
+                                            });
+                                          }),
+                                    ),
+                                  ])),
                           const SizedBox(
-                            height: 10,
+                            height: 25,
                           ),
                           MultiLineInputField(
                               controller: controller_3,
@@ -352,7 +420,8 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                       ? 1014
                       : 1003,
           days: getDateDifferenceInDays(fromDate, toDate),
-          uaAantaluren: int.parse(numberController.text),
+          uaAantaluren:
+              (fullDay != 3) ? hours : int.parse(numberController.text),
           uaOpmerking: controller_3.text,
           fileBytes: fileAsString,
           typeFile: fileName,
