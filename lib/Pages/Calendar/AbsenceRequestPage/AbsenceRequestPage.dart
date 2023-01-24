@@ -153,9 +153,10 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                                 ),
                               ]),
                           const SizedBox(
-                            height: 16,
+                            height: 30,
                           ),
                           InputField(
+                              textAlign: TextAlign.center,
                               controller: controller_1,
                               title: typeDaysRequest == true
                                   ? AppLocalizations.of(context)!.from + ":"
@@ -172,6 +173,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                                     color: RainbowColor.primary_1,
                                   ))),
                           InputField(
+                              textAlign: TextAlign.center,
                               controller: controller_2,
                               title: AppLocalizations.of(context)!.towith + ":",
                               hint: toDateString,
@@ -186,48 +188,70 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                                     color: RainbowColor.primary_1,
                                   ))),
                           const SizedBox(
-                            height: 10,
+                            height: 15,
                           ),
                           Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: RainbowColor.primary_1, width: 1.0),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
                               padding:
-                                  const EdgeInsets.only(left: 20, right: 20),
+                                  const EdgeInsets.only(left: 15, right: 20),
                               margin: const EdgeInsets.only(bottom: 6),
-                              child: DropdownButton(
-                                value: newValue,
-                                icon: const Padding(
-                                    padding: EdgeInsets.only(left: 2),
-                                    child: Icon(Icons.arrow_circle_down_sharp)),
-                                iconEnabledColor:
-                                    RainbowColor.primary_1, //Icon color
-                                style: TextStyle(
-                                    color: RainbowColor.primary_1, //Font color
-                                    fontSize: 17, //font size on dropdown button
-                                    fontFamily: RainbowTextStyle.fontFamily),
-                                dropdownColor: RainbowColor
-                                    .secondary, //dropdown background color
-                                underline: Container(), //remove underline
-                                isExpanded:
-                                    false, //make true to make width 100%
-                                items: items.map((String value) {
-                                  return DropdownMenuItem(
-                                    value: value,
-                                    child: Text(value,
-                                        style: TextStyle(
-                                            fontFamily:
-                                                RainbowTextStyle.fontFamily)),
-                                  );
-                                }).toList(),
-                                onChanged: (String? changedValue) {
-                                  setState(() {
-                                    newValue = changedValue!;
-                                  });
-                                },
-                              )),
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                        margin:
+                                            const EdgeInsets.only(right: 43),
+                                        child: Text(
+                                          "Type: ",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w400,
+                                              color: Colors.black,
+                                              fontFamily:
+                                                  RainbowTextStyle.fontFamily),
+                                        )),
+                                    DropdownButton(
+                                      value: newValue,
+                                      focusColor: RainbowColor.primary_1,
+                                      iconSize: 30,
+                                      icon: const Padding(
+                                          padding: EdgeInsets.only(left: 2),
+                                          child: Icon(
+                                              Icons.arrow_circle_down_sharp)),
+                                      iconEnabledColor:
+                                          RainbowColor.primary_1, //Icon color
+                                      style: TextStyle(
+                                          color: RainbowColor
+                                              .primary_1, //Font color
+                                          fontSize:
+                                              18, //font size on dropdown button
+                                          fontFamily:
+                                              RainbowTextStyle.fontFamily),
+                                      dropdownColor: RainbowColor
+                                          .secondary, //dropdown background color
+                                      underline: Container(
+                                        color: RainbowColor.primary_1,
+                                        width: 15.0,
+                                        height: 1,
+                                      ),
+                                      //remove underline
+                                      isExpanded:
+                                          false, //make true to make width 100%
+                                      items: items.map((String value) {
+                                        return DropdownMenuItem(
+                                          value: value,
+                                          child: Text(value,
+                                              style: TextStyle(
+                                                  fontFamily: RainbowTextStyle
+                                                      .fontFamily)),
+                                        );
+                                      }).toList(),
+                                      onChanged: (String? changedValue) {
+                                        setState(() {
+                                          newValue = changedValue!;
+                                        });
+                                      },
+                                    )
+                                  ])),
                           const SizedBox(
                             height: 10,
                           ),

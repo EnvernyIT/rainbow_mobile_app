@@ -110,5 +110,6 @@
     "cantDownload" : "Kan niet downloaden",
     "accessDenied" : "Toegang geweigerd",
     "urlExample" : "Url klopt niet. Example: https://rainbow.com/example",
-    "saldoInDays" : "Saldo in dagen"
+    "saldoInDays" : "Saldo in dagen",
+    "pincodeExplanation" : "Deze pincode dient voor een directe inlog mogelijkheid. Om bij het inloggen problemen te voorkomen en ook om u als gebruiker niet te hinderen met het continu inloggegevens te tikken."
 }

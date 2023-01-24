@@ -304,7 +304,7 @@ class _UserProfileTileState extends State<UserProfileTile> {
                       height: 90,
                       width: 250,
                       child: Text(
-                        "Deze pincode dient voor een directe inlog mogelijkheid. Om bij het inloggen problemen te voorkomen en ook om u als gebruiker niet te hinderen met het continu inloggegevens te tikken.",
+                        AppLocalizations.of(context)!.pincodeExplanation,
                         style: TextStyle(
                             color: RainbowColor.primary_1, fontSize: 14),
                       ))
