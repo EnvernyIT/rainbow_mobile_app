@@ -29,12 +29,12 @@ class _Absence2TileState extends State<Absence2Tile> {
               Standardstatus.PR_70_APPROVED
           ? const Icon(
               Icons.check_circle_outline,
-              color: Colors.green,
+              color: Colors.green, size: 30,
             )
           : widget.absence.status?.statusNumber == Standardstatus.PR_70_REJECTED
-              ? const Icon(Icons.block, color: Colors.redAccent)
+              ? const Icon(Icons.block, color: Colors.redAccent,size: 30,)
               : const Icon(Icons.access_time_outlined,
-                  color: Color.fromARGB(255, 193, 186, 186)),
+                  color: Color.fromARGB(255, 193, 186, 186), size: 30,),
       subtitle: Text(
         widget.absence.usStartDate == widget.absence.uaEindDat
             ? DateFormat.yMMMEd(locale).format(widget.absence.usStartDate!) +
@@ -56,15 +56,7 @@ class _Absence2TileState extends State<Absence2Tile> {
         ),
       ),
       title: Text(
-        widget.absence.hourType?.usId == HourTypeId.SICK.value
-            ? AppLocalizations.of(context)!.sick
-            : widget.absence.hourType?.usId == HourTypeId.AWP.value
-                ? "\"Absent Without Perm\""
-                : AppLocalizations.of(context)!.medical +
-                    " " +
-                    (widget.absence.numberOfLeaveDays == 1
-                        ? AppLocalizations.of(context)!.day
-                        : AppLocalizations.of(context)!.days),
+        widget.absence.hourType?.usOmschrijving ?? "",
         style: TextStyle(
           color: RainbowColor.letter,
           fontFamily: RainbowTextStyle.fontFamily,

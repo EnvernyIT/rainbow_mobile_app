@@ -16,6 +16,7 @@ import 'package:rainbow_app/Components/TextInputs/InputField.dart';
 import 'package:rainbow_app/Components/TextInputs/MultiLineInputField.dart';
 
 import '../../../Backend/APIS/UserEmployeeService.dart';
+import '../../../Backend/Models/HourType.dart';
 import '../../../Components/Buttons/Button.dart';
 import '../../../Components/Navigation.dart';
 import '../../../Components/ProgressHUD.dart';
@@ -47,10 +48,13 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   TextEditingController controller_1 = TextEditingController();
   TextEditingController controller_2 = TextEditingController();
   TextEditingController controller_3 = TextEditingController();
+  double hoursAllowed = 8;
+  double fullDayHours = 8;
+  double halfDayHours = 4;
   double hours = 0;
   List<Absence> absences = [];
   int listLength = 0;
-  String newValue = "";
+  HourType newValue = HourType(valid: true);
   double userLeaveBalance = 0;
   String fileName = "Choose file";
   List<String> items = [];
@@ -58,13 +62,18 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   bool isApiCallProcess = false;
   int fullDay = 1;
   String fileAsString = "";
-  // File image;
+
+  List<HourType> hourTypes = [];
+  String message = "";
+  bool _isLoading = false;
 
   @override
   void initState() {
-    super.initState();
     setList();
     setUserLeaveBalance();
+    setUserHours();
+    setHourTypeList();
+    super.initState();
   }
 
   @override
@@ -210,7 +219,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                                     Container(
                                         margin: const EdgeInsets.only(left: 5),
                                         child: DropdownButton(
-                                          value: newValue,
+                                          value: (newValue != null) ? newValue : null,
                                           focusColor: RainbowColor.primary_1,
                                           iconSize: 30,
                                           icon: const Padding(
@@ -236,17 +245,17 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                                           //remove underline
                                           isExpanded:
                                               false, //make true to make width 100%
-                                          items: items.map((String value) {
+                                          items: hourTypes.map((HourType value) {
                                             return DropdownMenuItem(
                                               value: value,
-                                              child: Text(value,
+                                              child: Text(value.usOmschrijving!,
                                                   style: TextStyle(
                                                       fontFamily:
                                                           RainbowTextStyle
                                                               .fontFamily)),
                                             );
                                           }).toList(),
-                                          onChanged: (String? changedValue) {
+                                          onChanged: (HourType? changedValue) {
                                             setState(() {
                                               newValue = changedValue!;
                                             });
@@ -268,7 +277,8 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                                             activeColor: RainbowColor.primary_1,
                                             title: Text(
                                               AppLocalizations.of(context)!
-                                                  .wholeDay,
+                                                  .wholeDay + " (" + fullDayHours.toString() + " " + AppLocalizations.of(context)!
+                                                  .hours + ")" ,
                                             ),
                                             value: 1,
                                             groupValue: fullDay,
@@ -276,7 +286,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                                               setState(() {
                                                 fullDay =
                                                     int.parse(value.toString());
-                                                hours = 8;
+                                                hours = fullDayHours;
                                               });
                                             })),
                                     Expanded(
@@ -284,7 +294,8 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                                             activeColor: RainbowColor.primary_1,
                                             title: Text(
                                               AppLocalizations.of(context)!
-                                                  .halfDay,
+                                                  .halfDay+ " (" + halfDayHours.toString() + " " + AppLocalizations.of(context)!
+                                                  .hours + ")" ,
                                             ),
                                             value: 2,
                                             groupValue: fullDay,
@@ -292,7 +303,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                                               setState(() {
                                                 fullDay =
                                                     int.parse(value.toString());
-                                                hours = 4;
+                                                hours = halfDayHours;
                                               });
                                             })),
                                     Expanded(
@@ -405,20 +416,15 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
 
   void sendLeaveRequest(double userLeaveBalance, BuildContext context) {
     if (userLeaveBalance > getDateDifferenceInDays(fromDate, toDate)) {
-      if (numberController.text.isNotEmpty) {
+      if (hours <= 0) {
+        if(hours > hoursAllowed){
         AbsenceRequest absenceRequest = AbsenceRequest(
           dateFrom: fromDateString(fromDate),
           dateTo: fromDateString(toDate),
-          usId: newValue == AppLocalizations.of(context)!.sick
-              ? 1004
-              : newValue == AppLocalizations.of(context)!.maternity
-                  ? 1009
-                  : newValue == AppLocalizations.of(context)!.training
-                      ? 1014
-                      : 1003,
+          usId: newValue.usId,
           days: getDateDifferenceInDays(fromDate, toDate),
           uaAantaluren:
-              (fullDay != 3) ? hours : double.parse(numberController.text),
+              (fullDay == 1) ? fullDayHours : (fullDay == 2) ? halfDayHours : double.parse(numberController.text),
           uaOpmerking: controller_3.text,
           fileBytes: fileAsString,
           typeFile: fileName,
@@ -471,6 +477,15 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
           });
           SnackBar snackBar = SnackBar(
             content: Text(AppLocalizations.of(context)!.dateNotAllowed),
+            backgroundColor: Colors.red,
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }} else {
+          setState(() {
+            isApiCallProcess = false;
+          });
+          SnackBar snackBar = SnackBar(
+            content: Text(AppLocalizations.of(context)!.tooManyHours),
             backgroundColor: Colors.red,
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -699,13 +714,6 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
         if (value != null) {
           absences = value;
           listLength = absences.length;
-          items = <String>[
-            AppLocalizations.of(context)!.sick,
-            AppLocalizations.of(context)!.maternity,
-            AppLocalizations.of(context)!.training,
-            AppLocalizations.of(context)!.special,
-          ];
-          newValue = items[0];
         }
       });
     });
@@ -773,5 +781,49 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
       }
     }
     return false;
+  }
+
+  void setUserHours() {
+    AbsenceRequest absenceRequest = AbsenceRequest();
+    absenceRequest.usId = 0;
+    absenceRequest.dateFrom = "";
+    absenceRequest.dateTo = "";
+    absenceRequest.uaAantaluren = 0;
+    absenceRequest.days = 0;
+    absenceRequest.uaOpmerking = "";
+    absenceRequest.fileBytes = "";
+    absenceRequest.typeFile = "";
+    AbsenceService absenceService = AbsenceService();
+    absenceService.getScheduledHours(absenceRequest).then((value) {
+      setState(() {
+        hoursAllowed = value;
+        fullDayHours = value;
+        halfDayHours = (value / 2);
+      });
+    });
+  }
+
+  void setHourTypeList() {
+    AbsenceService service = AbsenceService();
+    service.listHourTypes().then((value) {
+      setState(() {
+        if(value != null){
+          if(value.length == 1){
+            if(value.first.valid) {
+              hourTypes = value;
+              newValue = value.first;
+              _isLoading = true;
+            } else {
+              message = value.first.response!;
+              _isLoading = true;
+            }
+          } else {
+            hourTypes = value;
+            newValue = value.first;
+            _isLoading = true;
+          }
+        }
+      });
+    });
   }
 }

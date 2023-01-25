@@ -68,12 +68,12 @@ class SmallInputField extends StatelessWidget {
                   child: TextFormField(
                     textAlign: TextAlign.left,
                     textAlignVertical: TextAlignVertical.center,
-                    validator: (input) {
-                      if (int.parse(input!) >= 24) {
-                        return AppLocalizations.of(context)!.tooManyHours;
-                      }
-                      return null;
-                    },
+                    // validator: (input) {
+                    //   if (int.parse(input!) >= 24) {
+                    //     return AppLocalizations.of(context)!.tooManyHours;
+                    //   }
+                    //   return null;
+                    // },
                     initialValue: initialValue,
                     keyboardType: keyboardType,
                     readOnly: widget == null ? false : true,

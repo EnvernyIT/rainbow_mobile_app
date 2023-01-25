@@ -46,6 +46,7 @@ class Absence {
 
       //Hourtype
       HourType hourType = HourType(
+        valid: true,
         usId: json[i]['hourType']['usId'] as int,
         usCode: json[i]['hourType']['usCode'] as String,
         usOmschrijving: json[i]['hourType']['usOmschrijving'] as String,
@@ -130,6 +131,7 @@ class Absence {
 
     //Hourtype
     final hourType = HourType(
+      valid: true,
       usId: json[0]['hourType']['usId'] as int,
       usCode: json[0]['hourType']['usCode'] as String,
       usOmschrijving: json[0]['hourType']['usOmschrijving'] as String,

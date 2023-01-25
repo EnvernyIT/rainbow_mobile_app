@@ -2,6 +2,8 @@ import 'dart:core';
 import 'dart:core';
 
 class HourType {
+  bool valid;
+  String? response;
   int? usId;
   String? usCode;
   String? usOmschrijving;
@@ -15,6 +17,8 @@ class HourType {
   String? caption;
 
   HourType({
+    required this.valid,
+    this.response,
     this.usId,
     this.usCode,
     this.usOmschrijving,
@@ -27,6 +31,22 @@ class HourType {
     this.indActive,
     this.caption,
   });
+
+  List<HourType> getTypesList(List<dynamic> json) {
+    List<HourType> types = [];
+
+    for(int i = 0; i <= json.length -1; i++){
+      HourType type = HourType(valid : true);
+      type.response = "";
+      type.usId = json[i]['usId'];
+      type.usCode = json[i]['usCode'];
+      type.usOmschrijving = json[i]['usOmschrijving'];
+
+      types.add(type);
+    }
+
+    return types;
+  }
 }
 
 enum HourTypeId {

@@ -42,7 +42,7 @@ class UserEmployeeService {
 
     if (response.statusCode == 200 || response.statusCode == 400) {
       print(json.decode(response.body));
-      return json.decode(response.body);
+      return double.parse(json.decode(response.body).toString());
     } else {
       return 0;
     }
