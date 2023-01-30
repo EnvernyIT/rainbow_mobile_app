@@ -113,5 +113,6 @@
     "saldoInDays" : "Balance in days",
     "pincodeExplanation" : "This pin code is used for direct login. To prevent problems when logging in and also not to hinder you as a user with the continuous provision of login details.",
     "halfDay" : "Half day",
-    "wholeDay" : "Whole day"
+    "wholeDay" : "Whole day",
+    "dateAfterFrom": "Date should be after th from date!"
 }

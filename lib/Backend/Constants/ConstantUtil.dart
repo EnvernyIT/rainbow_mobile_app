@@ -1,5 +1,5 @@
 class ConstantUtil {
-  static const String CHECK_AGAIN = "Check again";
+  static const String CHECK_AGAIN = "Entity already exists or check again";
   static const String NO_INTERNET = "No internet or Server is down!";
   static const String SERVICE_UNAVAILABLE =
       "503 - Service Unavailable. Check Server or relogin";

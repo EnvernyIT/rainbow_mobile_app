@@ -37,8 +37,8 @@ class AbsenceRequestPage extends StatefulWidget {
 
 class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
-  DateTime fromDate = DateTime.now();
-  DateTime toDate = DateTime.now();
+  DateTime fromDate = DateTime.now().add(Duration(days: 1));
+  DateTime toDate =  DateTime.now().add(Duration(days: 1));
   String toDateString = "";
   bool typeDaysRequest = false;
   int selectedColor = 0;
@@ -51,7 +51,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   double hoursAllowed = 8;
   double fullDayHours = 8;
   double halfDayHours = 4;
-  double hours = 0;
+  double hours = 8;
   List<Absence> absences = [];
   int listLength = 0;
   HourType newValue = HourType(valid: true);
@@ -416,8 +416,8 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
 
   void sendLeaveRequest(double userLeaveBalance, BuildContext context) {
     if (userLeaveBalance > getDateDifferenceInDays(fromDate, toDate)) {
-      if (hours <= 0) {
-        if(hours > hoursAllowed){
+      if (hours >= 0) {
+        if(hours <= hoursAllowed){
         AbsenceRequest absenceRequest = AbsenceRequest(
           dateFrom: fromDateString(fromDate),
           dateTo: fromDateString(toDate),
@@ -432,8 +432,8 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
         AbsenceService service = AbsenceService();
         Absence absence = Absence(valid: true);
         if (fromDate
-                .isAfter(DateTime.now().subtract(const Duration(days: 1))) ||
-            toDate.isAfter(DateTime.now().subtract(const Duration(days: 1)))) {
+                .isAfter(DateTime.now()) ||
+            toDate.isAfter(DateTime.now())) {
           service.request(absenceRequest)?.then((value) {
             if (value.valid) {
               absence = value;
@@ -572,8 +572,16 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
     if (pickDate != null) {
       setState(() {
         if (pickDate.isAfter(DateTime.now())) {
-          toDate = pickDate;
-          toDateString = DateFormat.yMd(locale).format(toDate);
+          if(pickDate.isAfter(fromDate)) {
+            toDate = pickDate;
+            toDateString = DateFormat.yMd(locale).format(toDate);
+          } else {
+            SnackBar snackBar = SnackBar(
+              content: Text(AppLocalizations.of(context)!.dateAfterFrom),
+              backgroundColor: Colors.red,
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
         } else {
           SnackBar snackBar = SnackBar(
             content: Text(AppLocalizations.of(context)!.incorrectDate),
@@ -799,6 +807,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
         hoursAllowed = value;
         fullDayHours = value;
         halfDayHours = (value / 2);
+        hours = value;
       });
     });
   }

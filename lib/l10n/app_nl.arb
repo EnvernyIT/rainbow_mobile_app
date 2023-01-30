@@ -113,5 +113,6 @@
     "saldoInDays" : "Saldo in dagen",
     "pincodeExplanation" : "Deze pincode dient voor een directe inlog mogelijkheid. Om bij het inloggen problemen te voorkomen en ook om u als gebruiker niet te hinderen met het continu geven van inloggegevens.",
     "halfDay" : "Halve dag",
-    "wholeDay" : "Hele dag"
+    "wholeDay" : "Hele dag",
+    "dateAfterFrom": "Datum moet na de vanaf-datum zijn!"
 }
