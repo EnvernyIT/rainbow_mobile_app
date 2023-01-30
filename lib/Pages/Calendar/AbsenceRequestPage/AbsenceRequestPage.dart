@@ -173,7 +173,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                               widget: IconButton(
                                   onPressed: () {
                                     _getFromDateFromUser(locale);
-                                    getDateDifferenceInHours(fromDate, toDate);
+                                    // getDateDifferenceInHours(fromDate, toDate);
                                   },
                                   icon: Icon(
                                     Icons.calendar_today_outlined,
@@ -188,7 +188,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                               widget: IconButton(
                                   onPressed: () {
                                     _getToDateFromUser(locale);
-                                    getDateDifferenceInHours(fromDate, toDate);
+                                    // getDateDifferenceInHours(fromDate, toDate);
                                   },
                                   icon: Icon(
                                     Icons.calendar_today_outlined,
@@ -515,7 +515,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   _getFromDateFromUser(locale) async {
     DateTime? pickDate = await showDatePicker(
         context: context,
-        initialDate: DateTime.now(),
+        initialDate: fromDate,
         firstDate: DateTime(2015),
         lastDate: DateTime(2121),
         builder: (context, child) {
@@ -548,7 +548,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
           });
         }
       });
-      getDateDifferenceInHours(pickDate, toDate);
+      // getDateDifferenceInHours(pickDate, toDate);
     } else {
       print(AppLocalizations.of(context)!.somethingWentWrong);
     }
@@ -557,7 +557,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   _getToDateFromUser(locale) async {
     DateTime? pickDate = await showDatePicker(
         context: context,
-        initialDate: DateTime.now(),
+        initialDate: toDate,
         firstDate: DateTime(2015),
         lastDate: DateTime(2121),
         builder: (context, child) {
@@ -593,7 +593,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
           });
         }
       });
-      getDateDifferenceInHours(fromDate, pickDate);
+      // getDateDifferenceInHours(fromDate, pickDate);
     } else {
       print(AppLocalizations.of(context)!.somethingWentWrong);
     }
