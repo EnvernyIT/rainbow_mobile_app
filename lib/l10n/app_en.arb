@@ -114,5 +114,17 @@
     "pincodeExplanation" : "This pin code is used for direct login. To prevent problems when logging in and also not to hinder you as a user with the continuous provision of login details.",
     "halfDay" : "Half day",
     "wholeDay" : "Whole day",
-    "dateAfterFrom": "Date should be after th from date!"
+    "dateAfterFrom": "Date should be after th from date!",
+    "amount" : "Amount:",
+    "period" : "Period",
+    "periodFrom" : "Periode from",
+    "periodTo" : "Periode to",
+    "country" : "Country",
+    "empCode" : "Employee code",
+    "idNumber" : "Id number",
+    "bank" : "Bank",
+    "accountNumb" : "Account number",
+    "position" : "Position",
+    "hourlyWage" : "Hourly Wage",
+    "empByWage" : "Employee by wage"
 }

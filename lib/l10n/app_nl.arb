@@ -114,5 +114,17 @@
     "pincodeExplanation" : "Deze pincode dient voor een directe inlog mogelijkheid. Om bij het inloggen problemen te voorkomen en ook om u als gebruiker niet te hinderen met het continu geven van inloggegevens.",
     "halfDay" : "Halve dag",
     "wholeDay" : "Hele dag",
-    "dateAfterFrom": "Datum moet na de vanaf-datum zijn!"
+    "dateAfterFrom": "Datum moet na de vanaf-datum zijn!",
+    "amount" : "Bedrag:",
+    "period" : "Periode",
+    "periodFrom" : "Periode vanaf",
+    "periodTo" : "Periode t/m",
+    "country" : "Land",
+    "empCode" : "Medewerker Code",
+    "idNumber" : "Id Nummer",
+    "bank" : "Bank",
+    "accountNumb" : "Rekening nummer",
+    "position" : "Functie",
+    "hourlyWage" : "Uurloon",
+    "empByWage" : "Mederwerker per loon"
 }

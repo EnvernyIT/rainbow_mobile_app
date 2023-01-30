@@ -35,7 +35,8 @@ class AbsenceRequestPage extends StatefulWidget {
   State<AbsenceRequestPage> createState() => _AbsenceRequestPageState();
 }
 
-class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
+class _AbsenceRequestPageState extends State<AbsenceRequestPage>
+    with TickerProviderStateMixin {
   GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
   DateTime fromDate = DateTime.now().add(Duration(days: 1));
   DateTime toDate = DateTime.now().add(Duration(days: 1));
@@ -65,19 +66,104 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
 
   List<HourType> hourTypes = [];
   String message = "";
-  bool _isLoading = false;
+  bool _isLoading = true;
+
+  // this will control the button clicks and tab changing
+  late TabController _controller;
+
+  // this will control the animation when a button changes from an off state to an on state
+  late AnimationController _animationControllerOn;
+
+  // this will control the animation when a button changes from an on state to an off state
+  late AnimationController _animationControllerOff;
+
+  // this will give the background color values of a button when it changes to an on state
+  late Animation _colorTweenBackgroundOn;
+  late Animation _colorTweenBackgroundOff;
+
+  // this will give the foreground color values of a button when it changes to an on state
+  late Animation _colorTweenForegroundOn;
+  late Animation _colorTweenForegroundOff;
+
+  // when swiping, the _controller.index value only changes after the animation, therefore, we need this to trigger the animations and save the current index
+  int _currentIndex = 0;
+
+  // saves the previous active tab
+  int _prevControllerIndex = 0;
+
+  // saves the value of the tab animation. For example, if one is between the 1st and the 2nd tab, this value will be 0.5
+  double _aniValue = 0.0;
+
+  // saves the previous value of the tab animation. It's used to figure the direction of the animation
+  double _prevAniValue = 0.0;
+
+  // these will be our tab icons. You can use whatever you like for the content of your buttons
+  List _icons = [
+    Icons.add,
+    Icons.list,
+  ];
+
+  // active button's foreground color
+  Color _foregroundOn = Colors.white;
+  Color _foregroundOff = Colors.black;
+
+  // active button's background color
+  Color _backgroundOn = Colors.blue;
+  Color _backgroundOff = Colors.grey;
+
+  // scroll controller for the TabBar
+  ScrollController _scrollController = new ScrollController();
+
+  // this will save the keys for each Tab in the Tab Bar, so we can retrieve their position and size for the scroll controller
+  List _keys = [];
+
+  // regist if the the button was tapped
+  bool _buttonTap = false;
 
   @override
   void initState() {
-    setList();
+    super.initState();
+    for (int index = 0; index < _icons.length; index++) {
+      // create a GlobalKey for each Tab
+      _keys.add(new GlobalKey());
+    }
+
+    // this creates the controller with 6 tabs (in our case)
+    _controller = TabController(vsync: this, length: 2);
+    // this will execute the function every time there's a swipe animation
+    _controller.animation?.addListener(_handleTabAnimation);
+    // this will execute the function every time the _controller.index value changes
+    _controller.addListener(_handleTabChange);
+
+    _animationControllerOff =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 75));
+    // so the inactive buttons start in their "final" state (color)
+    _animationControllerOff.value = 1.0;
+    _colorTweenBackgroundOff =
+        ColorTween(begin: _backgroundOn, end: _backgroundOff)
+            .animate(_animationControllerOff);
+    _colorTweenForegroundOff =
+        ColorTween(begin: _foregroundOn, end: _foregroundOff)
+            .animate(_animationControllerOff);
+
+    _animationControllerOn =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 150));
+    // so the inactive buttons start in their "final" state (color)
+    _animationControllerOn.value = 1.0;
+    _colorTweenBackgroundOn =
+        ColorTween(begin: _backgroundOff, end: _backgroundOn)
+            .animate(_animationControllerOn);
+    _colorTweenForegroundOn =
+        ColorTween(begin: _foregroundOff, end: _foregroundOn)
+            .animate(_animationControllerOn);
     setUserLeaveBalance();
     setUserHours();
     setHourTypeList();
-    super.initState();
   }
 
   @override
   void dispose() {
+    _controller.dispose();
     super.dispose();
   }
 
@@ -88,344 +174,404 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   }
 
   clearAll() {
-    controller_1.clear();
-    controller_2.clear();
-    controller_3.clear();
-    numberController.clear();
-    fileName = "Choose file";
-    fileAsString = "";
+    setState(() {
+      controller_1.clear();
+      controller_2.clear();
+      controller_3.clear();
+      numberController.clear();
+      fileName = "Choose file";
+      fileAsString = "";
+      DateTime fromDate = DateTime.now().add(Duration(days: 1));
+      DateTime toDate = DateTime.now().add(Duration(days: 1));
+      String toDateString = "";
+      absences.clear();
+    });
   }
 
   Widget uiBuild(BuildContext context) {
     String locale = Localizations.localeOf(context).languageCode;
-    return DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            bottom: TabBar(
-              indicatorColor: RainbowColor.primary_1,
-              labelColor: RainbowColor.primary_1,
-              indicatorWeight: 4,
-              tabs: [
-                Tab(
-                    iconMargin: const EdgeInsets.only(bottom: 5),
-                    height: 50,
-                    text: AppLocalizations.of(context)!.request,
-                    icon: const Icon(Icons.add)),
-                Tab(
-                    iconMargin: const EdgeInsets.only(bottom: 5),
-                    height: 50,
-                    text: AppLocalizations.of(context)!.list,
-                    icon: const Icon(Icons.list)),
-              ],
-            ),
-            elevation: 2,
-            backgroundColor: RainbowColor.secondary,
-            foregroundColor: RainbowColor.primary_1,
-            title: Text(AppLocalizations.of(context)!.requestLeave,
-                style: TextStyle(fontFamily: RainbowTextStyle.fontFamily)),
-          ),
-          body: TabBarView(children: <Widget>[
-            Container(
-              padding: const EdgeInsets.all(15),
-              child: SingleChildScrollView(
-                  child: Form(
-                      key: globalFormKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Text(
-                                  AppLocalizations.of(context)!.leaveBalance +
-                                      ": ",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: RainbowTextStyle.fontFamily),
-                                ),
-                                Text(
-                                  userLeaveBalance.toString() +
-                                      " " +
-                                      AppLocalizations.of(context)!.hours +
-                                      " | " +
-                                      userLeaveHoursToDays(userLeaveBalance) +
-                                      " " +
-                                      AppLocalizations.of(context)!.dayss,
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: RainbowTextStyle.fontFamily),
-                                ),
-                              ]),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          InputField(
-                              textAlign: TextAlign.center,
-                              controller: controller_1,
-                              title: typeDaysRequest == true
-                                  ? AppLocalizations.of(context)!.from + ":"
-                                  : AppLocalizations.of(context)!.day + ":",
-                              hint: DateFormat.yMd(locale).format(fromDate),
-                              color: _color_1,
-                              widget: IconButton(
-                                  onPressed: () {
-                                    _getFromDateFromUser(locale);
-                                    // getDateDifferenceInHours(fromDate, toDate);
-                                  },
-                                  icon: Icon(
-                                    Icons.calendar_today_outlined,
-                                    color: RainbowColor.primary_1,
-                                  ))),
-                          InputField(
-                              textAlign: TextAlign.center,
-                              controller: controller_2,
-                              title: AppLocalizations.of(context)!.towith + ":",
-                              hint: toDateString,
-                              color: _color_2,
-                              widget: IconButton(
-                                  onPressed: () {
-                                    _getToDateFromUser(locale);
-                                    // getDateDifferenceInHours(fromDate, toDate);
-                                  },
-                                  icon: Icon(
-                                    Icons.calendar_today_outlined,
-                                    color: RainbowColor.primary_1,
-                                  ))),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          Container(
-                              padding:
-                                  const EdgeInsets.only(left: 15, right: 20),
-                              margin: const EdgeInsets.only(bottom: 0),
-                              child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                        margin:
-                                            const EdgeInsets.only(right: 43),
-                                        child: Text(
-                                          "Type: ",
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w400,
-                                              color: Colors.black,
-                                              fontFamily:
-                                                  RainbowTextStyle.fontFamily),
-                                        )),
-                                    Container(
-                                        margin: const EdgeInsets.only(left: 5),
-                                        child: DropdownButton(
-                                          value: (newValue != null)
-                                              ? newValue
-                                              : null,
-                                          focusColor: RainbowColor.primary_1,
-                                          iconSize: 30,
-                                          icon: const Padding(
-                                              padding: EdgeInsets.only(left: 2),
-                                              child: Icon(Icons
-                                                  .arrow_circle_down_sharp)),
-                                          iconEnabledColor:
-                                              RainbowColor.primary_1,
-                                          //Icon color
-                                          style: TextStyle(
-                                              color: RainbowColor
-                                                  .primary_1, //Font color
-                                              fontSize:
-                                                  18, //font size on dropdown button
-                                              fontFamily:
-                                                  RainbowTextStyle.fontFamily),
-                                          dropdownColor: RainbowColor.secondary,
-                                          //dropdown background color
-                                          underline: Container(
-                                            color: RainbowColor.primary_1,
-                                            width: 15.0,
-                                            height: 1,
-                                          ),
-                                          //remove underline
-                                          isExpanded: false,
-                                          //make true to make width 100%
-                                          items:
-                                              hourTypes.map((HourType value) {
-                                            return DropdownMenuItem(
-                                              value: value,
-                                              child: Text(value.usOmschrijving!,
+    // return DefaultTabController(
+    //     length: 2,
+    //     child:
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 2,
+        backgroundColor: RainbowColor.secondary,
+        foregroundColor: RainbowColor.primary_1,
+        title: Text(AppLocalizations.of(context)!.requestLeave,
+            style: TextStyle(fontFamily: RainbowTextStyle.fontFamily)),
+      ),
+      body: Column(children: [
+        Container(
+            padding: EdgeInsets.all(4),
+            margin: EdgeInsets.only(left: 45, right: 35),
+            alignment: Alignment.center,
+            height: 55.0,
+            child: ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                controller: _scrollController,
+                scrollDirection: Axis.horizontal,
+                // number of tabs
+                itemCount: _icons.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Padding(
+                    // each button's key
+                    key: _keys[index],
+                    // padding for the buttons
+                    padding: EdgeInsets.all(6.0),
+                    child: FloatingActionButton.extended(
+                      heroTag: "btn" + index.toString(),
+                      backgroundColor: _getBackgroundColor(index),
+                      foregroundColor: _getForegroundColor(index),
+                      label: Text(index == 0 ? AppLocalizations.of(context)!.request : AppLocalizations.of(context)!.list),
+                      icon: Icon(
+                        _icons[index],
+                        size: 24,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _buttonTap = true;
+                          // trigger the controller to change between Tab Views
+                          _controller.animateTo(index);
+                          // set the current index
+                          _setCurrentIndex(index);
+                          // scroll to the tapped button (needed if we tap the active button and it's not on its position)
+                          _scrollTo(index);
+                          setList();
+                          _isLoading = false;
+                        });
+                      },
+                    ),
+                  );
+                })),
+        Flexible(
+            child: TabBarView(
+                //     // physics: NeverScrollableScrollPhysics(),
+                controller: _controller,
+                children: <Widget>[
+              Container(
+                padding: const EdgeInsets.all(15),
+                child: SingleChildScrollView(
+                    child: Form(
+                        key: globalFormKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Text(
+                                    AppLocalizations.of(context)!.leaveBalance +
+                                        ": ",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily:
+                                            RainbowTextStyle.fontFamily),
+                                  ),
+                                  Text(
+                                    userLeaveBalance.toString() +
+                                        " " +
+                                        AppLocalizations.of(context)!.hours +
+                                        " | " +
+                                        userLeaveHoursToDays(userLeaveBalance) +
+                                        " " +
+                                        AppLocalizations.of(context)!.dayss,
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily:
+                                            RainbowTextStyle.fontFamily),
+                                  ),
+                                ]),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            InputField(
+                                textAlign: TextAlign.center,
+                                controller: controller_1,
+                                title: typeDaysRequest == true
+                                    ? AppLocalizations.of(context)!.from + ":"
+                                    : AppLocalizations.of(context)!.day + ":",
+                                hint: DateFormat.yMd(locale).format(fromDate),
+                                color: _color_1,
+                                widget: IconButton(
+                                    onPressed: () {
+                                      _getFromDateFromUser(locale);
+                                      // getDateDifferenceInHours(fromDate, toDate);
+                                    },
+                                    icon: Icon(
+                                      Icons.calendar_today_outlined,
+                                      color: RainbowColor.primary_1,
+                                    ))),
+                            InputField(
+                                textAlign: TextAlign.center,
+                                controller: controller_2,
+                                title:
+                                    AppLocalizations.of(context)!.towith + ":",
+                                hint: toDateString,
+                                color: _color_2,
+                                widget: IconButton(
+                                    onPressed: () {
+                                      _getToDateFromUser(locale);
+                                      // getDateDifferenceInHours(fromDate, toDate);
+                                    },
+                                    icon: Icon(
+                                      Icons.calendar_today_outlined,
+                                      color: RainbowColor.primary_1,
+                                    ))),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            Container(
+                                padding:
+                                    const EdgeInsets.only(left: 15, right: 20),
+                                margin: const EdgeInsets.only(bottom: 0),
+                                child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                          margin:
+                                              const EdgeInsets.only(right: 43),
+                                          child: Text(
+                                            "Type: ",
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w400,
+                                                color: Colors.black,
+                                                fontFamily: RainbowTextStyle
+                                                    .fontFamily),
+                                          )),
+                                      Container(
+                                          margin:
+                                              const EdgeInsets.only(left: 5),
+                                          child: DropdownButton(
+                                            value: (newValue != null)
+                                                ? newValue
+                                                : null,
+                                            focusColor: RainbowColor.primary_1,
+                                            iconSize: 30,
+                                            icon: const Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 2),
+                                                child: Icon(Icons
+                                                    .arrow_circle_down_sharp)),
+                                            iconEnabledColor:
+                                                RainbowColor.primary_1,
+                                            //Icon color
+                                            style: TextStyle(
+                                                color: RainbowColor.primary_1,
+                                                //Font color
+                                                fontSize: 18,
+                                                //font size on dropdown button
+                                                fontFamily: RainbowTextStyle
+                                                    .fontFamily),
+                                            dropdownColor:
+                                                RainbowColor.secondary,
+                                            //dropdown background color
+                                            underline: Container(
+                                              color: RainbowColor.primary_1,
+                                              width: 15.0,
+                                              height: 1,
+                                            ),
+                                            //remove underline
+                                            isExpanded: false,
+                                            //make true to make width 100%
+                                            items:
+                                                hourTypes.map((HourType value) {
+                                              return DropdownMenuItem(
+                                                value: value,
+                                                child: Text(
+                                                    value.usOmschrijving!,
+                                                    style: TextStyle(
+                                                        fontFamily:
+                                                            RainbowTextStyle
+                                                                .fontFamily)),
+                                              );
+                                            }).toList(),
+                                            onChanged:
+                                                (HourType? changedValue) {
+                                              setState(() {
+                                                newValue = changedValue!;
+                                              });
+                                            },
+                                          ))
+                                    ])),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            SizedBox(
+                                // width: 400,
+                                height: 130,
+                                child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Expanded(
+                                          child: RadioListTile(
+                                              activeColor:
+                                                  RainbowColor.primary_1,
+                                              title: Text(
+                                                AppLocalizations.of(context)!
+                                                        .wholeDay +
+                                                    " (" +
+                                                    fullDayHours.toString() +
+                                                    " " +
+                                                    AppLocalizations.of(
+                                                            context)!
+                                                        .hours +
+                                                    ")",
+                                              ),
+                                              value: 1,
+                                              groupValue: fullDay,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  fullDay = int.parse(
+                                                      value.toString());
+                                                  hours = fullDayHours;
+                                                });
+                                              })),
+                                      Expanded(
+                                          child: RadioListTile(
+                                              activeColor:
+                                                  RainbowColor.primary_1,
+                                              title: Text(
+                                                AppLocalizations.of(context)!
+                                                        .halfDay +
+                                                    " (" +
+                                                    halfDayHours.toString() +
+                                                    " " +
+                                                    AppLocalizations.of(
+                                                            context)!
+                                                        .hours +
+                                                    ")",
+                                              ),
+                                              value: 2,
+                                              groupValue: fullDay,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  fullDay = int.parse(
+                                                      value.toString());
+                                                  hours = halfDayHours;
+                                                });
+                                              })),
+                                      Expanded(
+                                        child: RadioListTile(
+                                            activeColor: RainbowColor.primary_1,
+                                            title: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  Text(AppLocalizations.of(
+                                                          context)!
+                                                      .hours),
+                                                  const SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  SmallInputField(
+                                                    title: "",
+                                                    width: 100,
+                                                    keyboardType:
+                                                        TextInputType.number,
+                                                    controller:
+                                                        numberController,
+                                                  )
+                                                ]),
+                                            value: 3,
+                                            groupValue: fullDay,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                fullDay =
+                                                    int.parse(value.toString());
+                                              });
+                                            }),
+                                      ),
+                                    ])),
+                            const SizedBox(
+                              height: 25,
+                            ),
+                            MultiLineInputField(
+                                controller: controller_3,
+                                title:
+                                    AppLocalizations.of(context)!.description +
+                                        ":",
+                                hint: AppLocalizations.of(context)!
+                                    .giveDescription),
+                            Container(
+                                alignment: Alignment.center,
+                                margin: const EdgeInsets.all(3),
+                                child: InkWell(
+                                    onTap: () => _chooseTypeOfFile(context),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Icon(
+                                          Icons.upload_file,
+                                          color: RainbowColor.primary_1,
+                                          size: 30,
+                                        ),
+                                        const SizedBox(
+                                          width: 5,
+                                        ),
+                                        Flexible(
+                                            child: InkWell(
+                                                onTap: () =>
+                                                    _chooseTypeOfFile(context),
+                                                child: Text(
+                                                  fileName,
                                                   style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      fontStyle:
+                                                          FontStyle.italic,
+                                                      color: Colors.black,
                                                       fontFamily:
                                                           RainbowTextStyle
-                                                              .fontFamily)),
-                                            );
-                                          }).toList(),
-                                          onChanged: (HourType? changedValue) {
-                                            setState(() {
-                                              newValue = changedValue!;
-                                            });
-                                          },
-                                        ))
-                                  ])),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          SizedBox(
-                              // width: 400,
-                              height: 130,
-                              child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Expanded(
-                                        child: RadioListTile(
-                                            activeColor: RainbowColor.primary_1,
-                                            title: Text(
-                                              AppLocalizations.of(context)!
-                                                      .wholeDay +
-                                                  " (" +
-                                                  fullDayHours.toString() +
-                                                  " " +
-                                                  AppLocalizations.of(context)!
-                                                      .hours +
-                                                  ")",
-                                            ),
-                                            value: 1,
-                                            groupValue: fullDay,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                fullDay =
-                                                    int.parse(value.toString());
-                                                hours = fullDayHours;
-                                              });
-                                            })),
-                                    Expanded(
-                                        child: RadioListTile(
-                                            activeColor: RainbowColor.primary_1,
-                                            title: Text(
-                                              AppLocalizations.of(context)!
-                                                      .halfDay +
-                                                  " (" +
-                                                  halfDayHours.toString() +
-                                                  " " +
-                                                  AppLocalizations.of(context)!
-                                                      .hours +
-                                                  ")",
-                                            ),
-                                            value: 2,
-                                            groupValue: fullDay,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                fullDay =
-                                                    int.parse(value.toString());
-                                                hours = halfDayHours;
-                                              });
-                                            })),
-                                    Expanded(
-                                      child: RadioListTile(
-                                          activeColor: RainbowColor.primary_1,
-                                          title: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              children: [
-                                                Text(AppLocalizations.of(
-                                                        context)!
-                                                    .hours),
-                                                const SizedBox(
-                                                  width: 10,
-                                                ),
-                                                SmallInputField(
-                                                  title: "",
-                                                  width: 100,
-                                                  keyboardType:
-                                                      TextInputType.number,
-                                                  controller: numberController,
-                                                )
-                                              ]),
-                                          value: 3,
-                                          groupValue: fullDay,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              fullDay =
-                                                  int.parse(value.toString());
-                                            });
-                                          }),
-                                    ),
-                                  ])),
-                          const SizedBox(
-                            height: 25,
-                          ),
-                          MultiLineInputField(
-                              controller: controller_3,
-                              title: AppLocalizations.of(context)!.description +
-                                  ":",
-                              hint: AppLocalizations.of(context)!
-                                  .giveDescription),
-                          Container(
-                              alignment: Alignment.center,
-                              margin: const EdgeInsets.all(3),
-                              child: InkWell(
-                                  onTap: () => _chooseTypeOfFile(context),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Icon(
-                                        Icons.upload_file,
-                                        color: RainbowColor.primary_1,
-                                        size: 30,
-                                      ),
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
-                                      Flexible(
-                                          child: InkWell(
-                                              onTap: () =>
-                                                  _chooseTypeOfFile(context),
-                                              child: Text(
-                                                fileName,
-                                                style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.w400,
-                                                    fontStyle: FontStyle.italic,
-                                                    color: Colors.black,
-                                                    fontFamily: RainbowTextStyle
-                                                        .fontFamily),
-                                              )))
-                                    ],
-                                  ))),
-                          Container(
-                              alignment: Alignment.bottomCenter,
-                              margin: const EdgeInsets.all(10),
-                              child: Button(
-                                label: AppLocalizations.of(context)!.request,
-                                onTap: () {
-                                  if (validateAndSave()) {
-                                    setState(() {
-                                      isApiCallProcess = true;
-                                    });
-                                    sendLeaveRequest(userLeaveBalance, context);
-                                  }
-                                },
-                              ))
-                        ],
-                      ))),
-            ),
-            Container(
-                color: RainbowColor.secondary,
-                child: RefreshIndicator(
-                  backgroundColor: RainbowColor.secondary,
-                  color: RainbowColor.primary_1,
-                  onRefresh: refresh,
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: listLength,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Absence2Tile(
-                          absence: absences[index],
-                        );
-                      }),
-                ))
-          ]),
-        ));
+                                                              .fontFamily),
+                                                )))
+                                      ],
+                                    ))),
+                            Container(
+                                alignment: Alignment.bottomCenter,
+                                margin: const EdgeInsets.all(10),
+                                child: Button(
+                                  label: AppLocalizations.of(context)!.request,
+                                  onTap: () {
+                                    if (validateAndSave()) {
+                                      setState(() {
+                                        isApiCallProcess = true;
+                                      });
+                                      sendLeaveRequest(
+                                          userLeaveBalance, context);
+                                    }
+                                  },
+                                ))
+                          ],
+                        ))),
+              ),
+              ProgressHUD(
+                  inAsyncCall: _isLoading,
+                  opacity: 0.5,
+                  child: Container(
+                      color: RainbowColor.secondary,
+                      child: RefreshIndicator(
+                        backgroundColor: RainbowColor.secondary,
+                        color: RainbowColor.primary_1,
+                        onRefresh: refresh,
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: absences.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Absence2Tile(
+                                absence: absences[index],
+                              );
+                            }),
+                      )))
+            ]))
+      ]),
+    );
   }
 
   void sendLeaveRequest(double userLeaveBalance, BuildContext context) {
@@ -454,6 +600,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
               if (value.valid) {
                 absence = value;
                 clearAll();
+                setList();
                 SnackBar snackBar = SnackBar(
                   content:
                       Text(AppLocalizations.of(context)!.requestSuccesfull),
@@ -607,7 +754,16 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   }
 
   Future refresh() async {
-    setState(() {});
+    setState(() {
+      _isLoading = true;
+    });
+
+    listLength = 0;
+    setList();
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   void _chooseTypeOfFile(BuildContext context) {
@@ -729,6 +885,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
         if (value != null) {
           absences = value;
           listLength = absences.length;
+          _isLoading = false;
         }
       });
     });
@@ -828,15 +985,12 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
             if (value.first.valid) {
               hourTypes = value;
               newValue = value.first;
-              _isLoading = true;
             } else {
               message = value.first.response!;
-              _isLoading = true;
             }
           } else {
             hourTypes = value;
             newValue = value.first;
-            _isLoading = true;
           }
         }
       });
@@ -852,5 +1006,124 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
       return true;
     }
     return false;
+  }
+
+  // runs during the switching tabs animation
+  _handleTabAnimation() {
+    // gets the value of the animation. For example, if one is between the 1st and the 2nd tab, this value will be 0.5
+    _aniValue = _controller.animation!.value ?? 0;
+
+    // if the button wasn't pressed, which means the user is swiping, and the amount swipped is less than 1 (this means that we're swiping through neighbor Tab Views)
+    if (!_buttonTap && ((_aniValue - _prevAniValue).abs() < 1)) {
+      // set the current tab index
+      _setCurrentIndex(_aniValue.round());
+    }
+
+    // save the previous Animation Value
+    _prevAniValue = _aniValue;
+  }
+
+  // runs when the displayed tab changes
+  _handleTabChange() {
+    // if a button was tapped, change the current index
+    if (_buttonTap) _setCurrentIndex(_controller.index);
+
+    // this resets the button tap
+    if ((_controller.index == _prevControllerIndex) ||
+        (_controller.index == _aniValue.round())) _buttonTap = false;
+
+    // save the previous controller index
+    _prevControllerIndex = _controller.index;
+  }
+
+  _setCurrentIndex(int index) {
+    // if we're actually changing the index
+    if (index != _currentIndex) {
+      setState(() {
+        // change the index
+        _currentIndex = index;
+      });
+
+      // trigger the button animation
+      _triggerAnimation();
+      // scroll the TabBar to the correct position (if we have a scrollable bar)
+      _scrollTo(index);
+    }
+  }
+
+  _triggerAnimation() {
+    // reset the animations so they're ready to go
+    _animationControllerOn.reset();
+    _animationControllerOff.reset();
+
+    // run the animations!
+    _animationControllerOn.forward();
+    _animationControllerOff.forward();
+  }
+
+  _scrollTo(int index) {
+    // get the screen width. This is used to check if we have an element off screen
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    // get the button we want to scroll to
+    RenderBox renderBox = _keys[index].currentContext.findRenderObject();
+    // get its size
+    double size = renderBox.size.width;
+    // and position
+    double position = renderBox.localToGlobal(Offset.zero).dx;
+
+    // this is how much the button is away from the center of the screen and how much we must scroll to get it into place
+    double offset = (position + size / 2) - screenWidth / 2;
+
+    // if the button is to the left of the middle
+    if (offset < 0) {
+      // get the first button
+      renderBox = _keys[0].currentContext.findRenderObject();
+      // get the position of the first button of the TabBar
+      position = renderBox.localToGlobal(Offset.zero).dx;
+
+      // if the offset pulls the first button away from the left side, we limit that movement so the first button is stuck to the left side
+      if (position > offset) offset = position;
+    } else {
+      // if the button is to the right of the middle
+
+      // get the last button
+      renderBox = _keys[_icons.length - 1].currentContext.findRenderObject();
+      // get its position
+      position = renderBox.localToGlobal(Offset.zero).dx;
+      // and size
+      size = renderBox.size.width;
+
+      // if the last button doesn't reach the right side, use it's right side as the limit of the screen for the TabBar
+      if (position + size < screenWidth) screenWidth = position + size;
+
+      // if the offset pulls the last button away from the right side limit, we reduce that movement so the last button is stuck to the right side limit
+      if (position + size - offset < screenWidth) {
+        offset = position + size - screenWidth;
+      }
+    }
+
+    // scroll the calculated ammount
+    _scrollController.animateTo(offset + _scrollController.offset,
+        duration: new Duration(milliseconds: 150), curve: Curves.easeInOut);
+  }
+
+  _getBackgroundColor(int index) {
+    if (index == _currentIndex) {
+      // if it's active button
+      return RainbowColor.primary_1;
+    } else {
+      // if the button is inactive
+      return RainbowColor.secondary;
+    }
+  }
+
+  _getForegroundColor(int index) {
+    // the same as the above
+    if (index == _currentIndex) {
+      return Colors.white;
+    } else {
+      return RainbowColor.primary_1;
+    }
   }
 }

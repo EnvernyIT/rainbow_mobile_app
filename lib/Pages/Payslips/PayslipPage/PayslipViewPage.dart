@@ -56,14 +56,14 @@ class _PayslipViewPageState extends State<PayslipViewPage> {
                 String bytes =
                     await service.getPayslipFile(payslipRequestModel);
                 if (bytes == ConstantUtil.TOKEN_EXPIRED ||
-                    bytes == ConstantUtil.TOKEN_EXPIRED ||
-                    bytes == ConstantUtil.TOKEN_EXPIRED ||
-                    bytes == ConstantUtil.TOKEN_EXPIRED ||
-                    bytes == ConstantUtil.TOKEN_EXPIRED ||
-                    bytes == ConstantUtil.TOKEN_EXPIRED ||
-                    bytes == ConstantUtil.TOKEN_EXPIRED ||
-                    bytes == ConstantUtil.TOKEN_EXPIRED ||
-                    bytes == ConstantUtil.TOKEN_EXPIRED) {
+                    bytes == ConstantUtil.NO_INTERNET ||
+                    bytes == ConstantUtil.SERVICE_UNAVAILABLE ||
+                    bytes == ConstantUtil.BAD_REQUEST ||
+                    bytes == ConstantUtil.SOMETHING_WRONG ||
+                    bytes == ConstantUtil.FORBIDDEN ||
+                    bytes == ConstantUtil.NOT_FOUND ||
+                    bytes == ConstantUtil.REQUEST_TIMEOUT ||
+                    bytes == ConstantUtil.INTERNAL_SERVER_ERROR) {
                   errorMessage = bytes;
                   SnackBar snackBar = SnackBar(
                     content: SizedBox(
@@ -106,7 +106,7 @@ class _PayslipViewPageState extends State<PayslipViewPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Bedrag: ",
+                Text(AppLocalizations.of(context)!.amount,
                     style: TextStyle(
                       color: Colors.black,
                       fontFamily: RainbowTextStyle.fontFamily,
@@ -135,67 +135,61 @@ class _PayslipViewPageState extends State<PayslipViewPage> {
               margin: const EdgeInsets.only(left: 16, right: 16),
               child: Column(children: [
                 RTextField(
-                  title: "Periode",
+                  title: AppLocalizations.of(context)!.period,
                   data_1: widget.payslip.hsPeriode.toString(),
                   fontSize: 18,
                   color_1: RainbowColor.primary_2,
                 ),
                 RTextField(
-                  title: "Loon Code",
-                  data_1: widget.payslip.loCode.toString(),
-                  fontSize: 18,
-                  color_1: RainbowColor.primary_2,
-                ),
-                RTextField(
-                  title: "Periode vanaf",
+                  title: AppLocalizations.of(context)!.periodFrom,
                   data_1: showDate(widget.payslip.peDatumVan),
                   fontSize: 18,
                   color_1: RainbowColor.primary_2,
                 ),
                 RTextField(
-                  title: "Periode t/m",
+                  title: AppLocalizations.of(context)!.periodTo,
                   data_1: showDate(widget.payslip.peDatumTm),
                   fontSize: 18,
                   color_1: RainbowColor.primary_2,
                 ),
                 RTextField(
-                  title: "Land",
+                  title: AppLocalizations.of(context)!.country,
                   data_1: widget.payslip.beLand,
                   fontSize: 18,
                   color_1: RainbowColor.primary_2,
                 ),
                 RTextField(
-                  title: "Employee code",
+                  title: AppLocalizations.of(context)!.empCode,
                   data_1: widget.payslip.emCode.toString(),
                   fontSize: 18,
                   color_1: RainbowColor.primary_2,
                 ),
                 RTextField(
-                  title: "ID nummer",
+                  title: AppLocalizations.of(context)!.idNumber,
                   data_1: widget.payslip.emIdNr,
                   fontSize: 18,
                   color_1: RainbowColor.primary_2,
                 ),
                 RTextField(
-                  title: "Bank",
+                  title: AppLocalizations.of(context)!.bank,
                   data_1: widget.payslip.hsBank1,
                   fontSize: 18,
                   color_1: RainbowColor.primary_2,
                 ),
                 RTextField(
-                  title: "Rekening nummer",
+                  title: AppLocalizations.of(context)!.accountNumb,
                   data_1: widget.payslip.hsRekening1,
                   fontSize: 18,
                   color_1: RainbowColor.primary_2,
                 ),
                 RTextField(
-                  title: "Functie",
+                  title: AppLocalizations.of(context)!.position,
                   data_1: widget.payslip.fuOmschrijving,
                   fontSize: 18,
                   color_1: RainbowColor.primary_2,
                 ),
                 RTextField(
-                  title: "Employee Uurloon",
+                  title: AppLocalizations.of(context)!.hourlyWage,
                   data_1: "(" +
                       widget.payslip.vaCode.toString() +
                       ") " +
@@ -204,7 +198,7 @@ class _PayslipViewPageState extends State<PayslipViewPage> {
                   color_1: RainbowColor.primary_2,
                 ),
                 RTextField(
-                  title: "Employee per loon",
+                  title: AppLocalizations.of(context)!.empByWage,
                   data_1: "(" +
                       widget.payslip.vaCode.toString() +
                       ") " +

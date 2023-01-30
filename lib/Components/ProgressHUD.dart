@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rainbow_app/Theme/ThemeColor.dart';
 
+
 class ProgressHUD extends StatelessWidget {
   final Widget? child;
   final bool? inAsyncCall;
@@ -20,7 +21,7 @@ class ProgressHUD extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Widget> widgetList = <Widget>[];
     widgetList.add(child!);
-    if (inAsyncCall!) {
+    if (inAsyncCall == true) {
       final modal = Stack(
         children: [
           Opacity(
