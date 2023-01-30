@@ -38,7 +38,7 @@ class AbsenceRequestPage extends StatefulWidget {
 class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
   DateTime fromDate = DateTime.now().add(Duration(days: 1));
-  DateTime toDate =  DateTime.now().add(Duration(days: 1));
+  DateTime toDate = DateTime.now().add(Duration(days: 1));
   String toDateString = "";
   bool typeDaysRequest = false;
   int selectedColor = 0;
@@ -219,15 +219,18 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                                     Container(
                                         margin: const EdgeInsets.only(left: 5),
                                         child: DropdownButton(
-                                          value: (newValue != null) ? newValue : null,
+                                          value: (newValue != null)
+                                              ? newValue
+                                              : null,
                                           focusColor: RainbowColor.primary_1,
                                           iconSize: 30,
                                           icon: const Padding(
                                               padding: EdgeInsets.only(left: 2),
                                               child: Icon(Icons
                                                   .arrow_circle_down_sharp)),
-                                          iconEnabledColor: RainbowColor
-                                              .primary_1, //Icon color
+                                          iconEnabledColor:
+                                              RainbowColor.primary_1,
+                                          //Icon color
                                           style: TextStyle(
                                               color: RainbowColor
                                                   .primary_1, //Font color
@@ -235,17 +238,18 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                                                   18, //font size on dropdown button
                                               fontFamily:
                                                   RainbowTextStyle.fontFamily),
-                                          dropdownColor: RainbowColor
-                                              .secondary, //dropdown background color
+                                          dropdownColor: RainbowColor.secondary,
+                                          //dropdown background color
                                           underline: Container(
                                             color: RainbowColor.primary_1,
                                             width: 15.0,
                                             height: 1,
                                           ),
                                           //remove underline
-                                          isExpanded:
-                                              false, //make true to make width 100%
-                                          items: hourTypes.map((HourType value) {
+                                          isExpanded: false,
+                                          //make true to make width 100%
+                                          items:
+                                              hourTypes.map((HourType value) {
                                             return DropdownMenuItem(
                                               value: value,
                                               child: Text(value.usOmschrijving!,
@@ -277,8 +281,13 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                                             activeColor: RainbowColor.primary_1,
                                             title: Text(
                                               AppLocalizations.of(context)!
-                                                  .wholeDay + " (" + fullDayHours.toString() + " " + AppLocalizations.of(context)!
-                                                  .hours + ")" ,
+                                                      .wholeDay +
+                                                  " (" +
+                                                  fullDayHours.toString() +
+                                                  " " +
+                                                  AppLocalizations.of(context)!
+                                                      .hours +
+                                                  ")",
                                             ),
                                             value: 1,
                                             groupValue: fullDay,
@@ -294,8 +303,13 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
                                             activeColor: RainbowColor.primary_1,
                                             title: Text(
                                               AppLocalizations.of(context)!
-                                                  .halfDay+ " (" + halfDayHours.toString() + " " + AppLocalizations.of(context)!
-                                                  .hours + ")" ,
+                                                      .halfDay +
+                                                  " (" +
+                                                  halfDayHours.toString() +
+                                                  " " +
+                                                  AppLocalizations.of(context)!
+                                                      .hours +
+                                                  ")",
                                             ),
                                             value: 2,
                                             groupValue: fullDay,
@@ -417,70 +431,74 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
   void sendLeaveRequest(double userLeaveBalance, BuildContext context) {
     if (userLeaveBalance > getDateDifferenceInDays(fromDate, toDate)) {
       if (hours >= 0) {
-        if(hours <= hoursAllowed){
-        AbsenceRequest absenceRequest = AbsenceRequest(
-          dateFrom: fromDateString(fromDate),
-          dateTo: fromDateString(toDate),
-          usId: newValue.usId,
-          days: getDateDifferenceInDays(fromDate, toDate),
-          uaAantaluren:
-              (fullDay == 1) ? fullDayHours : (fullDay == 2) ? halfDayHours : double.parse(numberController.text),
-          uaOpmerking: controller_3.text,
-          fileBytes: fileAsString,
-          typeFile: fileName,
-        );
-        AbsenceService service = AbsenceService();
-        Absence absence = Absence(valid: true);
-        if (fromDate
-                .isAfter(DateTime.now()) ||
-            toDate.isAfter(DateTime.now())) {
-          service.request(absenceRequest)?.then((value) {
-            if (value.valid) {
-              absence = value;
-              clearAll();
-              SnackBar snackBar = SnackBar(
-                content: Text(AppLocalizations.of(context)!.requestSuccesfull),
-                backgroundColor: Colors.green,
-              );
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => AbsenceInfoPage(
-                          absence: absence,
-                        )),
-              );
-              setState(() {
-                isApiCallProcess = false;
-              });
-            } else {
-              setState(() {
-                isApiCallProcess = false;
-              });
-              SnackBar snackBar = SnackBar(
-                content: SizedBox(
-                    height: 40,
-                    child: Column(children: [
-                      Text(AppLocalizations.of(context)!.requestUnsuccesfull),
-                      Text(AppLocalizations.of(context)!.reason +
-                          " " +
-                          value.response!),
-                    ])),
-                backgroundColor: Colors.red,
-              );
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            }
-          });
-        } else {
-          setState(() {
-            isApiCallProcess = false;
-          });
-          SnackBar snackBar = SnackBar(
-            content: Text(AppLocalizations.of(context)!.dateNotAllowed),
-            backgroundColor: Colors.red,
+        if (hours <= hoursAllowed) {
+          AbsenceRequest absenceRequest = AbsenceRequest(
+            dateFrom: fromDateString(fromDate),
+            dateTo: fromDateString(toDate),
+            usId: newValue.usId,
+            days: getDateDifferenceInDays(fromDate, toDate),
+            uaAantaluren: (fullDay == 1)
+                ? fullDayHours
+                : (fullDay == 2)
+                    ? halfDayHours
+                    : double.parse(numberController.text),
+            uaOpmerking: controller_3.text,
+            fileBytes: fileAsString,
+            typeFile: fileName,
           );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        }} else {
+          AbsenceService service = AbsenceService();
+          Absence absence = Absence(valid: true);
+          if (fromDate.isAfter(DateTime.now()) ||
+              toDate.isAfter(DateTime.now())) {
+            service.request(absenceRequest)?.then((value) {
+              if (value.valid) {
+                absence = value;
+                clearAll();
+                SnackBar snackBar = SnackBar(
+                  content:
+                      Text(AppLocalizations.of(context)!.requestSuccesfull),
+                  backgroundColor: Colors.green,
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AbsenceInfoPage(
+                            absence: absence,
+                          )),
+                );
+                setState(() {
+                  isApiCallProcess = false;
+                });
+              } else {
+                setState(() {
+                  isApiCallProcess = false;
+                });
+                SnackBar snackBar = SnackBar(
+                  content: SizedBox(
+                      height: 40,
+                      child: Column(children: [
+                        Text(AppLocalizations.of(context)!.requestUnsuccesfull),
+                        Text(AppLocalizations.of(context)!.reason +
+                            " " +
+                            value.response!),
+                      ])),
+                  backgroundColor: Colors.red,
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              }
+            });
+          } else {
+            setState(() {
+              isApiCallProcess = false;
+            });
+            SnackBar snackBar = SnackBar(
+              content: Text(AppLocalizations.of(context)!.dateNotAllowed),
+              backgroundColor: Colors.red,
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        } else {
           setState(() {
             isApiCallProcess = false;
           });
@@ -571,26 +589,15 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
 
     if (pickDate != null) {
       setState(() {
-        if (pickDate.isAfter(DateTime.now())) {
-          if(pickDate.isAfter(fromDate) || pickDate.isAtSameMomentAs(fromDate)) {
-            toDate = pickDate;
-            toDateString = DateFormat.yMd(locale).format(toDate);
-          } else {
-            SnackBar snackBar = SnackBar(
-              content: Text(AppLocalizations.of(context)!.dateAfterFrom),
-              backgroundColor: Colors.red,
-            );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          }
+        if (pickDate.isAfter(fromDate) || isSameDate(pickDate, fromDate)) {
+          toDate = pickDate;
+          toDateString = DateFormat.yMd(locale).format(toDate);
         } else {
           SnackBar snackBar = SnackBar(
-            content: Text(AppLocalizations.of(context)!.incorrectDate),
+            content: Text(AppLocalizations.of(context)!.dateAfterFrom),
             backgroundColor: Colors.red,
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          setState(() {
-            _color_2 = Colors.red;
-          });
         }
       });
       // getDateDifferenceInHours(fromDate, pickDate);
@@ -816,9 +823,9 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
     AbsenceService service = AbsenceService();
     service.listHourTypes().then((value) {
       setState(() {
-        if(value != null){
-          if(value.length == 1){
-            if(value.first.valid) {
+        if (value != null) {
+          if (value.length == 1) {
+            if (value.first.valid) {
               hourTypes = value;
               newValue = value.first;
               _isLoading = true;
@@ -834,5 +841,16 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
         }
       });
     });
+  }
+
+  bool isSameDate(DateTime pickDate, DateTime fromDate) {
+    String date = fromDateString(pickDate);
+    String otherDate = fromDateString(fromDate);
+    if (pickDate.year == fromDate.year &&
+        pickDate.month == fromDate.month &&
+        pickDate.day == fromDate.day) {
+      return true;
+    }
+    return false;
   }
 }
