@@ -572,7 +572,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage> {
     if (pickDate != null) {
       setState(() {
         if (pickDate.isAfter(DateTime.now())) {
-          if(pickDate.isAfter(fromDate)) {
+          if(pickDate.isAfter(fromDate) || pickDate.isAtSameMomentAs(fromDate)) {
             toDate = pickDate;
             toDateString = DateFormat.yMd(locale).format(toDate);
           } else {
