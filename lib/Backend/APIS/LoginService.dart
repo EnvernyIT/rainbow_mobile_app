@@ -66,6 +66,12 @@ class LoginService {
       } on HttpException {
         return LoginResponseModel(
             valid: false, token: '', response: ConstantUtil.SOMETHING_WRONG);
+      } on CertificateException {
+        return LoginResponseModel(
+            valid: false, token: '', response: ConstantUtil.WRONG_URL_SSL);
+      } on HandshakeException {
+        return LoginResponseModel(
+            valid: false, token: '', response: ConstantUtil.URL_NOT_VALID);
       }
     } else {
       return LoginResponseModel(

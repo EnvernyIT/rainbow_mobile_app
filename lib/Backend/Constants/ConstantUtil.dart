@@ -13,4 +13,5 @@ class ConstantUtil {
   static const String SOMETHING_WRONG = "Something went wrong";
   static const String TOKEN_EXPIRED = "Token Expired, login";
   static const String CREDENTIALS_INVALID = "Credential are invalid";
+  static const String WRONG_URL_SSL = "Url has invalid character.";
 }

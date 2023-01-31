@@ -135,7 +135,7 @@ class _PayslipListPageState extends State<PayslipListPage> {
                             : ListView.builder(
                                 physics: const NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
-                                itemCount: listLength,
+                                itemCount: payslipList.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   return PayslipTile(
                                       payslip: payslipList[index]);

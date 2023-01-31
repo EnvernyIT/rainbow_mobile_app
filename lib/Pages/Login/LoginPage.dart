@@ -15,6 +15,7 @@ import 'PincodePage.dart';
 
 class LoginPage extends StatefulWidget {
   static const String routeName = '/login';
+
   const LoginPage({Key? key}) : super(key: key);
 
   @override
@@ -113,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                       if (input == null || input.isEmpty) {
                         return AppLocalizations.of(context)!.giveLink;
                       } else {
-                        if (!input.startsWith("http:")) {
+                        if (!input.startsWith("https://") && !input.startsWith("http://")) {
                           return AppLocalizations.of(context)!.urlExample;
                         }
                       }
@@ -241,15 +242,18 @@ class _LoginPageState extends State<LoginPage> {
                         //Icon at tail, arrow bottom is default icon
                         padding: EdgeInsets.only(left: 20),
                         child: Icon(Icons.arrow_circle_down_sharp)),
-                    iconEnabledColor: RainbowColor.primary_1, //Icon color
+                    iconEnabledColor: RainbowColor.primary_1,
+                    //Icon color
                     style: TextStyle(
                         color: RainbowColor.primary_1, //Font color
                         fontSize: 17, //font size on dropdown button
                         fontFamily: RainbowTextStyle.fontFamily),
-                    dropdownColor:
-                        RainbowColor.secondary, //dropdown background color
-                    underline: Container(), //remove underline
-                    isExpanded: false, //make true to make width 100%
+                    dropdownColor: RainbowColor.secondary,
+                    //dropdown background color
+                    underline: Container(),
+                    //remove underline
+                    isExpanded: false,
+                    //make true to make width 100%
                     items: items.map((String items) {
                       return DropdownMenuItem(
                         value: items,
@@ -420,6 +424,7 @@ class _LoginPageState extends State<LoginPage> {
     LoginService loginService = LoginService();
     SharedPreferences preferences = await SharedPreferences.getInstance();
     loginService.login(requestModel).then((value) {
+      // try{
       if (value.valid == true) {
         LoggedInUser.loggedInUser = UserModel(
             emId: value.emId,
