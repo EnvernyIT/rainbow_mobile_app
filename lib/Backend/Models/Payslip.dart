@@ -68,7 +68,7 @@ class Payslip {
   double? hmCumBedrag;
   String? hmActief;
   num? hsDagLoon;
-  int? hsUrenPerWeek;
+  double? hsUrenPerWeek;
   String? wtCode;
   String? beVaCode;
   String? beTelefoon;
@@ -198,13 +198,13 @@ class Payslip {
             payslip.fuCode = data[i]['fuCode'] as String;
             payslip.fuOmschrijving = data[i]['fuOmschrijving'] as String;
             payslip.emLoonType = data[i]['emLoonType'] as String;
-            payslip.emPerLoon = data[i]['emPerLoon'] as double?;
-            payslip.emUurLoon = data[i]['emUurLoon'] as double?;
+            payslip.emPerLoon = double.tryParse(data[i]['emPerLoon'].toString());
+            payslip.emUurLoon = double.tryParse(data[i]['emUurLoon'].toString());
             payslip.btType1 = data[i]['btType1'] as String;
             payslip.btOmschrijving1 = data[i]['btOmschrijving1'] as String;
             payslip.hsRekening1 = data[i]['hsRekening1'] as String;
             payslip.hsBank1 = data[i]['hsBank1'] as String;
-            payslip.hsBedrag1 = data[i]['hsBedrag1'] as double;
+            payslip.hsBedrag1 = double.tryParse(data[i]['hsBedrag1'].toString());
             payslip.hsVaCode1 = data[i]['hsVaCode1'] as String;
             payslip.beTaalLoonslip = data[i]['beTaalLoonslip'] as String;
             payslip.hsVacantieSaldo = data[i]['hsVacantieSaldo'] as double?;
@@ -230,7 +230,7 @@ class Payslip {
             // payslip.hmCumBedrag = json[i]['hmCumBedrag'] as num;
             payslip.hmActief = data[i]['hmActief'] as String;
             payslip.hsDagLoon = data[i]['hsDagLoon'] as double?;
-            payslip.hsUrenPerWeek = data[i]['hsUrenPerWeek'] as int;
+            payslip.hsUrenPerWeek = double.tryParse(data[i]['hsUrenPerWeek'].toString());
             payslip.wtCode = data[i]['wtCode'] as String;
             payslip.beVaCode = data[i]['beVaCode'] as String;
             payslip.beTelefoon = data[i]['beTelefoon'] as String;
@@ -311,7 +311,7 @@ class Payslip {
     // final hmCumBedrag = json['hmCumBedrag'] as double;
     final hmActief = json['hmActief'] as String;
     final hsDagLoon = json['hsDagLoon'] as num;
-    final hsUrenPerWeek = json['hsUrenPerWeek'] as int;
+    final hsUrenPerWeek = double.tryParse(json['hsUrenPerWeek'].toString());
     final wtCode = json['wtCode'] as String;
     final beVaCode = json['beVaCode'] as String;
     final beTelefoon = json['beTelefoon'] as String;
