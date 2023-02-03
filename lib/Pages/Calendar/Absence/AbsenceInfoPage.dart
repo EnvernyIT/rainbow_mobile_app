@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:rainbow_app/Components/OnlyReadFields/RButtonTextField.dart';
+import 'package:rainbow_app/Components/OnlyReadFields/RField.dart';
 import 'package:rainbow_app/Pages/Calendar/AbsenceListPage/AbsenceListPage.dart';
 import 'package:rainbow_app/Pages/Dashboard/DashboardPage.dart';
 
@@ -17,6 +18,7 @@ import '../../../Theme/ThemeTextStyle.dart';
 
 class AbsenceInfoPage extends StatefulWidget {
   final Absence absence;
+
   const AbsenceInfoPage({Key? key, required this.absence}) : super(key: key);
   static const String routeName = '/absenceInfo';
 
@@ -30,6 +32,7 @@ class _AbsenceInfoPageState extends State<AbsenceInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         elevation: 2,
         foregroundColor: RainbowColor.primary_1,
@@ -42,65 +45,56 @@ class _AbsenceInfoPageState extends State<AbsenceInfoPage> {
         }),
       ),
       body: Container(
-        margin: const EdgeInsets.all(10),
+        margin: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.white, width: 3.0),
+          borderRadius: BorderRadius.circular(15),
+          color: Colors.white,
+        ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            RTitle(
-              title: AppLocalizations.of(context)!.absence +
-                  ": " +
-                  (widget.absence.hourType?.usOmschrijving ?? ""),
-              subTitle: (widget.absence.uaEindDat != widget.absence.usStartDate
-                      ? showMDDate(widget.absence.usStartDate)
-                      : showYMDDate(widget.absence.usStartDate) +
-                          " (" +
-                          widget.absence.uaAantalUren.toString() +
-                          " " +
-                          AppLocalizations.of(context)!.hours +
-                          ")") +
-                  " " +
-                  (widget.absence.uaEindDat != widget.absence.usStartDate
-                      ? AppLocalizations.of(context)!.towiths +
-                          " " +
-                          showYMDDate(widget.absence.uaEindDat!)
-                      : ""),
+            RField(
+              title: AppLocalizations.of(context)!.leaveType,
+              content: widget.absence.hourType?.usOmschrijving ?? "",
             ),
-            const SizedBox(
-              height: 25,
+            RField(
+                title: widget.absence.uaEindDat != widget.absence.usStartDate
+                    ? AppLocalizations.of(context)!.duration
+                    : AppLocalizations.of(context)!.day,
+                content: (widget.absence.uaEindDat != widget.absence.usStartDate
+                    ? showMDDate(widget.absence.usStartDate) +
+                        " - " +
+                        " " +
+                        showMDDate(widget.absence.uaEindDat!)
+                    : showYMDDate(widget.absence.usStartDate) +
+                        " (" +
+                        widget.absence.uaAantalUren.toString() +
+                        " " +
+                        AppLocalizations.of(context)!.hours +
+                        ")")),
+            RField(
+              title: AppLocalizations.of(context)!.total,
+              content: widget.absence.numberOfLeaveDays.toString() +
+                      " " +
+                      AppLocalizations.of(context)!.dayss ??
+                  " - " + AppLocalizations.of(context)!.dayss,
             ),
-            RTextField(
+            RField(
+              title: AppLocalizations.of(context)!.hours,
+              content: widget.absence.uaAantalUren.toString() ?? "",
+            ),
+            RField(
               title: AppLocalizations.of(context)!.status,
-              data_1: widget.absence.status?.statusNumber ==
+              content: widget.absence.status!.ksOmschrijving ?? "",
+              color: widget.absence.status?.statusNumber ==
                       Standardstatus.PR_70_APPROVED
-                  ? AppLocalizations.of(context)!.approved
+                  ? Colors.green
                   : widget.absence.status?.statusNumber ==
                           Standardstatus.PR_70_REJECTED
-                      ? AppLocalizations.of(context)!.declined
-                      : AppLocalizations.of(context)!.waiting,
-              color_1: widget.absence.status?.statusNumber ==
-                      Standardstatus.PR_70_APPROVED
-                  ? Colors.lightGreen
-                  : widget.absence.status?.statusNumber ==
-                          Standardstatus.PR_70_REJECTED
-                      ? Colors.red
+                      ? Colors.redAccent
                       : Color.fromARGB(255, 193, 186, 186),
-              fontSize: 17.0,
             ),
-            RBigTextField(
-              title: AppLocalizations.of(context)!.description,
-              data: widget.absence.uaOpmerking,
-              fontSize: 17.0,
-            ),
-            // RButtonTextField(
-            //   title: AppLocalizations.of(context)!.fileOrPhoto,
-            //   fontSize: 17.0,
-            //   buttonTitle: AppLocalizations.of(context)!.download,
-            //   buttonIcon: const Icon(
-            //     Icons.download,
-            //     color: RainbowColor.secondary,
-            //     size: 16.0,
-            //   ),
-            // )
           ],
         ),
       ),
@@ -109,7 +103,7 @@ class _AbsenceInfoPageState extends State<AbsenceInfoPage> {
 
   String showMDDate(DateTime? date) {
     if (date != null) {
-      String formatter = DateFormat.MMMEd().format(date);
+      String formatter = DateFormat.yMMMd().format(date);
       return formatter;
     }
     return " ";
@@ -120,7 +114,6 @@ class _AbsenceInfoPageState extends State<AbsenceInfoPage> {
       String formatter = DateFormat.yMMMEd().format(date);
       return formatter;
     }
-
     return " ";
   }
 }

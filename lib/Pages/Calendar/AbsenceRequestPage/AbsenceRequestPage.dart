@@ -20,6 +20,7 @@ import '../../../Backend/Models/HourType.dart';
 import '../../../Components/Buttons/Button.dart';
 import '../../../Components/Navigation.dart';
 import '../../../Components/ProgressHUD.dart';
+import '../../../Components/TextInputs/DateInputField.dart';
 import '../../../Components/TextInputs/DropdownTextField.dart';
 import '../../../Components/TextInputs/SmallInputField.dart';
 import '../../../Components/Tiles/Absence2Tile.dart';
@@ -38,9 +39,10 @@ class AbsenceRequestPage extends StatefulWidget {
 class _AbsenceRequestPageState extends State<AbsenceRequestPage>
     with TickerProviderStateMixin {
   GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
-  DateTime fromDate = DateTime.now().add(Duration(days: 1));
-  DateTime toDate = DateTime.now().add(Duration(days: 1));
+  DateTime fromDate = DateTime.now().add(const Duration(days: 1));
+  DateTime toDate = DateTime.now().add(const Duration(days: 1));
   String toDateString = "";
+  String fromDateString = "";
   bool typeDaysRequest = false;
   int selectedColor = 0;
   Color _color_1 = RainbowColor.primary_1;
@@ -66,7 +68,15 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
 
   List<HourType> hourTypes = [];
   String message = "";
-  bool _isLoading = true;
+
+  //Colors of days half, full and custom
+  Color? colors_1a = Colors.white;
+  Color? colors_1b = Colors.grey[500];
+  Color? colors_2a = RainbowColor.primary_1;
+  Color? colors_2b = Colors.white;
+  Color? colors_3a = RainbowColor.primary_1;
+  Color? colors_3b = Colors.white;
+  int color = 1;
 
   // this will control the button clicks and tab changing
   late TabController _controller;
@@ -120,6 +130,10 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
   // regist if the the button was tapped
   bool _buttonTap = false;
 
+  int request = 0;
+
+  bool custom = false;
+
   @override
   void initState() {
     super.initState();
@@ -135,8 +149,8 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
     // this will execute the function every time the _controller.index value changes
     _controller.addListener(_handleTabChange);
 
-    _animationControllerOff =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 75));
+    _animationControllerOff = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 75));
     // so the inactive buttons start in their "final" state (color)
     _animationControllerOff.value = 1.0;
     _colorTweenBackgroundOff =
@@ -146,8 +160,8 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
         ColorTween(begin: _foregroundOn, end: _foregroundOff)
             .animate(_animationControllerOff);
 
-    _animationControllerOn =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 150));
+    _animationControllerOn = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 150));
     // so the inactive buttons start in their "final" state (color)
     _animationControllerOn.value = 1.0;
     _colorTweenBackgroundOn =
@@ -180,73 +194,58 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
       controller_3.clear();
       numberController.clear();
       fileName = "Choose file";
+      toDateString = "";
+      fromDateString = "";
       fileAsString = "";
-      DateTime fromDate = DateTime.now().add(Duration(days: 1));
-      DateTime toDate = DateTime.now().add(Duration(days: 1));
-      String toDateString = "";
+      DateTime fromDate = DateTime.now().add(const Duration(days: 1));
+      DateTime toDate = DateTime.now().add(const Duration(days: 1));
       absences.clear();
     });
   }
 
   Widget uiBuild(BuildContext context) {
     String locale = Localizations.localeOf(context).languageCode;
-    // return DefaultTabController(
-    //     length: 2,
-    //     child:
     return Scaffold(
       appBar: AppBar(
         elevation: 2,
         backgroundColor: RainbowColor.secondary,
         foregroundColor: RainbowColor.primary_1,
         title: Text(AppLocalizations.of(context)!.requestLeave,
-            style: TextStyle(fontFamily: RainbowTextStyle.fontFamily)),
+            style: TextStyle(
+              fontFamily: RainbowTextStyle.fontFamily,
+            )),
+        actions: [
+          IconButton(
+              onPressed: () {
+                setState(() {
+                  if (request == 0) {
+                    setState(() {
+                      isApiCallProcess = true;
+                      _controller.index = 1;
+                      request = 1;
+                    });
+                    setList();
+                  } else {
+                    setState(() {
+                      _controller.index = 0;
+                      request = 0;
+                    });
+                  }
+                });
+              },
+              icon: Icon(
+                request == 0 ? Icons.list : Icons.add,
+                size: 30,
+              )),
+        ],
       ),
       body: Column(children: [
-        Container(
-            padding: EdgeInsets.all(4),
-            margin: EdgeInsets.only(left: 45, right: 35),
-            alignment: Alignment.center,
-            height: 55.0,
-            child: ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                controller: _scrollController,
-                scrollDirection: Axis.horizontal,
-                // number of tabs
-                itemCount: _icons.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Padding(
-                    // each button's key
-                    key: _keys[index],
-                    // padding for the buttons
-                    padding: EdgeInsets.all(6.0),
-                    child: FloatingActionButton.extended(
-                      heroTag: "btn" + index.toString(),
-                      backgroundColor: _getBackgroundColor(index),
-                      foregroundColor: _getForegroundColor(index),
-                      label: Text(index == 0 ? AppLocalizations.of(context)!.request : AppLocalizations.of(context)!.list),
-                      icon: Icon(
-                        _icons[index],
-                        size: 24,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _buttonTap = true;
-                          // trigger the controller to change between Tab Views
-                          _controller.animateTo(index);
-                          // set the current index
-                          _setCurrentIndex(index);
-                          // scroll to the tapped button (needed if we tap the active button and it's not on its position)
-                          _scrollTo(index);
-                          setList();
-                          _isLoading = false;
-                        });
-                      },
-                    ),
-                  );
-                })),
+        const SizedBox(
+          height: 5,
+        ),
         Flexible(
             child: TabBarView(
-                //     // physics: NeverScrollableScrollPhysics(),
+                physics: NeverScrollableScrollPhysics(),
                 controller: _controller,
                 children: <Widget>[
               Container(
@@ -288,216 +287,239 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
                             const SizedBox(
                               height: 10,
                             ),
-                            InputField(
-                                textAlign: TextAlign.center,
-                                controller: controller_1,
-                                title: typeDaysRequest == true
-                                    ? AppLocalizations.of(context)!.from + ":"
-                                    : AppLocalizations.of(context)!.day + ":",
-                                hint: DateFormat.yMd(locale).format(fromDate),
-                                color: _color_1,
-                                widget: IconButton(
-                                    onPressed: () {
-                                      _getFromDateFromUser(locale);
-                                      // getDateDifferenceInHours(fromDate, toDate);
-                                    },
-                                    icon: Icon(
-                                      Icons.calendar_today_outlined,
-                                      color: RainbowColor.primary_1,
-                                    ))),
-                            InputField(
-                                textAlign: TextAlign.center,
-                                controller: controller_2,
-                                title:
-                                    AppLocalizations.of(context)!.towith + ":",
-                                hint: toDateString,
-                                color: _color_2,
-                                widget: IconButton(
-                                    onPressed: () {
-                                      _getToDateFromUser(locale);
-                                      // getDateDifferenceInHours(fromDate, toDate);
-                                    },
-                                    icon: Icon(
-                                      Icons.calendar_today_outlined,
-                                      color: RainbowColor.primary_1,
-                                    ))),
-                            const SizedBox(
-                              height: 15,
-                            ),
                             Container(
                                 padding:
-                                    const EdgeInsets.only(left: 15, right: 20),
-                                margin: const EdgeInsets.only(bottom: 0),
-                                child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                          margin:
-                                              const EdgeInsets.only(right: 43),
-                                          child: Text(
-                                            "Type: ",
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w400,
-                                                color: Colors.black,
-                                                fontFamily: RainbowTextStyle
-                                                    .fontFamily),
+                                    const EdgeInsets.only(left: 20, right: 20),
+                                margin: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(15),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.2),
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: const Offset(4, 8),
+                                    )
+                                  ],
+                                ),
+                                child: Container(
+                                    alignment: Alignment.center,
+                                    decoration: const BoxDecoration(),
+                                    child: DropdownButton(
+                                      value:
+                                          (newValue != null) ? newValue : null,
+                                      focusColor: RainbowColor.primary_1,
+                                      iconSize: 30,
+                                      icon: const Padding(
+                                          padding: EdgeInsets.only(right: 5),
+                                          child: Icon(
+                                            Icons.keyboard_arrow_down,
+                                            size: 30,
                                           )),
-                                      Container(
-                                          margin:
-                                              const EdgeInsets.only(left: 5),
-                                          child: DropdownButton(
-                                            value: (newValue != null)
-                                                ? newValue
-                                                : null,
-                                            focusColor: RainbowColor.primary_1,
-                                            iconSize: 30,
-                                            icon: const Padding(
-                                                padding:
-                                                    EdgeInsets.only(left: 2),
-                                                child: Icon(Icons
-                                                    .arrow_circle_down_sharp)),
-                                            iconEnabledColor:
-                                                RainbowColor.primary_1,
-                                            //Icon color
-                                            style: TextStyle(
-                                                color: RainbowColor.primary_1,
-                                                //Font color
-                                                fontSize: 18,
-                                                //font size on dropdown button
-                                                fontFamily: RainbowTextStyle
-                                                    .fontFamily),
-                                            dropdownColor:
-                                                RainbowColor.secondary,
-                                            //dropdown background color
-                                            underline: Container(
-                                              color: RainbowColor.primary_1,
-                                              width: 15.0,
-                                              height: 1,
-                                            ),
-                                            //remove underline
-                                            isExpanded: false,
-                                            //make true to make width 100%
-                                            items:
-                                                hourTypes.map((HourType value) {
-                                              return DropdownMenuItem(
-                                                value: value,
-                                                child: Text(
-                                                    value.usOmschrijving!,
-                                                    style: TextStyle(
-                                                        fontFamily:
-                                                            RainbowTextStyle
-                                                                .fontFamily)),
-                                              );
-                                            }).toList(),
-                                            onChanged:
-                                                (HourType? changedValue) {
-                                              setState(() {
-                                                newValue = changedValue!;
-                                              });
-                                            },
-                                          ))
-                                    ])),
+                                      iconEnabledColor: RainbowColor.primary_1,
+                                      //Icon color
+                                      style: TextStyle(
+                                          color: Colors.grey[500],
+                                          //Font color
+                                          fontSize: 18,
+                                          //font size on dropdown button
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily:
+                                              RainbowTextStyle.fontFamily),
+                                      dropdownColor: RainbowColor.secondary,
+                                      //dropdown background color
+                                      underline: Container(
+                                        width: 0,
+                                        height: 0,
+                                      ),
+                                      //remove underline
+                                      isExpanded: true,
+                                      //make true to make width 100%
+                                      items: hourTypes.map((HourType value) {
+                                        return DropdownMenuItem(
+                                          value: value,
+                                          child: Text(value.usOmschrijving!,
+                                              style: TextStyle(
+                                                  fontFamily: RainbowTextStyle
+                                                      .fontFamily)),
+                                        );
+                                      }).toList(),
+                                      onChanged: (HourType? changedValue) {
+                                        setState(() {
+                                          newValue = changedValue!;
+                                        });
+                                      },
+                                    ))),
                             const SizedBox(
                               height: 10,
                             ),
-                            SizedBox(
-                                // width: 400,
-                                height: 130,
-                                child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Expanded(
-                                          child: RadioListTile(
-                                              activeColor:
-                                                  RainbowColor.primary_1,
-                                              title: Text(
-                                                AppLocalizations.of(context)!
-                                                        .wholeDay +
-                                                    " (" +
-                                                    fullDayHours.toString() +
-                                                    " " +
-                                                    AppLocalizations.of(
-                                                            context)!
-                                                        .hours +
-                                                    ")",
-                                              ),
-                                              value: 1,
-                                              groupValue: fullDay,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  fullDay = int.parse(
-                                                      value.toString());
-                                                  hours = fullDayHours;
-                                                });
-                                              })),
-                                      Expanded(
-                                          child: RadioListTile(
-                                              activeColor:
-                                                  RainbowColor.primary_1,
-                                              title: Text(
-                                                AppLocalizations.of(context)!
-                                                        .halfDay +
-                                                    " (" +
-                                                    halfDayHours.toString() +
-                                                    " " +
-                                                    AppLocalizations.of(
-                                                            context)!
-                                                        .hours +
-                                                    ")",
-                                              ),
-                                              value: 2,
-                                              groupValue: fullDay,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  fullDay = int.parse(
-                                                      value.toString());
-                                                  hours = halfDayHours;
-                                                });
-                                              })),
-                                      Expanded(
-                                        child: RadioListTile(
-                                            activeColor: RainbowColor.primary_1,
-                                            title: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Text(AppLocalizations.of(
-                                                          context)!
-                                                      .hours),
-                                                  const SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  SmallInputField(
-                                                    title: "",
-                                                    width: 100,
-                                                    keyboardType:
-                                                        TextInputType.number,
-                                                    controller:
-                                                        numberController,
-                                                  )
-                                                ]),
-                                            value: 3,
-                                            groupValue: fullDay,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                fullDay =
-                                                    int.parse(value.toString());
-                                              });
-                                            }),
-                                      ),
-                                    ])),
-                            const SizedBox(
-                              height: 25,
+                            DateInputField(
+                              startDate: fromDateString,
+                              endDate: toDateString,
+                              onTap: () {
+                                _getFromDateFromUser(locale);
+                              },
+                              onTap_1: () {
+                                _getToDateFromUser(locale);
+                              },
                             ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              margin: const EdgeInsets.all(10),
+                              // height: 50,
+                              decoration: BoxDecoration(
+                                color: RainbowColor.primary_1,
+                                border: Border.all(
+                                    color: RainbowColor.primary_1,
+                                    width: 3,
+                                    style: BorderStyle.solid),
+                                borderRadius: BorderRadius.circular(15),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.2),
+                                    spreadRadius: 5,
+                                    blurRadius: 7,
+                                    offset: const Offset(4, 8),
+                                  )
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Expanded(
+                                      child: InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              changeButtonColors(1);
+                                              custom = false;
+                                            });
+                                          },
+                                          child: Container(
+                                              alignment: Alignment.center,
+                                              padding: const EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
+                                                  color: colors_1a,
+                                                  borderRadius:
+                                                      const BorderRadius.only(
+                                                          bottomLeft:
+                                                              Radius.circular(
+                                                                  15),
+                                                          topLeft:
+                                                              Radius.circular(
+                                                                  15))),
+                                              child: Text(
+                                                AppLocalizations.of(context)!
+                                                    .wholeDay,
+                                                style: TextStyle(
+                                                    color: colors_1b,
+                                                    fontSize: 18,
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              )))),
+                                  Expanded(
+                                      child: InkWell(
+                                          onTap: () {
+                                            changeButtonColors(2);
+                                            custom = false;
+                                          },
+                                          child: Container(
+                                              alignment: Alignment.center,
+                                              padding: const EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
+                                                  color: colors_2a),
+                                              child: Text(
+                                                AppLocalizations.of(context)!
+                                                    .halfDay,
+                                                style: TextStyle(
+                                                    color: colors_2b,
+                                                    fontSize: 18,
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              )))),
+                                  Expanded(
+                                      child: InkWell(
+                                          onTap: () {
+                                            changeButtonColors(3);
+                                            custom = true;
+                                          },
+                                          child: Container(
+                                              alignment: Alignment.center,
+                                              padding: const EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
+                                                  color: colors_3a,
+                                                  borderRadius:
+                                                      const BorderRadius.only(
+                                                          bottomRight:
+                                                              Radius.circular(
+                                                                  15),
+                                                          topRight:
+                                                              Radius.circular(
+                                                                  15))),
+                                              child: Text(
+                                                AppLocalizations.of(context)!
+                                                    .custom,
+                                                style: TextStyle(
+                                                    color: colors_3b,
+                                                    fontSize: 18,
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              )))),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            custom
+                                ? Container(
+                                    padding: const EdgeInsets.only(
+                                        left: 20, right: 20),
+                                    margin: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(15),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.2),
+                                          spreadRadius: 5,
+                                          blurRadius: 7,
+                                          offset: const Offset(4, 8),
+                                        )
+                                      ],
+                                    ),
+                                    child: TextField(
+                                      controller: numberController,
+                                      textAlign: TextAlign.start,
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black,
+                                          fontFamily:
+                                              RainbowTextStyle.fontFamily),
+                                      decoration: InputDecoration(
+                                        hintText: "0",
+                                        hintStyle: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.grey[500],
+                                            fontFamily:
+                                                RainbowTextStyle.fontFamily),
+                                        border: InputBorder.none,
+                                      ),
+                                    ))
+                                : SizedBox(
+                                    height: 0,
+                                    width: 0,
+                                  ),
                             MultiLineInputField(
                                 controller: controller_3,
-                                title:
-                                    AppLocalizations.of(context)!.description +
-                                        ":",
-                                hint: AppLocalizations.of(context)!
-                                    .giveDescription),
+                                title: AppLocalizations.of(context)!.reason),
+                            const SizedBox(
+                              height: 15,
+                            ),
                             Container(
                                 alignment: Alignment.center,
                                 margin: const EdgeInsets.all(3),
@@ -533,11 +555,24 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
                                                 )))
                                       ],
                                     ))),
+                            SizedBox(
+                              height: 15,
+                            ),
                             Container(
                                 alignment: Alignment.bottomCenter,
-                                margin: const EdgeInsets.all(10),
-                                child: Button(
-                                  label: AppLocalizations.of(context)!.request,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(15),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.2),
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: const Offset(4, 8),
+                                    )
+                                  ],
+                                ),
+                                child: GestureDetector(
                                   onTap: () {
                                     if (validateAndSave()) {
                                       setState(() {
@@ -547,31 +582,70 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
                                           userLeaveBalance, context);
                                     }
                                   },
+                                  child: Container(
+                                      alignment: Alignment.center,
+                                      height: 50,
+                                      width: 400,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          color: RainbowColor.primary_1),
+                                      child: Text(
+                                        AppLocalizations.of(context)!.request,
+                                        style: TextStyle(
+                                            color: RainbowColor.secondary,
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily:
+                                                RainbowTextStyle.fontFamily),
+                                      )),
                                 ))
                           ],
                         ))),
               ),
-              ProgressHUD(
-                  inAsyncCall: _isLoading,
-                  opacity: 0.5,
-                  child: Container(
-                      color: RainbowColor.secondary,
-                      child: RefreshIndicator(
-                        backgroundColor: RainbowColor.secondary,
-                        color: RainbowColor.primary_1,
-                        onRefresh: refresh,
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: absences.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Absence2Tile(
-                                absence: absences[index],
-                              );
-                            }),
-                      )))
+              RefreshIndicator(
+                backgroundColor: RainbowColor.secondary,
+                color: RainbowColor.primary_1,
+                onRefresh: refresh,
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: absences.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Absence2Tile(
+                        absence: absences[index],
+                      );
+                    }),
+              )
             ]))
       ]),
     );
+  }
+
+  void changeButtonColors(int i) {
+    setState(() {
+      if (i == 1) {
+        colors_1a = Colors.white;
+        colors_1b = RainbowColor.primary_1;
+        colors_2a = RainbowColor.primary_1;
+        colors_2b = Colors.white;
+        colors_3a = RainbowColor.primary_1;
+        colors_3b = Colors.white;
+      } else if (i == 2) {
+        colors_1a = RainbowColor.primary_1;
+        colors_1b = Colors.white;
+        colors_2a = Colors.white;
+        colors_2b = RainbowColor.primary_1;
+        colors_3a = RainbowColor.primary_1;
+        colors_3b = Colors.white;
+      } else if (i == 3) {
+        colors_1a = RainbowColor.primary_1;
+        colors_1b = Colors.white;
+        colors_2a = RainbowColor.primary_1;
+        colors_2b = Colors.white;
+        colors_3a = Colors.white;
+        colors_3b = RainbowColor.primary_1;
+      }
+    });
   }
 
   void sendLeaveRequest(double userLeaveBalance, BuildContext context) {
@@ -579,8 +653,8 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
       if (hours >= 0) {
         if (hours <= hoursAllowed) {
           AbsenceRequest absenceRequest = AbsenceRequest(
-            dateFrom: fromDateString(fromDate),
-            dateTo: fromDateString(toDate),
+            dateFrom: getDateString(fromDate),
+            dateTo: getDateString(toDate),
             usId: newValue.usId,
             days: getDateDifferenceInDays(fromDate, toDate),
             uaAantaluren: (fullDay == 1)
@@ -700,6 +774,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
 
           fromDate = pickDate;
           toDate = fromDate;
+          fromDateString = DateFormat.yMd(locale).format(fromDate);
           toDateString = DateFormat.yMd(locale).format(toDate);
         } else {
           SnackBar snackBar = SnackBar(
@@ -713,7 +788,6 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
           });
         }
       });
-      // getDateDifferenceInHours(pickDate, toDate);
     } else {
       print(AppLocalizations.of(context)!.somethingWentWrong);
     }
@@ -755,14 +829,14 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
 
   Future refresh() async {
     setState(() {
-      _isLoading = true;
+      isApiCallProcess = true;
     });
 
     listLength = 0;
     setList();
 
     setState(() {
-      _isLoading = false;
+      isApiCallProcess = false;
     });
   }
 
@@ -885,7 +959,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
         if (value != null) {
           absences = value;
           listLength = absences.length;
-          _isLoading = false;
+          isApiCallProcess = false;
         }
       });
     });
@@ -900,7 +974,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
     });
   }
 
-  fromDateString(DateTime date) {
+  getDateString(DateTime date) {
     DateFormat formatter = DateFormat('yyyy-MM-dd');
     String dateString = formatter.format(date);
     return dateString;
@@ -998,8 +1072,8 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
   }
 
   bool isSameDate(DateTime pickDate, DateTime fromDate) {
-    String date = fromDateString(pickDate);
-    String otherDate = fromDateString(fromDate);
+    String date = getDateString(pickDate);
+    String otherDate = getDateString(fromDate);
     if (pickDate.year == fromDate.year &&
         pickDate.month == fromDate.month &&
         pickDate.day == fromDate.day) {

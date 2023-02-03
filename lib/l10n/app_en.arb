@@ -113,7 +113,7 @@
     "saldoInDays" : "Balance in days",
     "pincodeExplanation" : "This pin code is used for direct login. To prevent problems when logging in and also not to hinder you as a user with the continuous provision of login details.",
     "halfDay" : "Half day",
-    "wholeDay" : "Whole day",
+    "wholeDay" : "Full day",
     "dateAfterFrom": "Date should be after th from date!",
     "amount" : "Amount:",
     "period" : "Period",
@@ -126,5 +126,12 @@
     "accountNumb" : "Account number",
     "position" : "Position",
     "hourlyWage" : "Hourly Wage",
-    "empByWage" : "Employee by wage"
+    "empByWage" : "Employee by wage",
+    "startDate" : "Start Date",
+    "endDate" : "End Date",
+    "custom": "Custom",
+    "leaveType": "Leave Type",
+    "duration" : "Duration",
+    "total" : "Total",
+    "amountOfHours" : "Amount of hours"
 }

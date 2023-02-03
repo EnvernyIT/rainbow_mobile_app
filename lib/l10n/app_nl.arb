@@ -126,5 +126,12 @@
     "accountNumb" : "Rekening nummer",
     "position" : "Functie",
     "hourlyWage" : "Uurloon",
-    "empByWage" : "Mederwerker per loon"
+    "empByWage" : "Mederwerker per loon",
+    "startDate" : "Start Datum",
+    "endDate" : "Eind Datum",
+    "custom": "Custom",
+    "leaveType": "Verlof Type",
+    "duration" : "Duur",
+    "total" : "Totaal",
+    "amountOfHours" : "Aantal uren"
 }

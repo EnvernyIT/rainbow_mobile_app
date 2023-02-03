@@ -53,6 +53,10 @@ class _PayslipListPageState extends State<PayslipListPage> {
 
   @override
   Widget build(BuildContext context) {
+    return uiBuild(context);
+  }
+
+  Widget uiBuild(BuildContext context) {
     return Scaffold(
       backgroundColor: RainbowColor.secondary,
       appBar: AppBar(
@@ -101,30 +105,35 @@ class _PayslipListPageState extends State<PayslipListPage> {
       body: FutureBuilder<List<Payslip>?>(
         future: futurePayslips,
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            int? dataLength = snapshot.data?.length;
-            if(dataLength != null && dataLength > 0) {
-              return ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: snapshot.data?.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return PayslipTile(payslip: snapshot.data![index]);
-                  });
-            }else{
-              return  Center(
-                child: Text(AppLocalizations.of(context)!.noPayslipsFound,
-                    style: TextStyle(fontFamily: RainbowTextStyle.fontFamily,fontSize: 20)),
-              );
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData) {
+              int? dataLength = snapshot.data?.length;
+              if (dataLength != null && dataLength > 0) {
+                return ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: snapshot.data?.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return PayslipTile(payslip: snapshot.data![index]);
+                    });
+              } else {
+                return Center(
+                  child: Text(AppLocalizations.of(context)!.noPayslipsFound,
+                      style: TextStyle(
+                          fontFamily: RainbowTextStyle.fontFamily,
+                          fontSize: 20)),
+                );
+              }
+              // return Text('${snapshot.data?.length}');
+            } else if (snapshot.hasError) {
+              print(snapshot.stackTrace);
+              return Text('${snapshot.stackTrace}');
             }
-            // return Text('${snapshot.data?.length}');
-          } else if (snapshot.hasError) {
-            print(snapshot.stackTrace);
-            return Text('${snapshot.stackTrace}');
+          } else {
+            // By default, show a loading spinner.
+            return Center(child: const CircularProgressIndicator());
           }
-
-          // By default, show a loading spinner.
-          return const CircularProgressIndicator();
+          return Container();
         },
       ),
     );

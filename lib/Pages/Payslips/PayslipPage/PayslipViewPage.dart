@@ -16,10 +16,12 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 import '../../../Backend/Constants/ConstantUtil.dart';
 import '../../../Backend/Models/Payslip.dart';
 import '../../../Components/Navigation.dart';
+import '../../../Components/ProgressHUD.dart';
 import '../../../Theme/ThemeTextStyle.dart';
 
 class PayslipViewPage extends StatefulWidget {
   final Payslip payslip;
+
   PayslipViewPage({Key? key, required this.payslip}) : super(key: key);
 
   @override
@@ -28,6 +30,9 @@ class PayslipViewPage extends StatefulWidget {
 
 class _PayslipViewPageState extends State<PayslipViewPage> {
   String errorMessage = "";
+
+  bool isApiCallProcess = false;
+
   @override
   void initState() {
     super.initState();
@@ -35,7 +40,13 @@ class _PayslipViewPageState extends State<PayslipViewPage> {
 
   @override
   Widget build(BuildContext context) {
+    return ProgressHUD(
+        child: uiBuild(context), inAsyncCall: isApiCallProcess, opacity: 0.5);
+  }
+
+  Widget uiBuild(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         elevation: 2,
         foregroundColor: RainbowColor.primary_1,
@@ -46,6 +57,9 @@ class _PayslipViewPageState extends State<PayslipViewPage> {
         actions: [
           IconButton(
               onPressed: () async {
+                setState(() {
+                  isApiCallProcess = true;
+                });
                 final filepath = getFilePath(
                     widget.payslip.hsPeriode.toString(),
                     widget.payslip.hsJaar.toString());
@@ -87,8 +101,14 @@ class _PayslipViewPageState extends State<PayslipViewPage> {
                     backgroundColor: Colors.redAccent,
                   );
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  setState(() {
+                    isApiCallProcess = false;
+                  });
                 } else {
                   _createPdf(bytes, filepath);
+                  setState(() {
+                    isApiCallProcess = false;
+                  });
                 }
               },
               icon: Icon(
@@ -99,7 +119,13 @@ class _PayslipViewPageState extends State<PayslipViewPage> {
       ),
       // drawer: const Navigation(),
       body: Container(
-        margin: const EdgeInsets.all(25),
+        margin: const EdgeInsets.all(15),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.white, width: 3.0),
+          borderRadius: BorderRadius.circular(15),
+          color: Colors.white,
+        ),
         alignment: Alignment.center,
         child: Column(
           children: [
