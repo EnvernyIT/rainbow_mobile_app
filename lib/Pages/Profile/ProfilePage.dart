@@ -58,23 +58,29 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Column(
                   children: [
                     Container(
-                      margin: const EdgeInsets.only(bottom: 20),
+                      margin: const EdgeInsets.only(bottom: 10),
                       alignment: Alignment.center,
                       child: InkWell(
                         onTap: () {
                           // _editProfileImage(context);
                         },
                         child: CircleAvatar(
-                            radius: 65.0,
-                            backgroundColor: RainbowColor.primary_1,
-                            child: image.isNotEmpty
+                            radius: 80.0,
+                            backgroundColor: Colors.transparent,
+                            backgroundImage: DecorationImage(image:
+                            image.isNotEmpty
                                 ? Image.memory(
                                     base64Decode(image),
                                     fit: BoxFit.fill,
-                                  )
+                                  ).image
                                 : Image.asset(
-                                    'assets/images/blank-profile.png')),
-                      ),
+                                    'assets/images/blank-profile.png').image).image,
+                      )),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 10, bottom: 10),
+                      color: Colors.grey[300],
+                      height: 3,
                     ),
                     RTextField(
                       title: AppLocalizations.of(context)!.employeeCode,

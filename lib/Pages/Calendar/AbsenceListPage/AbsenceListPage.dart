@@ -27,6 +27,7 @@ class _AbsenceListPageState extends State<AbsenceListPage> {
   bool _isLoading = false; //bool variable created
   bool isCurrentRoutePincode = false;
   String message = "";
+
   @override
   void initState() {
     super.initState();
@@ -116,7 +117,11 @@ class _AbsenceListPageState extends State<AbsenceListPage> {
   }
 
   Future refresh() async {
-    setState(() {});
+    setState(() {
+      _isLoading = false;
+    });
+    absences.clear();
+    setList();
   }
 
   void setList() {
