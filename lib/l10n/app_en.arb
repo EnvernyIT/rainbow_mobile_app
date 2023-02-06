@@ -126,7 +126,7 @@
     "accountNumb" : "Account number",
     "position" : "Position",
     "hourlyWage" : "Hourly Wage",
-    "empByWage" : "Employee by wage",
+    "empByWage" : "Period wage",
     "startDate" : "Start Date",
     "endDate" : "End Date",
     "custom": "Custom",

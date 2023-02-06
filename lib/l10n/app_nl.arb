@@ -126,7 +126,7 @@
     "accountNumb" : "Rekening nummer",
     "position" : "Functie",
     "hourlyWage" : "Uurloon",
-    "empByWage" : "Mederwerker per loon",
+    "empByWage" : "Periodeloon",
     "startDate" : "Start Datum",
     "endDate" : "Eind Datum",
     "custom": "Custom",

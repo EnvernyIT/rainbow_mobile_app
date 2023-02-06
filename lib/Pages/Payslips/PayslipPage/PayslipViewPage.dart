@@ -121,6 +121,7 @@ class _PayslipViewPageState extends State<PayslipViewPage> {
       body: Container(
         margin: const EdgeInsets.all(15),
         padding: const EdgeInsets.all(10),
+        width: double.infinity,
         decoration: BoxDecoration(
           border: Border.all(color: Colors.white, width: 3.0),
           borderRadius: BorderRadius.circular(15),
@@ -154,6 +155,11 @@ class _PayslipViewPageState extends State<PayslipViewPage> {
                 ),
               ],
             ),
+            Container(
+              margin: const EdgeInsets.only(top: 15),
+              color: Colors.grey[300],
+              height: 3,
+            ),
             const SizedBox(
               height: 20,
             ),
@@ -162,7 +168,7 @@ class _PayslipViewPageState extends State<PayslipViewPage> {
               child: Column(children: [
                 RTextField(
                   title: AppLocalizations.of(context)!.period,
-                  data_1: widget.payslip.hsPeriode.toString(),
+                  data_1: widget.payslip.hsJaar.toString() + " - " + widget.payslip.hsPeriode.toString(),
                   fontSize: 18,
                   color_1: RainbowColor.primary_2,
                 ),
@@ -205,6 +211,12 @@ class _PayslipViewPageState extends State<PayslipViewPage> {
                 RTextField(
                   title: AppLocalizations.of(context)!.accountNumb,
                   data_1: widget.payslip.hsRekening1,
+                  fontSize: 18,
+                  color_1: RainbowColor.primary_2,
+                ),
+                RTextField(
+                  title: AppLocalizations.of(context)!.department,
+                  data_1: widget.payslip.afOmschrijving,
                   fontSize: 18,
                   color_1: RainbowColor.primary_2,
                 ),
