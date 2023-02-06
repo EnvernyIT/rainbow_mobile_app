@@ -478,7 +478,8 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
                             ),
                             custom
                                 ? Container(
-                                    padding: const EdgeInsets.only(
+                                width: double.infinity,
+                                padding: const EdgeInsets.only(
                                         left: 20, right: 20),
                                     margin: const EdgeInsets.all(10),
                                     decoration: BoxDecoration(
@@ -588,7 +589,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
                                   child: Container(
                                       alignment: Alignment.center,
                                       height: 50,
-                                      width: 400,
+                                      width: double.infinity,
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(15),

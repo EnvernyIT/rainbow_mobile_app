@@ -20,9 +20,12 @@ class DateInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-      Container(
-        padding: const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
+      Expanded(
+          child: Container(
+        padding:
+            const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
         height: 50,
+        width: double.infinity,
         child: GestureDetector(
           onTap: onTap,
           child: Row(
@@ -61,10 +64,13 @@ class DateInputField extends StatelessWidget {
             )
           ],
         ),
-      ),
-      Container(
-        padding: const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
+      )),
+      Expanded(
+          child: Container(
+        padding:
+            const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
         height: 50,
+        width: double.infinity,
         child: GestureDetector(
           onTap: onTap,
           child: Row(
@@ -103,7 +109,7 @@ class DateInputField extends StatelessWidget {
             )
           ],
         ),
-      ),
+      )),
     ]);
   }
 }

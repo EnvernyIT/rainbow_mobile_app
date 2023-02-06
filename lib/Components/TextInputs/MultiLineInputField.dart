@@ -28,7 +28,7 @@ class MultiLineInputField extends StatelessWidget {
           return Container(
             margin: const EdgeInsets.only(top: 8.0, bottom: 10.0),
             padding: const EdgeInsets.only(left: 14),
-            width: width ?? 350,
+            width: double.infinity,
             decoration: BoxDecoration(
               border: Border.all(color: Colors.white, width: 3.0),
               borderRadius: BorderRadius.circular(15),
