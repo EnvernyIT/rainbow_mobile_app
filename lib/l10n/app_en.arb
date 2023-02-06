@@ -133,5 +133,6 @@
     "leaveType": "Leave Type",
     "duration" : "Duration",
     "total" : "Total",
-    "amountOfHours" : "Amount of hours"
+    "amountOfHours" : "Amount of hours",
+    "addAttachment" : "Add an attachment"
 }

@@ -59,7 +59,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
   int listLength = 0;
   HourType newValue = HourType(valid: true);
   double userLeaveBalance = 0;
-  String fileName = "Choose file";
+  String fileName = "Add an attachment";
   List<String> items = [];
   late File image;
   bool isApiCallProcess = false;
@@ -245,7 +245,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
         ),
         Flexible(
             child: TabBarView(
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 controller: _controller,
                 children: <Widget>[
               Container(
@@ -395,6 +395,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
                                             setState(() {
                                               changeButtonColors(1);
                                               custom = false;
+                                              fullDay = 1;
                                             });
                                           },
                                           child: Container(
@@ -424,6 +425,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
                                           onTap: () {
                                             changeButtonColors(2);
                                             custom = false;
+                                            fullDay = 2;
                                           },
                                           child: Container(
                                               alignment: Alignment.center,
@@ -444,6 +446,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
                                           onTap: () {
                                             changeButtonColors(3);
                                             custom = true;
+                                            fullDay = 3;
                                           },
                                           child: Container(
                                               alignment: Alignment.center,
@@ -510,7 +513,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
                                         border: InputBorder.none,
                                       ),
                                     ))
-                                : SizedBox(
+                                : const SizedBox(
                                     height: 0,
                                     width: 0,
                                   ),
@@ -555,7 +558,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
                                                 )))
                                       ],
                                     ))),
-                            SizedBox(
+                            const SizedBox(
                               height: 15,
                             ),
                             Container(
@@ -970,6 +973,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
     employeeService.getLeaveBalance().then((value) {
       setState(() {
         userLeaveBalance = value;
+        fileName = AppLocalizations.of(context)!.addAttachment;
       });
     });
   }

@@ -133,5 +133,6 @@
     "leaveType": "Verlof Type",
     "duration" : "Duur",
     "total" : "Totaal",
-    "amountOfHours" : "Aantal uren"
+    "amountOfHours" : "Aantal uren",
+    "addAttachment" : "Voeg een bijlage toe"
 }
