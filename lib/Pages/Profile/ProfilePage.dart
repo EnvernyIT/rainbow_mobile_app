@@ -58,20 +58,20 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Column(
                   children: [
                     Container(
-                      margin: const EdgeInsets.only(bottom: 10),
+                      margin: const EdgeInsets.only(bottom: 5),
                       alignment: Alignment.center,
                       child: InkWell(
                         onTap: () {
                           // _editProfileImage(context);
                         },
                         child: CircleAvatar(
-                            radius: 80.0,
+                            radius: 100.0,
                             backgroundColor: Colors.transparent,
                             backgroundImage: DecorationImage(image:
                             image.isNotEmpty
                                 ? Image.memory(
                                     base64Decode(image),
-                                    fit: BoxFit.fill,
+                                    fit: BoxFit.contain,
                                   ).image
                                 : Image.asset(
                                     'assets/images/blank-profile.png').image).image,
