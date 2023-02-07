@@ -65,14 +65,8 @@ class _AbsenceInfoPageState extends State<AbsenceInfoPage> {
                 content: (widget.absence.uaEindDat != widget.absence.usStartDate
                     ? showMDDate(widget.absence.usStartDate) +
                         " - " +
-                        " " +
                         showMDDate(widget.absence.uaEindDat!)
-                    : showYMDDate(widget.absence.usStartDate) +
-                        " (" +
-                        widget.absence.uaAantalUren.toString() +
-                        " " +
-                        AppLocalizations.of(context)!.hours +
-                        ")")),
+                    : showYMDDate(widget.absence.usStartDate))),
             RField(
               title: AppLocalizations.of(context)!.total,
               content: widget.absence.numberOfLeaveDays.toString() +

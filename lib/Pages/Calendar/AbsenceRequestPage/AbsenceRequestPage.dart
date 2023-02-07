@@ -170,6 +170,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
     _colorTweenForegroundOn =
         ColorTween(begin: _foregroundOff, end: _foregroundOn)
             .animate(_animationControllerOn);
+    setList();
     setUserLeaveBalance();
     setUserHours();
     setHourTypeList();
@@ -199,7 +200,6 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
       fileAsString = "";
       DateTime fromDate = DateTime.now().add(const Duration(days: 1));
       DateTime toDate = DateTime.now().add(const Duration(days: 1));
-      absences.clear();
     });
   }
 
@@ -216,22 +216,23 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
             )),
         actions: [
           IconButton(
-              onPressed: () {
-                setState(() {
+              onPressed: () async {
                   if (request == 0) {
                     setState(() {
                       isApiCallProcess = true;
+                    });
+                    await Future.delayed(const Duration(milliseconds: 300));
+                    setState(() {
                       _controller.index = 1;
                       request = 1;
+                      setList();
                     });
-                    setList();
                   } else {
                     setState(() {
                       _controller.index = 0;
                       request = 0;
                     });
                   }
-                });
               },
               icon: Icon(
                 request == 0 ? Icons.list : Icons.add,
@@ -239,6 +240,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
               )),
         ],
       ),
+      drawer: const Navigation(),
       body: Column(children: [
         const SizedBox(
           height: 5,
@@ -478,8 +480,8 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
                             ),
                             custom
                                 ? Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.only(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.only(
                                         left: 20, right: 20),
                                     margin: const EdgeInsets.all(10),
                                     decoration: BoxDecoration(
@@ -582,8 +584,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
                                       setState(() {
                                         isApiCallProcess = true;
                                       });
-                                      sendLeaveRequest(
-                                          userLeaveBalance, context);
+                                      sendLeaveRequest(context);
                                     }
                                   },
                                   child: Container(
@@ -610,7 +611,13 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
               RefreshIndicator(
                 backgroundColor: RainbowColor.secondary,
                 color: RainbowColor.primary_1,
-                onRefresh: refresh,
+                onRefresh: () async {
+                  setState(() {
+                    isApiCallProcess = true;
+                  });
+                  await Future.delayed(const Duration(milliseconds: 500));
+                  refresh();
+                },
                 child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: absences.length,
@@ -652,93 +659,69 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
     });
   }
 
-  void sendLeaveRequest(double userLeaveBalance, BuildContext context) {
-    if (userLeaveBalance > getDateDifferenceInDays(fromDate, toDate)) {
-      if (hours >= 0) {
-        if (hours <= hoursAllowed) {
-          AbsenceRequest absenceRequest = AbsenceRequest(
-            dateFrom: getDateString(fromDate),
-            dateTo: getDateString(toDate),
-            usId: newValue.usId,
-            days: getDateDifferenceInDays(fromDate, toDate),
-            uaAantaluren: (fullDay == 1)
-                ? fullDayHours
-                : (fullDay == 2)
-                    ? halfDayHours
-                    : double.parse(numberController.text),
-            uaOpmerking: controller_3.text,
-            fileBytes: fileAsString,
-            typeFile: fileName,
-          );
-          AbsenceService service = AbsenceService();
-          Absence absence = Absence(valid: true);
-          if (fromDate.isAfter(DateTime.now()) ||
-              toDate.isAfter(DateTime.now())) {
-            service.request(absenceRequest)?.then((value) {
-              if (value.valid) {
-                absence = value;
-                clearAll();
-                setList();
-                SnackBar snackBar = SnackBar(
-                  content:
-                      Text(AppLocalizations.of(context)!.requestSuccesfull),
-                  backgroundColor: Colors.green,
-                );
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => AbsenceInfoPage(
-                            absence: absence,
-                          )),
-                );
-                setState(() {
-                  isApiCallProcess = false;
-                });
-              } else {
-                setState(() {
-                  isApiCallProcess = false;
-                });
-                SnackBar snackBar = SnackBar(
-                  content: SizedBox(
-                      height: 40,
-                      child: Column(children: [
-                        Text(AppLocalizations.of(context)!.requestUnsuccesfull),
-                        Text(AppLocalizations.of(context)!.reason +
-                            " " +
-                            value.response!),
-                      ])),
-                  backgroundColor: Colors.red,
-                );
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              }
+  void sendLeaveRequest(BuildContext context) {
+    if (hours <= hoursAllowed) {
+      AbsenceRequest absenceRequest = AbsenceRequest(
+        dateFrom: getDateString(fromDate),
+        dateTo: getDateString(toDate),
+        usId: newValue.usId,
+        days: getDateDifferenceInDays(fromDate, toDate),
+        uaAantaluren: (fullDay == 1)
+            ? fullDayHours
+            : (fullDay == 2)
+                ? halfDayHours
+                : double.parse(numberController.text),
+        uaOpmerking: controller_3.text,
+        fileBytes: fileAsString,
+        typeFile: fileName,
+      );
+      AbsenceService service = AbsenceService();
+      Absence absence = Absence(valid: true);
+      if (fromDate.isAfter(DateTime.now()) || toDate.isAfter(DateTime.now())) {
+        service.request(absenceRequest)?.then((value) {
+          if (value.valid) {
+            absence = value;
+            clearAll();
+            setList();
+            SnackBar snackBar = SnackBar(
+              content: Text(AppLocalizations.of(context)!.requestSuccesfull),
+              backgroundColor: Colors.green,
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AbsenceInfoPage(
+                        absence: absence,
+                      )),
+            );
+            setState(() {
+              isApiCallProcess = false;
             });
           } else {
             setState(() {
               isApiCallProcess = false;
             });
             SnackBar snackBar = SnackBar(
-              content: Text(AppLocalizations.of(context)!.dateNotAllowed),
+              content: SizedBox(
+                  height: 40,
+                  child: Column(children: [
+                    Text(AppLocalizations.of(context)!.requestUnsuccesfull),
+                    Text(AppLocalizations.of(context)!.reason +
+                        " " +
+                        value.response!),
+                  ])),
               backgroundColor: Colors.red,
             );
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
-        } else {
-          setState(() {
-            isApiCallProcess = false;
-          });
-          SnackBar snackBar = SnackBar(
-            content: Text(AppLocalizations.of(context)!.tooManyHours),
-            backgroundColor: Colors.red,
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        }
+        });
       } else {
         setState(() {
           isApiCallProcess = false;
         });
         SnackBar snackBar = SnackBar(
-          content: Text(AppLocalizations.of(context)!.forgotHours),
+          content: Text(AppLocalizations.of(context)!.dateNotAllowed),
           backgroundColor: Colors.red,
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -748,7 +731,7 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
         isApiCallProcess = false;
       });
       SnackBar snackBar = SnackBar(
-        content: Text(AppLocalizations.of(context)!.notEnoughLeave),
+        content: Text(AppLocalizations.of(context)!.tooManyHours),
         backgroundColor: Colors.red,
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -833,12 +816,9 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
 
   Future refresh() async {
     setState(() {
-      isApiCallProcess = true;
+      listLength = 0;
     });
-
-    listLength = 0;
     setList();
-
     setState(() {
       isApiCallProcess = false;
     });
@@ -961,9 +941,20 @@ class _AbsenceRequestPageState extends State<AbsenceRequestPage>
     absenceService.getList(absenceRequest).then((value) {
       setState(() {
         if (value != null) {
-          absences = value;
-          listLength = absences.length;
-          isApiCallProcess = false;
+          if (value.length == 1) {
+            if (value.first.valid) {
+              absences = value;
+              listLength = absences.length;
+              isApiCallProcess = false;
+            } else {
+              message = value.first.response!;
+              isApiCallProcess = false;
+            }
+          } else {
+            absences = value;
+            listLength = absences.length;
+            isApiCallProcess = false;
+          }
         }
       });
     });

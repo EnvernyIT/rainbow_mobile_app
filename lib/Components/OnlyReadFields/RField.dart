@@ -6,20 +6,28 @@ import '../../Theme/ThemeTextStyle.dart';
 class RField extends StatelessWidget {
   final String title;
   final String content;
+  final String? content_2;
   final Color? color;
+  final double? lineWidth;
+  final double? bottomSpace;
+  final double? height;
 
   const RField({
+    super.key,
     required this.title,
     required this.content,
     this.color,
+    this.lineWidth,
+    this.bottomSpace,
+    this.content_2, this.height,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 0),
-      height: 80,
-      width: 420,
+      height: height ?? 80,
+      width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -38,7 +46,7 @@ class RField extends StatelessWidget {
           ),
           Flexible(
               child: Text(
-            content,
+            content + " " + (content_2 ?? ""),
             style: TextStyle(
                 color: color ?? Colors.black,
                 //Font color
@@ -47,12 +55,12 @@ class RField extends StatelessWidget {
                 fontWeight: FontWeight.w500,
                 fontFamily: RainbowTextStyle.fontFamily),
           )),
-          const SizedBox(
-            height: 18,
+          SizedBox(
+            height: bottomSpace ?? 18,
           ),
           Container(
             color: Colors.grey[200],
-            height: 2,
+            height: lineWidth ?? 2,
           )
         ],
       ),

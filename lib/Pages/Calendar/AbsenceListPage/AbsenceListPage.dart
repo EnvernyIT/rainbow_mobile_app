@@ -24,9 +24,9 @@ class _AbsenceListPageState extends State<AbsenceListPage> {
   List<Absence> absences = [];
   int listLength = 0;
   late String locale = Localizations.localeOf(context).languageCode;
-  bool _isLoading = false; //bool variable created
   bool isCurrentRoutePincode = false;
   String message = "";
+  bool isApiCallProcess = false;
 
   @override
   void initState() {
@@ -52,55 +52,53 @@ class _AbsenceListPageState extends State<AbsenceListPage> {
         backgroundColor: RainbowColor.secondary,
       ),
       drawer: const Navigation(),
-      body: _isLoading
-          ? Container(
-              color: RainbowColor.secondary,
-              child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: RefreshIndicator(
-                      backgroundColor: RainbowColor.secondary,
-                      color: RainbowColor.primary_1,
-                      onRefresh: refresh,
-                      child: absences.isEmpty
-                          ? Column(children: [
-                              const SizedBox(
-                                height: 25,
-                              ),
-                              Center(
-                                  child: Column(children: [
-                                const Icon(
-                                  size: 100,
-                                  Icons.list_alt_outlined,
-                                  color: RainbowColor.hint,
-                                ),
-                                Text(
-                                  AppLocalizations.of(context)!.noAbsencesFound,
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 18,
-                                      fontFamily: RainbowTextStyle.fontFamily),
-                                ),
-                                Text(
-                                  message.isNotEmpty ? "(" + message + ")" : "",
-                                  style: TextStyle(
-                                      color: Colors.redAccent,
-                                      fontSize: 18,
-                                      fontFamily: RainbowTextStyle.fontFamily),
-                                )
-                              ])),
-                              const SizedBox(
-                                height: 6,
-                              ),
-                            ])
-                          : ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: listLength,
-                              itemBuilder: (BuildContext context, int index) {
-                                return Absence2Tile(absence: absences[index]);
-                              }))))
-          : Center(
-              child: CircularProgressIndicator(color: RainbowColor.primary_1),
-            ),
+      body: RefreshIndicator(
+          backgroundColor: RainbowColor.secondary,
+          color: RainbowColor.primary_1,
+          onRefresh: () async {
+            setState(() {
+              isApiCallProcess = true;
+            });
+            await Future.delayed(const Duration(milliseconds: 500));
+            refresh();
+          },
+          child: absences.isEmpty
+              ? Column(children: [
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  Center(
+                      child: Column(children: [
+                    const Icon(
+                      size: 100,
+                      Icons.list_alt_outlined,
+                      color: RainbowColor.hint,
+                    ),
+                    Text(
+                      AppLocalizations.of(context)!.noAbsencesFound,
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontFamily: RainbowTextStyle.fontFamily),
+                    ),
+                    Text(
+                      message.isNotEmpty ? "(" + message + ")" : "",
+                      style: TextStyle(
+                          color: Colors.redAccent,
+                          fontSize: 18,
+                          fontFamily: RainbowTextStyle.fontFamily),
+                    )
+                  ])),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                ])
+              : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: listLength,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Absence2Tile(absence: absences[index]);
+                  })),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
@@ -118,7 +116,7 @@ class _AbsenceListPageState extends State<AbsenceListPage> {
 
   Future refresh() async {
     setState(() {
-      _isLoading = false;
+      isApiCallProcess = false;
     });
     absences.clear();
     setList();
@@ -134,15 +132,15 @@ class _AbsenceListPageState extends State<AbsenceListPage> {
             if (value.first.valid) {
               absences = value;
               listLength = absences.length;
-              _isLoading = true;
+              isApiCallProcess = false;
             } else {
               message = value.first.response!;
-              _isLoading = true;
+              isApiCallProcess = false;
             }
           } else {
             absences = value;
             listLength = absences.length;
-            _isLoading = true;
+            isApiCallProcess = false;
           }
         }
       });

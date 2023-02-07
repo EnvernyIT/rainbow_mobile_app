@@ -14,6 +14,7 @@ import '../../Backend/Models/Employee.dart';
 import '../../Backend/Models/Role.dart';
 import '../../Backend/Models/UserModel.dart';
 import '../../Components/Navigation.dart';
+import '../../Components/OnlyReadFields/RField.dart';
 import '../../Components/OnlyReadFields/RTextField.dart';
 import '../../Theme/ThemeColor.dart';
 import '../../Theme/ThemeTextStyle.dart';
@@ -43,6 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.grey[200],
         appBar: AppBar(
           elevation: 2,
           foregroundColor: RainbowColor.primary_1,
@@ -54,154 +56,115 @@ class _ProfilePageState extends State<ProfilePage> {
         drawer: const Navigation(),
         body: SingleChildScrollView(
             child: Container(
-                margin: const EdgeInsets.all(20.0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white, width: 3.0),
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.white,
+                ),
+                margin: const EdgeInsets.all(18.0),
+                padding: const EdgeInsets.all(2.0),
                 child: Column(
                   children: [
                     Container(
-                      margin: const EdgeInsets.only(bottom: 5),
-                      alignment: Alignment.center,
-                      child: InkWell(
-                        onTap: () {
-                          // _editProfileImage(context);
-                        },
+                        margin: const EdgeInsets.only(bottom: 5, top: 5),
+                        alignment: Alignment.center,
                         child: CircleAvatar(
-                            radius: 100.0,
-                            backgroundColor: Colors.transparent,
-                            backgroundImage: DecorationImage(image:
-                            image.isNotEmpty
-                                ? Image.memory(
-                                    base64Decode(image),
-                                    fit: BoxFit.contain,
-                                  ).image
-                                : Image.asset(
-                                    'assets/images/blank-profile.png').image).image,
-                      )),
-                    ),
+                          radius: 100.0,
+                          backgroundColor: Colors.transparent,
+                          backgroundImage: DecorationImage(
+                                  image: image.isNotEmpty
+                                      ? Image.memory(
+                                          base64Decode(image),
+                                          fit: BoxFit.contain,
+                                        ).image
+                                      : Image.asset(
+                                              'assets/images/blank-profile.png')
+                                          .image)
+                              .image,
+                        )),
                     Container(
-                      margin: const EdgeInsets.only(top: 10, bottom: 10),
-                      color: Colors.grey[300],
+                      margin: const EdgeInsets.only(top: 5, bottom: 5),
+                      color: Colors.grey[200],
                       height: 3,
                     ),
-                    RTextField(
+                    RField(
                       title: AppLocalizations.of(context)!.employeeCode,
-                      data_1: employee.emCode ?? "",
-                      fontSize: 17.0,
-                      color_1: RainbowColor.primary_1,
+                      content: employee.emCode ?? "",
+                      color: RainbowColor.primary_1,
+                      bottomSpace: 2,
+                      height: 50,
                     ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    RTextField(
+                    RField(
                       title: AppLocalizations.of(context)!.username,
-                      data_1: LoggedInUser.loggedInUser?.username ?? "",
-                      fontSize: 17.0,
-                      color_1: RainbowColor.primary_1,
+                      content: LoggedInUser.loggedInUser?.username ?? "",
+                      color: RainbowColor.primary_1,
+                      bottomSpace: 2,
+                      height: 50,
                     ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    RTextField(
+                    RField(
                       title: AppLocalizations.of(context)!.name,
-                      data_1: employee.emVoorNaam,
-                      data_2: employee.emNaam,
-                      color_1: RainbowColor.primary_1,
-                      color_2: RainbowColor.primary_1,
-                      fontSize: 17.0,
+                      content: employee.emVoorNaam ?? "",
+                      content_2: employee.emNaam,
+                      color: RainbowColor.primary_1,
+                      bottomSpace: 2,
+                      height: 50,
                     ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    RTextField(
+                    RField(
                       title: AppLocalizations.of(context)!.email,
-                      data_1: employee.email ?? "",
-                      fontSize: 17.0,
-                      color_1: RainbowColor.primary_1,
+                      content: employee.email ?? "",
+                      color: RainbowColor.primary_1,
+                      bottomSpace: 2,
+                      height: 50,
                     ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    // RTextField(
-                    //   title: AppLocalizations.of(context)!.status,
-                    //   data_1: employee.emStatus ?? "",
-                    //   fontSize: 17.0,
-                    //   color_1: RainbowColor.primary_1,
-                    // ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    RTextField(
+                    RField(
                       title: AppLocalizations.of(context)!.telephone,
-                      data_1: employee.emTelefoon ?? "",
-                      fontSize: 17.0,
-                      color_1: RainbowColor.primary_1,
+                      content: employee.emTelefoon ?? "",
+                      color: RainbowColor.primary_1,
+                      bottomSpace: 2,
+                      height: 50,
                     ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    RTextField(
+                    RField(
                       title: AppLocalizations.of(context)!.company,
-                      data_1: employee.bedrijf?.beNaam ?? "",
-                      fontSize: 17.0,
-                      color_1: RainbowColor.primary_1,
+                      content: employee.bedrijf?.beNaam ?? "",
+                      color: RainbowColor.primary_1,
+                      bottomSpace: 2,
+                      height: 50,
                     ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    RTextField(
+                    RField(
                       title: AppLocalizations.of(context)!.department,
-                      data_1: employee.hrmAfdeling?.afOmschrijving ?? "",
-                      fontSize: 17.0,
-                      color_1: RainbowColor.primary_1,
+                      content: employee.hrmAfdeling?.afOmschrijving ?? "",
+                      color: RainbowColor.primary_1,
+                      bottomSpace: 2,
+                      height: 50,
                     ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    RTextField(
+                    RField(
                       title: AppLocalizations.of(context)!.job,
-                      data_1: employee.hrmFunctie?.fuOmschrijving ?? "",
-                      fontSize: 17.0,
-                      color_1: RainbowColor.primary_1,
+                      content: employee.hrmFunctie?.fuOmschrijving ?? "",
+                      color: RainbowColor.primary_1,
+                      bottomSpace: 2,
+                      height: 50,
                     ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    RTextField(
+                    RField(
                       title: AppLocalizations.of(context)!.inServiceSince,
-                      data_1: showDate(employee.emInDienstDat),
-                      fontSize: 17.0,
-                      color_1: RainbowColor.primary_1,
+                      content: showDate(employee.emInDienstDat),
+                      color: RainbowColor.primary_1,
+                      bottomSpace: 2,
+                      height: 50,
                     ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    RTextField(
+                    RField(
                       title: AppLocalizations.of(context)!.leaveBalance,
-                      data_1: leaveBalance.toString(),
-                      fontSize: 17.0,
-                      color_1: RainbowColor.primary_1,
+                      content: leaveBalance.toString(),
+                      color: RainbowColor.primary_1,
+                      bottomSpace: 2,
+                      height: 50,
                     ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    RTextField(
+                    RField(
                       title: AppLocalizations.of(context)!.roles,
-                      data_1:
-                          LoggedInUser.loggedInUser?.roles?[0].roleName ?? "s",
-                      fontSize: 17.0,
-                      color_1: RainbowColor.primary_1,
+                      content: createLine(LoggedInUser.loggedInUser?.roles),
+                      color: RainbowColor.primary_1,
+                      bottomSpace: 2,
+                      height: 50,
                     ),
-
-                    // DropdownTextField(
-                    //   title: AppLocalizations.of(context)!.role,
-                    //   dropdownList: roles,
-                    //   fontSize: 17.0,
-                    // ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    // Button(
-                    //     label: (AppLocalizations.of(context)!.changePassword),
-                    //     onTap: () {})
                   ],
                 ))));
   }
@@ -281,5 +244,19 @@ class _ProfilePageState extends State<ProfilePage> {
         leaveBalance = leaveBalance + value;
       });
     });
+  }
+
+  String createLine(List<Role>? roles) {
+    String content = "";
+    if (roles != null) {
+        for (int i = 0; i <= roles.length - 1; i++) {
+          if(i == 0){
+            content = (roles[i].roleName ?? "") + ", ";
+          } else {
+            content = content + (roles[i].roleName ?? "") + ", ";
+          }
+        }
+    }
+    return content;
   }
 }
