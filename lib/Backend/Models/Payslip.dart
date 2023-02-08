@@ -229,7 +229,7 @@ class Payslip {
             // payslip.hmCumVa = json[i]['hmCumVa'] as num;
             // payslip.hmCumBedrag = json[i]['hmCumBedrag'] as num;
             payslip.hmActief = data[i]['hmActief'] as String;
-            payslip.hsDagLoon = data[i]['hsDagLoon'] as double?;
+            payslip.hsDagLoon = double.tryParse(data[i]['hsDagLoon'].toString());
             payslip.hsUrenPerWeek = double.tryParse(data[i]['hsUrenPerWeek'].toString());
             payslip.wtCode = data[i]['wtCode'] as String;
             payslip.beVaCode = data[i]['beVaCode'] as String;
